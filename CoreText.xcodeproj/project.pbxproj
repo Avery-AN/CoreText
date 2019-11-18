@@ -1,0 +1,471 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BB9F6B7E2381789100F05116 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6B7D2381789100F05116 /* AppDelegate.m */; };
+		BB9F6B892381789300F05116 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6B882381789300F05116 /* Assets.xcassets */; };
+		BB9F6B8F2381789300F05116 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6B8E2381789300F05116 /* main.m */; };
+		BB9F6B972381793900F05116 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6B962381793900F05116 /* RootViewController.m */; };
+		BB9F6BC523817A7400F05116 /* nezha@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6BAF23817A7400F05116 /* nezha@2x.png */; };
+		BB9F6BC623817A7400F05116 /* nezha@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6BB023817A7400F05116 /* nezha@3x.png */; };
+		BB9F6BE923817A7A00F05116 /* QATextRunDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BC823817A7A00F05116 /* QATextRunDelegate.m */; };
+		BB9F6BEA23817A7A00F05116 /* QAAttributedLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BCA23817A7A00F05116 /* QAAttributedLayer.m */; };
+		BB9F6BEB23817A7A00F05116 /* NSData+Md5.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BCD23817A7A00F05116 /* NSData+Md5.m */; };
+		BB9F6BEC23817A7A00F05116 /* NSString+Md5.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD023817A7A00F05116 /* NSString+Md5.m */; };
+		BB9F6BED23817A7A00F05116 /* UIImage+QACutImage.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD123817A7A00F05116 /* UIImage+QACutImage.m */; };
+		BB9F6BEE23817A7A00F05116 /* NSString+QAReplace.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD523817A7A00F05116 /* NSString+QAReplace.m */; };
+		BB9F6BEF23817A7A00F05116 /* UIImage+DecodeImage.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD623817A7A00F05116 /* UIImage+DecodeImage.m */; };
+		BB9F6BF023817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD823817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.m */; };
+		BB9F6BF123817A7A00F05116 /* QAAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD923817A7A00F05116 /* QAAttributedLabel.m */; };
+		BB9F6BF223817A7A00F05116 /* QATextDrawer.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BDB23817A7A00F05116 /* QATextDrawer.m */; };
+		BB9F6BF323817A7A00F05116 /* QAHighlightTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BDD23817A7A00F05116 /* QAHighlightTextManager.m */; };
+		BB9F6BF423817A7A00F05116 /* QAEmojiTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BE023817A7A00F05116 /* QAEmojiTextManager.m */; };
+		BB9F6BF523817A7A00F05116 /* QATextLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BE423817A7A00F05116 /* QATextLayout.m */; };
+		BB9F6BF623817A7A00F05116 /* QAAttributedStringSizeMeasurement.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BE723817A7A00F05116 /* QAAttributedStringSizeMeasurement.m */; };
+		BB9F6BFA2382E94200F05116 /* emoji_default@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6BF82382E94200F05116 /* emoji_default@3x.png */; };
+		BB9F6BFB2382E94200F05116 /* emoji_default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6BF92382E94200F05116 /* emoji_default@2x.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		BB9F6B792381789100F05116 /* CoreText.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoreText.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB9F6B7C2381789100F05116 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		BB9F6B7D2381789100F05116 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		BB9F6B882381789300F05116 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BB9F6B8D2381789300F05116 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB9F6B8E2381789300F05116 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BB9F6B952381793900F05116 /* RootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
+		BB9F6B962381793900F05116 /* RootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
+		BB9F6BAF23817A7400F05116 /* nezha@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nezha@2x.png"; sourceTree = "<group>"; };
+		BB9F6BB023817A7400F05116 /* nezha@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nezha@3x.png"; sourceTree = "<group>"; };
+		BB9F6BC823817A7A00F05116 /* QATextRunDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATextRunDelegate.m; sourceTree = "<group>"; };
+		BB9F6BC923817A7A00F05116 /* QATextDrawer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATextDrawer.h; sourceTree = "<group>"; };
+		BB9F6BCA23817A7A00F05116 /* QAAttributedLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAAttributedLayer.m; sourceTree = "<group>"; };
+		BB9F6BCD23817A7A00F05116 /* NSData+Md5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Md5.m"; sourceTree = "<group>"; };
+		BB9F6BCE23817A7A00F05116 /* NSString+Md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Md5.h"; sourceTree = "<group>"; };
+		BB9F6BCF23817A7A00F05116 /* NSData+Md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Md5.h"; sourceTree = "<group>"; };
+		BB9F6BD023817A7A00F05116 /* NSString+Md5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Md5.m"; sourceTree = "<group>"; };
+		BB9F6BD123817A7A00F05116 /* UIImage+QACutImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+QACutImage.m"; sourceTree = "<group>"; };
+		BB9F6BD223817A7A00F05116 /* UIImage+DecodeImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+DecodeImage.h"; sourceTree = "<group>"; };
+		BB9F6BD323817A7A00F05116 /* NSString+QAReplace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+QAReplace.h"; sourceTree = "<group>"; };
+		BB9F6BD423817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+QAAttributedString.h"; sourceTree = "<group>"; };
+		BB9F6BD523817A7A00F05116 /* NSString+QAReplace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+QAReplace.m"; sourceTree = "<group>"; };
+		BB9F6BD623817A7A00F05116 /* UIImage+DecodeImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+DecodeImage.m"; sourceTree = "<group>"; };
+		BB9F6BD723817A7A00F05116 /* UIImage+QACutImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+QACutImage.h"; sourceTree = "<group>"; };
+		BB9F6BD823817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+QAAttributedString.m"; sourceTree = "<group>"; };
+		BB9F6BD923817A7A00F05116 /* QAAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAAttributedLabel.m; sourceTree = "<group>"; };
+		BB9F6BDA23817A7A00F05116 /* QATextLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATextLayout.h; sourceTree = "<group>"; };
+		BB9F6BDB23817A7A00F05116 /* QATextDrawer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATextDrawer.m; sourceTree = "<group>"; };
+		BB9F6BDD23817A7A00F05116 /* QAHighlightTextManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAHighlightTextManager.m; sourceTree = "<group>"; };
+		BB9F6BDE23817A7A00F05116 /* QAEmojiTextManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAEmojiTextManager.h; sourceTree = "<group>"; };
+		BB9F6BDF23817A7A00F05116 /* QAHighlightTextManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAHighlightTextManager.h; sourceTree = "<group>"; };
+		BB9F6BE023817A7A00F05116 /* QAEmojiTextManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAEmojiTextManager.m; sourceTree = "<group>"; };
+		BB9F6BE123817A7A00F05116 /* QAAttributedLabelConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAAttributedLabelConfig.h; sourceTree = "<group>"; };
+		BB9F6BE223817A7A00F05116 /* QATextRunDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATextRunDelegate.h; sourceTree = "<group>"; };
+		BB9F6BE323817A7A00F05116 /* QAAttributedLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAAttributedLayer.h; sourceTree = "<group>"; };
+		BB9F6BE423817A7A00F05116 /* QATextLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATextLayout.m; sourceTree = "<group>"; };
+		BB9F6BE523817A7A00F05116 /* QAAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAAttributedLabel.h; sourceTree = "<group>"; };
+		BB9F6BE723817A7A00F05116 /* QAAttributedStringSizeMeasurement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAAttributedStringSizeMeasurement.m; sourceTree = "<group>"; };
+		BB9F6BE823817A7A00F05116 /* QAAttributedStringSizeMeasurement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAAttributedStringSizeMeasurement.h; sourceTree = "<group>"; };
+		BB9F6BF82382E94200F05116 /* emoji_default@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "emoji_default@3x.png"; sourceTree = "<group>"; };
+		BB9F6BF92382E94200F05116 /* emoji_default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "emoji_default@2x.png"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BB9F6B762381789100F05116 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BB9F6B702381789100F05116 = {
+			isa = PBXGroup;
+			children = (
+				BB9F6B7B2381789100F05116 /* CoreText */,
+				BB9F6B7A2381789100F05116 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BB9F6B7A2381789100F05116 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BB9F6B792381789100F05116 /* CoreText.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BB9F6B7B2381789100F05116 /* CoreText */ = {
+			isa = PBXGroup;
+			children = (
+				BB9F6B7C2381789100F05116 /* AppDelegate.h */,
+				BB9F6B7D2381789100F05116 /* AppDelegate.m */,
+				BB9F6B952381793900F05116 /* RootViewController.h */,
+				BB9F6B962381793900F05116 /* RootViewController.m */,
+				BB9F6BC723817A7A00F05116 /* QAAttributedLabel */,
+				BB9F6B9823817A7400F05116 /* Resources */,
+				BB9F6B882381789300F05116 /* Assets.xcassets */,
+				BB9F6B8D2381789300F05116 /* Info.plist */,
+				BB9F6B8E2381789300F05116 /* main.m */,
+			);
+			path = CoreText;
+			sourceTree = "<group>";
+		};
+		BB9F6B9823817A7400F05116 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				BB9F6BAF23817A7400F05116 /* nezha@2x.png */,
+				BB9F6BB023817A7400F05116 /* nezha@3x.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		BB9F6BC723817A7A00F05116 /* QAAttributedLabel */ = {
+			isa = PBXGroup;
+			children = (
+				BB9F6BE123817A7A00F05116 /* QAAttributedLabelConfig.h */,
+				BB9F6BE523817A7A00F05116 /* QAAttributedLabel.h */,
+				BB9F6BD923817A7A00F05116 /* QAAttributedLabel.m */,
+				BB9F6BE323817A7A00F05116 /* QAAttributedLayer.h */,
+				BB9F6BCA23817A7A00F05116 /* QAAttributedLayer.m */,
+				BB9F6BDA23817A7A00F05116 /* QATextLayout.h */,
+				BB9F6BE423817A7A00F05116 /* QATextLayout.m */,
+				BB9F6BC923817A7A00F05116 /* QATextDrawer.h */,
+				BB9F6BDB23817A7A00F05116 /* QATextDrawer.m */,
+				BB9F6BE223817A7A00F05116 /* QATextRunDelegate.h */,
+				BB9F6BC823817A7A00F05116 /* QATextRunDelegate.m */,
+				BB9F6BCB23817A7A00F05116 /* Category */,
+				BB9F6BDC23817A7A00F05116 /* Manager */,
+				BB9F6BE623817A7A00F05116 /* Utility */,
+				BB9F6BF72382E94200F05116 /* Resources */,
+			);
+			path = QAAttributedLabel;
+			sourceTree = "<group>";
+		};
+		BB9F6BCB23817A7A00F05116 /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				BB9F6BCC23817A7A00F05116 /* Md5 */,
+				BB9F6BD723817A7A00F05116 /* UIImage+QACutImage.h */,
+				BB9F6BD123817A7A00F05116 /* UIImage+QACutImage.m */,
+				BB9F6BD223817A7A00F05116 /* UIImage+DecodeImage.h */,
+				BB9F6BD623817A7A00F05116 /* UIImage+DecodeImage.m */,
+				BB9F6BD323817A7A00F05116 /* NSString+QAReplace.h */,
+				BB9F6BD523817A7A00F05116 /* NSString+QAReplace.m */,
+				BB9F6BD423817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.h */,
+				BB9F6BD823817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.m */,
+			);
+			path = Category;
+			sourceTree = "<group>";
+		};
+		BB9F6BCC23817A7A00F05116 /* Md5 */ = {
+			isa = PBXGroup;
+			children = (
+				BB9F6BCE23817A7A00F05116 /* NSString+Md5.h */,
+				BB9F6BD023817A7A00F05116 /* NSString+Md5.m */,
+				BB9F6BCF23817A7A00F05116 /* NSData+Md5.h */,
+				BB9F6BCD23817A7A00F05116 /* NSData+Md5.m */,
+			);
+			path = Md5;
+			sourceTree = "<group>";
+		};
+		BB9F6BDC23817A7A00F05116 /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				BB9F6BDF23817A7A00F05116 /* QAHighlightTextManager.h */,
+				BB9F6BDD23817A7A00F05116 /* QAHighlightTextManager.m */,
+				BB9F6BDE23817A7A00F05116 /* QAEmojiTextManager.h */,
+				BB9F6BE023817A7A00F05116 /* QAEmojiTextManager.m */,
+			);
+			path = Manager;
+			sourceTree = "<group>";
+		};
+		BB9F6BE623817A7A00F05116 /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				BB9F6BE823817A7A00F05116 /* QAAttributedStringSizeMeasurement.h */,
+				BB9F6BE723817A7A00F05116 /* QAAttributedStringSizeMeasurement.m */,
+			);
+			path = Utility;
+			sourceTree = "<group>";
+		};
+		BB9F6BF72382E94200F05116 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				BB9F6BF92382E94200F05116 /* emoji_default@2x.png */,
+				BB9F6BF82382E94200F05116 /* emoji_default@3x.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BB9F6B782381789100F05116 /* CoreText */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB9F6B922381789300F05116 /* Build configuration list for PBXNativeTarget "CoreText" */;
+			buildPhases = (
+				BB9F6B752381789100F05116 /* Sources */,
+				BB9F6B762381789100F05116 /* Frameworks */,
+				BB9F6B772381789100F05116 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CoreText;
+			productName = CoreText;
+			productReference = BB9F6B792381789100F05116 /* CoreText.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BB9F6B712381789100F05116 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1120;
+				ORGANIZATIONNAME = Avery;
+				TargetAttributes = {
+					BB9F6B782381789100F05116 = {
+						CreatedOnToolsVersion = 11.2;
+					};
+				};
+			};
+			buildConfigurationList = BB9F6B742381789100F05116 /* Build configuration list for PBXProject "CoreText" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BB9F6B702381789100F05116;
+			productRefGroup = BB9F6B7A2381789100F05116 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BB9F6B782381789100F05116 /* CoreText */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BB9F6B772381789100F05116 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB9F6BC523817A7400F05116 /* nezha@2x.png in Resources */,
+				BB9F6BC623817A7400F05116 /* nezha@3x.png in Resources */,
+				BB9F6BFA2382E94200F05116 /* emoji_default@3x.png in Resources */,
+				BB9F6BFB2382E94200F05116 /* emoji_default@2x.png in Resources */,
+				BB9F6B892381789300F05116 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BB9F6B752381789100F05116 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB9F6BF223817A7A00F05116 /* QATextDrawer.m in Sources */,
+				BB9F6BF123817A7A00F05116 /* QAAttributedLabel.m in Sources */,
+				BB9F6BF623817A7A00F05116 /* QAAttributedStringSizeMeasurement.m in Sources */,
+				BB9F6BEC23817A7A00F05116 /* NSString+Md5.m in Sources */,
+				BB9F6B7E2381789100F05116 /* AppDelegate.m in Sources */,
+				BB9F6BEE23817A7A00F05116 /* NSString+QAReplace.m in Sources */,
+				BB9F6BE923817A7A00F05116 /* QATextRunDelegate.m in Sources */,
+				BB9F6BF023817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.m in Sources */,
+				BB9F6BEA23817A7A00F05116 /* QAAttributedLayer.m in Sources */,
+				BB9F6BEF23817A7A00F05116 /* UIImage+DecodeImage.m in Sources */,
+				BB9F6BED23817A7A00F05116 /* UIImage+QACutImage.m in Sources */,
+				BB9F6BF423817A7A00F05116 /* QAEmojiTextManager.m in Sources */,
+				BB9F6BEB23817A7A00F05116 /* NSData+Md5.m in Sources */,
+				BB9F6BF323817A7A00F05116 /* QAHighlightTextManager.m in Sources */,
+				BB9F6B8F2381789300F05116 /* main.m in Sources */,
+				BB9F6BF523817A7A00F05116 /* QATextLayout.m in Sources */,
+				BB9F6B972381793900F05116 /* RootViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		BB9F6B902381789300F05116 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		BB9F6B912381789300F05116 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BB9F6B932381789300F05116 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = CoreText/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = Avery.CoreText;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		BB9F6B942381789300F05116 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = CoreText/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = Avery.CoreText;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BB9F6B742381789100F05116 /* Build configuration list for PBXProject "CoreText" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB9F6B902381789300F05116 /* Debug */,
+				BB9F6B912381789300F05116 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB9F6B922381789300F05116 /* Build configuration list for PBXNativeTarget "CoreText" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB9F6B932381789300F05116 /* Debug */,
+				BB9F6B942381789300F05116 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BB9F6B712381789100F05116 /* Project object */;
+}
