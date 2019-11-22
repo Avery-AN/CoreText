@@ -83,30 +83,41 @@
     
     // *** 【3】 文案的裁剪 ('...全文'):
     {
-//        label.numberOfLines = 0;
+        label.numberOfLines = 0;
         
-        label.numberOfLines = 6;
-        label.showMoreText = YES;
-        label.seeMoreText = @"...全文";
-        label.moreTextFont = [UIFont fontWithName:@"PingFangTC-Regular" size:19];
-        label.moreTextColor = [UIColor whiteColor];
-        label.moreTextBackgroundColor = [UIColor purpleColor];
-        label.moreTapedBackgroundColor = [UIColor redColor];
-        label.moreTapedTextColor = [UIColor blueColor];
+//        label.numberOfLines = 6;
+//        label.showMoreText = YES;
+//        label.seeMoreText = @"...全文";
+//        label.moreTextFont = [UIFont fontWithName:@"PingFangTC-Regular" size:19];
+//        label.moreTextColor = [UIColor whiteColor];
+//        label.moreTextBackgroundColor = [UIColor purpleColor];
+//        label.moreTapedBackgroundColor = [UIColor redColor];
+//        label.moreTapedTextColor = [UIColor blueColor];
     }
     
     [self.view addSubview:label];
     
+    [self performSelector:@selector(searchText:) withObject:@"直接绘制" afterDelay:1];
+    
     label.QAAttributedLabelTapAction = ^(NSString * _Nullable content, QAAttributedLabel_TapedStyle style) {
         NSLog(@"   点击高亮文案 style: %ld; content: %@", style, content);
     };
-    
 }
+
 
 
 #pragma mark - Action -
 - (void)action_sizeToFit {
     [self.label sizeToFit];
+}
+- (void)searchText:(NSString *)text {
+    [self.label searchTexts:[NSArray arrayWithObject:text]
+      resetSearchResultInfo:^NSDictionary * _Nullable{
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:[UIColor whiteColor] forKey:@"textColor"];
+        [dic setValue:[UIColor orangeColor] forKey:@"textBackgroundColor"];
+        return dic;
+    }];
 }
 
 
