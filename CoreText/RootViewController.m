@@ -25,7 +25,7 @@
     
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     button.backgroundColor = [UIColor orangeColor];
-    button.frame = CGRectMake(60, 600, 256, 50);
+    button.frame = CGRectMake(100, 500, [UIScreen mainScreen].bounds.size.width - 100*2, 50);
     [button setTitle:@"SizeToFit" forState:UIControlStateNormal];
     [button addTarget:self action:@selector(action_sizeToFit) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:button];
@@ -33,7 +33,7 @@
     
     
     // 【 QAAttributedLabel的使用方法 】
-    QAAttributedLabel *label = [[QAAttributedLabel alloc] initWithFrame:CGRectMake(10, 90, [UIScreen mainScreen].bounds.size.width- 10*2, 460)];
+    QAAttributedLabel *label = [[QAAttributedLabel alloc] initWithFrame:CGRectMake(10, 90, [UIScreen mainScreen].bounds.size.width- 10*2, 400)];
     self.label = label;
     label.backgroundColor = [UIColor grayColor];
     label.font = [UIFont fontWithName:@"PingFangTC-Regular" size:19];
