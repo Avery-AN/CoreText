@@ -18,7 +18,7 @@
 
 #pragma mark - life Cycle -
 - (void)dealloc {
-    NSLog(@" %s",__func__);
+//    NSLog(@" %s",__func__);
 }
 - (instancetype)initWithContainerSize:(CGSize)size attributedText:(NSMutableAttributedString *)attributedText {
     if (self = [super init]) {

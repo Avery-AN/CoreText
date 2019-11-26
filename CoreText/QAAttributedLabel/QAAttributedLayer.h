@@ -13,18 +13,13 @@
 @interface QAAttributedLayer : CALayer
 
 @property (nonatomic, nullable) QATextDrawer *textDrawer;
-@property (nonatomic, readonly, nullable) __block UIImage *contentImage;
+@property (nonatomic, nullable) __block id currentCGImage;
 @property (nonatomic, copy, nullable) NSDictionary *truncationInfo;
-
-/**
- 是否绘制了"seeMoreText"文本、YES表示已绘制
- */
-@property (nonatomic, assign, readonly) BOOL showMoreTextEffected;
 
 /**
  获取文案所占用的size
  */
-- (NSMutableAttributedString * _Nullable)getAttributedStringWithString:(NSString * _Nonnull)showContent
+- (NSMutableAttributedString * _Nullable)getAttributedStringWithString:(NSString * _Nonnull)content
                                                               maxWidth:(CGFloat)width;
 
 /**

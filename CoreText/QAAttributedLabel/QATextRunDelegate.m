@@ -11,7 +11,7 @@
 @implementation QATextRunDelegate
 
 - (void)dealloc {
-    NSLog(@"%s",__func__);
+//    NSLog(@"%s",__func__);
 }
 
 @end

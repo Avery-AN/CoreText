@@ -70,8 +70,8 @@
     CFRange fitRange = CFRangeMake(0, 0);
     CGSize constraints = CGSizeMake(maxWidth, CGFLOAT_MAX);
     CGSize suggestedSize = CTFramesetterSuggestFrameSizeWithConstraints(ctFramesetter, rangeToSize, NULL, constraints, &fitRange);
-    NSLog(@"fitRange-location: %ld; fitRange-length: %ld", fitRange.location, fitRange.length);
-    NSLog(@"suggestedSize: %@", NSStringFromCGSize(suggestedSize));
+    // NSLog(@"fitRange-location: %ld; fitRange-length: %ld", fitRange.location, fitRange.length);
+    // NSLog(@"suggestedSize: %@", NSStringFromCGSize(suggestedSize));
     
     CFRelease(ctFramesetter);
     CFRelease(ctFrame);

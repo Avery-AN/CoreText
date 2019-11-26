@@ -51,7 +51,8 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
 
 #pragma mark - Life Cycle -
 - (void)dealloc {
-    NSLog(@"%s",__func__);
+//    NSLog(@"%s",__func__);
+    
 //    if (_ctFrame) {
 //        CFRelease(_ctFrame);
 //        _ctFrame = nil;
@@ -120,22 +121,26 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     }
 }
 
-- (void)drawText:(NSMutableAttributedString *)attributedString
-         context:(CGContextRef)context
-     contentSize:(CGSize)size
-       wordSpace:(CGFloat)wordSpace
+- (int)drawText:(NSMutableAttributedString *)attributedString
+        context:(CGContextRef)context
+    contentSize:(CGSize)size
+      wordSpace:(CGFloat)wordSpace
 maxNumberOfLines:(NSInteger)maxNumberOfLines
-   textAlignment:(NSTextAlignment)textAlignment
-  truncationText:(NSDictionary *)truncationTextInfo
-  isSaveTextInfo:(BOOL)isSave {
-    if (context == NULL) {
-        return;
+  textAlignment:(NSTextAlignment)textAlignment
+ truncationText:(NSDictionary *)truncationTextInfo
+ isSaveTextInfo:(BOOL)isSave
+          check:(BOOL(^)(NSString *content))check
+         cancel:(void(^)(void))cancel {
+    if (context == NULL || !attributedString || CGSizeEqualToSize(size, CGSizeZero)) {
+        return -1;
     }
-    else if (!attributedString) {
-        return;
-    }
-    else if (CGSizeEqualToSize(size, CGSizeZero)) {
-        return;
+    
+    // 异常处理:
+    if (check && check(attributedString.string)) {
+        if (cancel) {
+            cancel();
+        }
+        return -1;
     }
     
     @autoreleasepool {
@@ -234,13 +239,25 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                     // 保存高亮文案在字符中的NSRange以及在CTFrame中的CGRect (以便在label中处理点击事件):
                     if (isSave) {
                         CGFloat contentHeight = size.height;
-                        [self saveHighlightRangeAndFrame:line
-                                              lineOrigin:lineOrigin
-                                               lineIndex:lineIndex
-                                              lineHeight:lineHeight
-                                                     run:run
-                                           ContentHeight:contentHeight
-                                        attributedString:attributedString];
+                        int result = [self saveHighlightRangeAndFrame:line
+                                                           lineOrigin:lineOrigin
+                                                            lineIndex:lineIndex
+                                                           lineHeight:lineHeight
+                                                                  run:run
+                                                        ContentHeight:contentHeight
+                                                     attributedString:attributedString
+                                                                check:check];
+                        if (result == -1) {
+                            if (cancel) {
+                                cancel();
+                            }
+                            
+                            CFRelease(drawPath);
+                            CFRelease(ctFrame);
+                            CFRelease(ctFramesetter);
+                            
+                            return -1;
+                        }
                     }
                 }
             }
@@ -250,6 +267,8 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
         CFRelease(ctFrame);
         CFRelease(ctFramesetter);
     }
+    
+    return 0;
 }
 
 
@@ -312,13 +331,14 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
     }
 }
 
-- (void)saveHighlightRangeAndFrame:(CTLineRef)line
-                        lineOrigin:(CGPoint)lineOrigin
-                         lineIndex:(CFIndex)lineIndex
-                        lineHeight:(CGFloat)lineHeight
-                               run:(CTRunRef)run
-                     ContentHeight:(CGFloat)contentHeight
-                  attributedString:(NSMutableAttributedString *)attributedString {
+- (int)saveHighlightRangeAndFrame:(CTLineRef)line
+                       lineOrigin:(CGPoint)lineOrigin
+                        lineIndex:(CFIndex)lineIndex
+                       lineHeight:(CGFloat)lineHeight
+                              run:(CTRunRef)run
+                    ContentHeight:(CGFloat)contentHeight
+                 attributedString:(NSMutableAttributedString *)attributedString
+                            check:(BOOL(^)(NSString *content))check {
     CFRange runRange = CTRunGetStringRange(run);
     NSRange currentRunRange = NSMakeRange(runRange.location, runRange.length);
     
@@ -357,6 +377,11 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
             NSString *keyString = [NSString stringWithFormat:@"%@%@", attributedString.string, highlightText];
             NSString *encodedKey = [keyString md5Hash];
             
+            // 异常处理:
+            if (check && check(attributedString.string)) {
+                return -1;
+            }
+            
             // 获取当前CTRunRef展示的文案:
             NSRange range = NSMakeRange((currentRunRange.location - highlightRange.location), currentRunRange.length);
             NSString *currentString = [highlightText substringWithRange:range];
@@ -377,10 +402,6 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                 }
                 
                 NSMutableArray *newlineTexts = [self.textNewlineDic valueForKey:encodedKey];
-                if (!newlineTexts) {
-                    newlineTexts = [NSMutableArray array];
-                }
-                
                 if (_currentLineIndex == lineIndex) {
                     if (highlightRects.count > 0) {
                         NSValue *rectValue = [highlightRects lastObject];
@@ -421,15 +442,13 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                     }
                 }
                 
-                
-                if (!self.highlightFrameDic) {
-                    self.highlightFrameDic = [NSMutableDictionary dictionary];
-                }
                 [self.highlightFrameDic setValue:highlightRects forKey:NSStringFromRange(highlightRange)];
                 [self.textNewlineDic setValue:newlineTexts forKey:encodedKey];
             }
         }
     }
+    
+    return 0;
 }
 
 
