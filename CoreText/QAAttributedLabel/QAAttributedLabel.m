@@ -107,10 +107,9 @@ typedef union {
     }
     else {
         /*
-         一种方案是在这里进行重绘
-         另外一种方案就是绘制的时候将frame设置到最大、不按照label.bounds来绘制、现实的时候再对image进行裁剪。
+         一种方案是在这里进行重绘 (需要处理下layer的display逻辑、将layer.attributedText_backup置为nil)
+         另外一种方案就是绘制的时候将frame设置到最大、不按照label.bounds来绘制、显示的时候再对image进行裁剪。
          */
-        NSLog(@"这里需要重绘");
         self.frame = (CGRect) {frame.origin, size};
         [self.layer setNeedsDisplay];
     }
