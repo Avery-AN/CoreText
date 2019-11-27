@@ -26,14 +26,14 @@
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     button.backgroundColor = [UIColor orangeColor];
     button.frame = CGRectMake(100, 500, [UIScreen mainScreen].bounds.size.width - 100*2, 50);
-    [button setTitle:@"SizeToFit" forState:UIControlStateNormal];
+    [button setTitle:@"自适应高度" forState:UIControlStateNormal];
     [button addTarget:self action:@selector(action_sizeToFit) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:button];
     
     
     
     // 【 QAAttributedLabel的使用方法 】
-    QAAttributedLabel *label = [[QAAttributedLabel alloc] initWithFrame:CGRectMake(10, 90, [UIScreen mainScreen].bounds.size.width- 10*2, 400)];
+    QAAttributedLabel *label = [[QAAttributedLabel alloc] initWithFrame:CGRectMake(10, 90, [UIScreen mainScreen].bounds.size.width - 10*2, 400)];
     self.label = label;
     label.backgroundColor = [UIColor grayColor];
     label.font = [UIFont fontWithName:@"PingFangTC-Regular" size:19];
@@ -73,8 +73,8 @@
         // label.highlightTapedBackgroundColor = [UIColor yellowColor];
         label.highlightAtTextColor = [UIColor greenColor];
         label.highlightLinkTextColor = [UIColor orangeColor];
-        label.highlightTopicTextColor = [UIColor redColor];
-        label.highlightAtTapedTextColor = [UIColor redColor];
+        label.highlightTopicTextColor = [UIColor blueColor];
+        label.highlightAtTapedTextColor = [UIColor orangeColor];
         label.highlightLinkTapedTextColor = [UIColor magentaColor];
         label.highlightTopicTapedTextColor = [UIColor greenColor];
         // label.highlightTextBackgroundColor = [UIColor brownColor];
@@ -97,6 +97,7 @@
     
     [self.view addSubview:label];
     
+    // 需要等label渲染完毕后再进行搜索:
     [self performSelector:@selector(searchText:) withObject:@"直接绘制" afterDelay:1];
     
     label.QAAttributedLabelTapAction = ^(NSString * _Nullable content, QAAttributedLabel_TapedStyle style) {
@@ -105,14 +106,13 @@
 }
 
 
-
 #pragma mark - Action -
 - (void)action_sizeToFit {
     [self.label sizeToFit];
 }
 - (void)searchText:(NSString *)text {
     [self.label searchTexts:[NSArray arrayWithObject:text]
-      resetSearchResultInfo:^NSDictionary * _Nullable{
+      resetSearchResultInfo:^NSDictionary * _Nullable {
         NSMutableDictionary *dic = [NSMutableDictionary dictionary];
         [dic setValue:[UIColor whiteColor] forKey:@"textColor"];
         [dic setValue:[UIColor orangeColor] forKey:@"textBackgroundColor"];
