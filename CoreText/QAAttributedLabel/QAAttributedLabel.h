@@ -26,16 +26,16 @@ typedef NS_ENUM(NSUInteger, QAAttributedLabel_TapedStyle) {
  null_unspecified: 不确定是否为空
  */
 
-@property (nonatomic, assign) BOOL linkHighlight;               // 网页链接是否需要高亮显示 (默认为NO)
-@property (nonatomic, assign) BOOL showShortLink;               // 是否展示短链接 ("www.baidu.com" -> "网页链接"; 默认为NO)
-@property (nonatomic, assign) BOOL atHighlight;                 // @的文本是否需要高亮显示 (默认为NO)
-@property (nonatomic, assign) BOOL topicHighlight;              // #...#文本(话题)是否需要高亮显示 (默认为NO)
-@property (nonatomic, assign) BOOL showMoreText;                // 当文本过多时、是否显示seeMoreText的内容 (默认为NO)
-@property (nonatomic, assign) BOOL display_async;               // 是否异步绘制 (默认为NO)
-@property (nonatomic, assign) BOOL isTaping;                    // 是否正在点击 (默认为NO)
 @property (nonatomic, copy, nullable) NSString *text;
 @property (nonatomic, copy, nullable) UIFont *font;
 @property (nonatomic, copy, null_resettable) UIColor *textColor;
+@property (nonatomic, assign) BOOL linkHighlight;               // 网页链接是否需要高亮显示 (默认为NO)
+@property (nonatomic, assign) BOOL showShortLink;               // 是否展示短链接 ("https://www.avery.com" -> "网页短链接"; 默认为NO)
+@property (nonatomic, assign) BOOL atHighlight;                 // @的文本是否需要高亮显示 (默认为NO)
+@property (nonatomic, assign) BOOL topicHighlight;              // #话题#是否需要高亮显示 (默认为NO)
+@property (nonatomic, assign) BOOL showMoreText;                // 当文本过多时、是否显示seeMoreText的内容 (默认为NO)
+@property (nonatomic, assign) BOOL display_async;               // 是否异步绘制 (默认为NO)
+@property (nonatomic, assign) BOOL isTaping;                    // 是否正在点击 (默认为NO)
 @property (nonatomic, assign, readonly) NSInteger length;           // 显示的文本长度
 @property (nonatomic, assign) NSTextAlignment textAlignment;        // 文本的对齐方式
 @property (nonatomic, assign) NSLineBreakMode lineBreakMode;        // 换行模式
@@ -46,7 +46,7 @@ typedef NS_ENUM(NSUInteger, QAAttributedLabel_TapedStyle) {
 @property (nonatomic, copy, nullable) NSString *shortLink;          // 展示短链接时显示的文案 (PS:"网页链接"、"网址"等)
 @property (nonatomic, copy, nullable) NSArray *highLightTexts;                  // text文本中需要高亮显示的部分
 @property (nonatomic, copy, nullable) UIFont *highlightFont;                    // 高亮文案的字体
-@property (nonatomic, copy, nullable) UIColor *highlightTextColor;              // 高亮显示时的颜色 (其它几种情况的默认颜色)
+@property (nonatomic, copy, nullable) UIColor *highlightTextColor;              // 高亮显示时的颜色 (其它几种高亮情况的默认颜色)
 @property (nonatomic, copy, nullable) UIColor *highlightLinkTextColor;          // 高亮显示时的颜色 (link)
 @property (nonatomic, copy, nullable) UIColor *highlightAtTextColor;            // 高亮显示时的颜色 (at)
 @property (nonatomic, copy, nullable) UIColor *highlightTopicTextColor;         // 高亮显示时的颜色 (topic)
