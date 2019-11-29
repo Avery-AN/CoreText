@@ -28,7 +28,7 @@
 <br>
 
 
-使用方法简单、只需设置项对应的属性值即可:<br>
+使用方法简单、只需设置对应项的属性值即可:<br>
 ------------
 ![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo3.png)<br>
 ![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo4.png)<br>
