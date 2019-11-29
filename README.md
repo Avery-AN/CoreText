@@ -14,7 +14,9 @@
 7. 支持搜索文本的高亮显示<br>
 8. 支持同步、异步绘制<br>
 9. 使用CoreText绘制、可自定义各种富文本样式(行间距、字间距、段间距等)<br>
-10. 支持对超长文案的截断处理 (ps:将超长文案的末尾处理成:"...全文"、并且支持自定义此截断文案)<br><br>
+10. 支持对超长文案的截断处理 (ps:将超长文案的末尾处理成:"...全文"、并且支持自定义此截断文案)<br>
+<br>
+<br>
 
 效果图如下:<br>
 ------------
@@ -22,3 +24,12 @@
 ![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo.png)<br>
 
 ![截断文案示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo2.png)<br>
+<br>
+<br>
+
+
+使用方法简单、只需设置对应项的属性值即可:<br>
+------------
+![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo3.png)<br>
+![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo4.png)<br>
+![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo5.png)<br>
