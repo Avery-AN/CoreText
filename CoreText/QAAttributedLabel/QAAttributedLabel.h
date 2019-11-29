@@ -42,7 +42,7 @@ typedef NS_ENUM(NSUInteger, QAAttributedLabel_TapedStyle) {
 @property (nonatomic, assign) BOOL atHighlight;             // "@xxx"是否需要高亮显示 (默认为NO)
 @property (nonatomic, assign) BOOL topicHighlight;          // "#话题#"是否需要高亮显示 (默认为NO)
 @property (nonatomic, assign) BOOL showMoreText;            // 当文本过多时、是否显示seeMoreText的内容 (默认为NO)
-@property (nonatomic, assign, readonly) BOOL isTaping;      // 是否正在被点击 (touchesBegan时为YES、touches事件完毕时为NO)
+@property (nonatomic, assign, readonly) BOOL isTouching;    // 是否正在被点击 (touchesBegan时为YES、touches事件结束后为NO)
 @property (nonatomic, copy, nullable) NSString *shortLink;                      // 展示短链接时显示的文案 (PS:"网页链接"、"网址"等)
 @property (nonatomic, copy, nullable) NSArray *highLightTexts;                  // text文本中需要高亮显示的部分
 @property (nonatomic, copy, nullable) UIFont *highlightFont;                    // 高亮文案的字体
