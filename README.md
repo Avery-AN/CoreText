@@ -21,15 +21,16 @@
 效果图如下:<br>
 ------------
 
-![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo.png)<br>
+![基本使用](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo_0.png)<br>
+![自适应高度](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo_1.png)<br>
 
-![截断文案示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo2.png)<br>
+![截断文案示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo_2.png)<br>
 <br>
 <br>
 
 
 使用方法简单、只需设置对应项的属性值即可:<br>
 ------------
-![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo3.png)<br>
-![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo4.png)<br>
-![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo5.png)<br>
+![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo_3.png)<br>
+![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo_4.png)<br>
+![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo_5.png)<br>
