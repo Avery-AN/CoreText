@@ -25,7 +25,7 @@
     
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     button.backgroundColor = [UIColor orangeColor];
-    button.frame = CGRectMake(100, 500, [UIScreen mainScreen].bounds.size.width - 100*2, 50);
+    button.frame = CGRectMake(100, 400, [UIScreen mainScreen].bounds.size.width - 100*2, 50);
     [button setTitle:@"自适应高度" forState:UIControlStateNormal];
     [button addTarget:self action:@selector(action_sizeToFit) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:button];
@@ -33,7 +33,7 @@
     
     
     // 【 QAAttributedLabel的使用方法 】
-    QAAttributedLabel *label = [[QAAttributedLabel alloc] initWithFrame:CGRectMake(10, 90, [UIScreen mainScreen].bounds.size.width - 10*2, 400)];
+    QAAttributedLabel *label = [[QAAttributedLabel alloc] initWithFrame:CGRectMake(10, 90, [UIScreen mainScreen].bounds.size.width - 10*2, 300)];
     self.label = label;
     label.backgroundColor = [UIColor grayColor];
     label.font = [UIFont fontWithName:@"PingFangTC-Regular" size:19];
@@ -83,16 +83,16 @@
     
     // *** 【3】 文案的裁剪 ('...全文'):
     {
-        label.numberOfLines = 0;
+//        label.numberOfLines = 0;
         
-//        label.numberOfLines = 6;
-//        label.showMoreText = YES;
-//        label.seeMoreText = @"...全文";
-//        label.moreTextFont = [UIFont fontWithName:@"PingFangTC-Regular" size:19];
-//        label.moreTextColor = [UIColor whiteColor];
-//        label.moreTextBackgroundColor = [UIColor purpleColor];
-//        label.moreTapedBackgroundColor = [UIColor redColor];
-//        label.moreTapedTextColor = [UIColor blueColor];
+        label.numberOfLines = 7;
+        label.showMoreText = YES;
+        label.seeMoreText = @"...全文";
+        label.moreTextFont = [UIFont fontWithName:@"PingFangTC-Regular" size:19];
+        label.moreTextColor = [UIColor whiteColor];
+        label.moreTextBackgroundColor = [UIColor purpleColor];
+        label.moreTapedBackgroundColor = [UIColor redColor];
+        label.moreTapedTextColor = [UIColor blueColor];
     }
     
     [self.view addSubview:label];
