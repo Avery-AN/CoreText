@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "QAAttributedLabelConfig.h"
 @class QAAttributedLayer, QATextLayout;
 
 typedef void (^GetTextContentSizeBlock)(CGSize size, NSMutableAttributedString * _Nullable attributedString);

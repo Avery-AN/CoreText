@@ -7,8 +7,9 @@
 //
 
 #import "QAAttributedLabel.h"
-#import "QAAttributedLabelConfig.h"
-#import <objc/runtime.h>
+#import "QAAttributedLayer.h"
+#import "QATextLayout.h"
+#import "QATextDrawer.h"
 
 
 #define LinkHighlight_MASK          (1 << 0)  // 0000 0001
