@@ -61,12 +61,12 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     return self;
 }
 - (void)setUp {
-    self.highlightRanges = [NSMutableArray array];
+    self.textNewlineDic = [NSMutableDictionary dictionary];
     self.highlightFrameDic = [NSMutableDictionary dictionary];
     
+    self.highlightRanges = [NSMutableArray array];
     self.textTypeDic = [NSMutableDictionary dictionary];
     self.textDic = [NSMutableDictionary dictionary];
-    self.textNewlineDic = [NSMutableDictionary dictionary];
 }
 
 
@@ -134,13 +134,13 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
     }
     
     @autoreleasepool {
-        // 先清空数据
-        [self.highlightFrameDic removeAllObjects];
-        [self.highlightRanges removeAllObjects];
-        [self.textNewlineDic removeAllObjects];
-        
         // 保存TextInfo的情况
         if (isSave) {
+            // 先清空数据
+            [self.highlightFrameDic removeAllObjects];
+            [self.highlightRanges removeAllObjects];
+            [self.textNewlineDic removeAllObjects];
+            
             // 保存高亮文案的highlightRange & highlightFont:
             if (self.textDic && self.textDic.count > 0) {
                 NSArray *allkeys = [self.textDic allKeys];
