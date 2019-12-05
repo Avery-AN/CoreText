@@ -42,7 +42,7 @@
     //label.textAlignment = NSTextAlignmentLeft;
     //label.lineBreakMode = NSLineBreakByCharWrapping;
     label.lineBreakMode = NSLineBreakByWordWrapping;
-    label.text = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#当我们在Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@AveryAN:本例中的Label在tableView中的使用详见:https://github.com/Avery-AN/TableView";
+    label.text = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#www.baidu.com/detail/wertyy/frdsefghjuu/hahhhahahha/ Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@AveryAN:本例中的Label在tableView中的使用详见:https://github.com/Avery-AN/TableView";
     
     
     // *** 【0】是否需要进行异步绘制:
@@ -63,8 +63,8 @@
         label.linkHighlight = YES;
         label.atHighlight = YES;
         label.topicHighlight = YES;
-        label.showShortLink = YES;
-        label.shortLink = @"网页短链接";
+//        label.showShortLink = YES;
+//        label.shortLink = @"网页短链接";
         // label.highlightFont = [UIFont systemFontOfSize:22];
 
         label.highLightTexts = [NSArray arrayWithObjects:@"调用底层的接口进行绘制", nil];
@@ -85,7 +85,8 @@
     {
 //        label.numberOfLines = 0;
         
-        label.numberOfLines = 7;
+//        label.numberOfLines = 7;
+        label.numberOfLines = 10;
         label.showMoreText = YES;
         label.seeMoreText = @"...全文";
         label.moreTextFont = [UIFont fontWithName:@"PingFangTC-Regular" size:19];
@@ -111,13 +112,13 @@
     [self.label sizeToFit];
 }
 - (void)searchText:(NSString *)text {
-    [self.label searchTexts:[NSArray arrayWithObject:text]
-      resetSearchResultInfo:^NSDictionary * _Nullable {
-        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-        [dic setValue:[UIColor whiteColor] forKey:@"textColor"];
-        [dic setValue:[UIColor orangeColor] forKey:@"textBackgroundColor"];
-        return dic;
-    }];
+//    [self.label searchTexts:[NSArray arrayWithObject:text]
+//      resetSearchResultInfo:^NSDictionary * _Nullable {
+//        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+//        [dic setValue:[UIColor whiteColor] forKey:@"textColor"];
+//        [dic setValue:[UIColor orangeColor] forKey:@"textBackgroundColor"];
+//        return dic;
+//    }];
 }
 
 
