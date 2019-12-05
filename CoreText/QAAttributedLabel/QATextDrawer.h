@@ -33,26 +33,6 @@
 @property (nonatomic, strong) NSMutableDictionary *textNewlineDic;
 
 /**
- 存储高亮字体 (key:range - value:font)
- */
-@property (nonatomic, strong) NSMutableDictionary *textFontDic;
-
-/**
- 存储高亮字体的颜色 (key:range - value:color)
- */
-@property (nonatomic, strong) NSMutableDictionary *textForwardColorDic;
-
-/**
- 存储高亮字体的背景色 (key:range - value:color)
- */
-@property (nonatomic, strong) NSMutableDictionary *textBackgroundColorDic;
-
-/**
- 存储高亮字体点击时的背景色 (key:range - value:color)
- */
-@property (nonatomic, strong) NSMutableDictionary *textTapedBackgroundColorDic;
-
-/**
  保存高亮文案所处位置对应的frame (key:range - value:CGRect)
  */
 @property (nonatomic, strong) NSMutableDictionary *highlightFrameDic;

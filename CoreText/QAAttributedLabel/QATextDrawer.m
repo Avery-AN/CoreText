@@ -31,9 +31,6 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
 
 
 @interface QATextDrawer () {
-    NSString *_previousHighlightKey;
-    NSRange _previousHighlightRange;
-    NSInteger _previousHighlightRangeTotalLength;
     NSMutableDictionary *_saveDoneDic;
 }
 @property (nonatomic, assign) HighlightContentPosition highlightContentPosition;
@@ -43,10 +40,6 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
  */
 @property (nonatomic, strong) NSMutableArray *highlightRanges;
 
-/**
- 保存需要设为高亮的文案的字体
- */
-@property (nonatomic, strong) NSMutableArray *highlightFonts;
 @end
 
 
@@ -68,16 +61,12 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     return self;
 }
 - (void)setUp {
-    self.highlightFonts = [NSMutableArray array];
     self.highlightRanges = [NSMutableArray array];
     self.highlightFrameDic = [NSMutableDictionary dictionary];
     
     self.textTypeDic = [NSMutableDictionary dictionary];
     self.textDic = [NSMutableDictionary dictionary];
     self.textNewlineDic = [NSMutableDictionary dictionary];
-    self.textFontDic = [NSMutableDictionary dictionary];
-    self.textForwardColorDic = [NSMutableDictionary dictionary];
-    self.textBackgroundColorDic = [NSMutableDictionary dictionary];
 }
 
 
@@ -147,21 +136,17 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
     @autoreleasepool {
         // 先清空数据
         [self.highlightFrameDic removeAllObjects];
-        [self.highlightFonts removeAllObjects];
         [self.highlightRanges removeAllObjects];
         [self.textNewlineDic removeAllObjects];
         
         // 保存TextInfo的情况
         if (isSave) {
             // 保存高亮文案的highlightRange & highlightFont:
-            if (self.textFontDic && self.textFontDic.count > 0) {
-                NSArray *allkeys = [self.textFontDic allKeys];
+            if (self.textDic && self.textDic.count > 0) {
+                NSArray *allkeys = [self.textDic allKeys];
                 for (NSString *rangeKey in allkeys) { // highlightRanges & highlightFonts数组中的元素表示某一个高亮字符串的range与font (需要注意:数组中元素的index不能乱)
                     if (self.highlightRanges.count == 0) {
                         [self.highlightRanges addObject:rangeKey];
-                        
-                        UIFont *font = (UIFont *)[self.textFontDic valueForKey:rangeKey];
-                        [self.highlightFonts addObject:font];
                     }
                     else {
                         NSRange range_current = NSRangeFromString(rangeKey);
@@ -175,14 +160,9 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                         
                         if (self.highlightRanges.count > position) {
                             [self.highlightRanges insertObject:rangeKey atIndex:position];
-                            UIFont *font = (UIFont *)[self.textFontDic valueForKey:rangeKey];
-                            [self.highlightFonts insertObject:font atIndex:position];
                         }
                         else {
                             [self.highlightRanges addObject:rangeKey];
-                            
-                            UIFont *font = (UIFont *)[self.textFontDic valueForKey:rangeKey];
-                            [self.highlightFonts addObject:font];
                         }
                     }
                     
@@ -293,6 +273,8 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
         CFRelease(ctFrame);
         CFRelease(ctFramesetter);
     }
+    
+    [_saveDoneDic removeAllObjects];
     
     return 0;
 }
@@ -428,6 +410,7 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
             }
             else {
                 NSInteger length_previous = 0;
+                CGFloat offsetX_previous = 0;
                 if (i > 0) {  // 查看之前的高亮文案是否已被完整的保存
                     int position = i - 1;
                     NSString *rangeString_previous = [self.highlightRanges objectAtIndex:position];
@@ -450,6 +433,7 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                         CGAffineTransform transform = CGAffineTransformMakeTranslation(0, contentHeight);
                         transform = CGAffineTransformScale(transform, 1.f, -1.f);
                         CGRect highlightRect_previous = CGRectApplyAffineTransform(runRect, transform);
+                        offsetX_previous = runRect.size.width;
                         NSLog(@"highlightRect_previous【0】: %@",NSStringFromCGRect(highlightRect_previous));
 
                         [self saveHighlightRect:highlightRect_previous
@@ -475,8 +459,9 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                     
                     // 获取高亮文案的Rect:
                     CGRect runRect;
-                    runRect.size.width = CTRunGetTypographicBounds(run, CFRangeMake(subRange.location, subRange.length), &runAscent, &runDescent, &runLeading);
-                    runRect.origin.x = lineOrigin.x + offsetX;
+                    runRect.size.width = CTRunGetTypographicBounds(run, CFRangeMake(length_previous, subRange.length), &runAscent, &runDescent, &runLeading);
+                    runRect.origin.x = lineOrigin.x + offsetX + offsetX_previous;
+                    offsetX_previous = 0;
                     runRect.origin.y = lineOrigin.y - runDescent;
                     runRect.size.height = lineHeight;
                     CGAffineTransform transform = CGAffineTransformMakeTranslation(0, contentHeight);
@@ -507,6 +492,7 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                     }
                 }
             }
+            
             if (!currentRunString || currentRunString.length == 0) {
                 break;
             }
@@ -550,6 +536,20 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
     }
     [self.highlightFrameDic setValue:highlightRects forKey:NSStringFromRange(highlightRange)];
     [self.textNewlineDic setValue:newlineTexts forKey:encodedKey];
+    
+    
+//    NSInteger current_highlightText_previous_totalLength = 0;
+//    for (NSString *text in newlineTexts) {
+//        current_highlightText_previous_totalLength = current_highlightText_previous_totalLength + text.length;
+//    }
+//    if (current_highlightText_previous_totalLength == highlightText.length) {
+//        [_saveDoneDic removeObjectForKey:NSStringFromRange(highlightRange)];
+//        [_saveDoneDic removeObjectForKey:@"encodedKey"];
+//    }
+//    else if (current_highlightText_previous_totalLength < highlightText.length) {
+//        [_saveDoneDic setValue:highlightText forKey:NSStringFromRange(highlightRange)];
+//        [_saveDoneDic setValue:encodedKey forKey:@"encodedKey"];
+//    }
 }
 
 

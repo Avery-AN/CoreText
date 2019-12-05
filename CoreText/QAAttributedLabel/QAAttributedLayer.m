@@ -727,9 +727,9 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
     // 首先清空数据:
     [self.textDrawer.textTypeDic removeAllObjects];
     [self.textDrawer.textDic removeAllObjects];
-    [self.textDrawer.textForwardColorDic removeAllObjects];
-    [self.textDrawer.textBackgroundColorDic removeAllObjects];
-    [self.textDrawer.textFontDic removeAllObjects];
+//    [self.textDrawer.textForwardColorDic removeAllObjects];
+//    [self.textDrawer.textBackgroundColorDic removeAllObjects];
+//    [self.textDrawer.textFontDic removeAllObjects];
     
     @autoreleasepool {
         NSMutableArray *ranges = nil;
@@ -822,9 +822,9 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
         
         [self.textDrawer.textTypeDic setValue:type forKey:NSStringFromRange(highlightRange)];
         [self.textDrawer.textDic setValue:highlightContent forKey:NSStringFromRange(highlightRange)];
-        [self.textDrawer.textForwardColorDic setValue:highlightTextColor forKey:NSStringFromRange(highlightRange)];
-        [self.textDrawer.textBackgroundColorDic setValue:highlightTextBackgroundColor forKey:NSStringFromRange(highlightRange)];
-        [self.textDrawer.textFontDic setValue:highlightFont forKey:NSStringFromRange(highlightRange)];
+//        [self.textDrawer.textForwardColorDic setValue:highlightTextColor forKey:NSStringFromRange(highlightRange)];
+//        [self.textDrawer.textBackgroundColorDic setValue:highlightTextBackgroundColor forKey:NSStringFromRange(highlightRange)];
+//        [self.textDrawer.textFontDic setValue:highlightFont forKey:NSStringFromRange(highlightRange)];
     }
 }
 
