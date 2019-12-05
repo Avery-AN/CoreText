@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "QATextRunDelegate.h"
 
 @interface QATextDrawer : NSObject
 
@@ -18,17 +17,7 @@
 //@property (nonatomic) CTFrameRef ctFrame;
 
 /**
- 存储高亮文本所属的类型 (key:range - value:link/at/topic)
- */
-@property (nonatomic, strong) NSMutableDictionary *textTypeDic;
-
-/**
- 存储高亮文本 (key:range - value:highlightText)
- */
-@property (nonatomic, strong) NSMutableDictionary *textDic;
-
-/**
- 存储高亮文本(换行) (key:highlightText.md5 - value:存储换行的highlightText数组)
+ 存储高亮文本(换行) (key:(attributedString&highlightText).md5 - value:数组、存储换行的highlightText信息)
  */
 @property (nonatomic, strong) NSMutableDictionary *textNewlineDic;
 
@@ -50,6 +39,8 @@
  @param wordSpace 字间距、处理自定义的Emoji时使用
  @param maxNumberOfLines 展示文案时最多展示的行数 (用户设定的numberoflines)
  @param isSave 是否需要保存attributedString中highllight文案的相关信息、值为YES时表示需要保存
+ @param check 检查attributedString是否在绘制的过程中已变化的block
+ @param cancel 绘制取消block
  */
 - (int)drawText:(NSMutableAttributedString *)attributedString
         context:(CGContextRef)context

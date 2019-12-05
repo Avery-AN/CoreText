@@ -8,13 +8,7 @@
 
 #import "QATextDrawer.h"
 #import "QAAttributedLabelConfig.h"
-
-typedef NS_ENUM(NSUInteger, HighlightContentPosition) {
-    HighlightContentPosition_Null = 0,
-    HighlightContentPosition_Header,
-    HighlightContentPosition_Middle,
-    HighlightContentPosition_Taile
-};
+#import "QATextRunDelegate.h"
 
 static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignment) {
     switch (textAlignment) {
@@ -29,11 +23,9 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     }
 }
 
-
 @interface QATextDrawer () {
     NSMutableDictionary *_saveDoneDic;
 }
-@property (nonatomic, assign) HighlightContentPosition highlightContentPosition;
 
 /**
  保存需要设为高亮的文案所处的位置
@@ -65,8 +57,6 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     self.highlightFrameDic = [NSMutableDictionary dictionary];
     
     self.highlightRanges = [NSMutableArray array];
-    self.textTypeDic = [NSMutableDictionary dictionary];
-    self.textDic = [NSMutableDictionary dictionary];
 }
 
 
@@ -142,8 +132,8 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
             [self.textNewlineDic removeAllObjects];
             
             // 保存高亮文案的highlightRange & highlightFont:
-            if (self.textDic && self.textDic.count > 0) {
-                NSArray *allkeys = [self.textDic allKeys];
+            if (attributedString.textDic && attributedString.textDic.count > 0) {
+                NSArray *allkeys = [attributedString.textDic allKeys];
                 for (NSString *rangeKey in allkeys) { // highlightRanges & highlightFonts数组中的元素表示某一个高亮字符串的range与font (需要注意:数组中元素的index不能乱)
                     if (self.highlightRanges.count == 0) {
                         [self.highlightRanges addObject:rangeKey];
@@ -351,17 +341,13 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
     }
     CFRange runRange = CTRunGetStringRange(run);
     NSRange currentRunRange = NSMakeRange(runRange.location, runRange.length);
-    NSLog(@"currentRunRange: %@",NSStringFromRange(currentRunRange));
     NSString *runContent = [attributedString.string substringWithRange:currentRunRange];
     NSMutableString *currentRunString = [NSMutableString stringWithString:runContent];
-    NSLog(@"currentRunString【 BEGIN 】: %@",currentRunString);
     
     for (int i = 0; i < self.highlightRanges.count; i++) {
         NSString *rangeString = [self.highlightRanges objectAtIndex:i];
         CGFloat runAscent, runDescent, runLeading;
         NSRange highlightRange = NSRangeFromString(rangeString);  // 存放高亮文本的range
-        NSLog(@" ");
-        NSLog(@"【 循环-当前highlightRange 】: %@",NSStringFromRange(highlightRange));
         
         // 找出highlightRange与currentRunRange的重合位置:
         NSRange overlappingRange = NSIntersectionRange(highlightRange, currentRunRange);
@@ -369,8 +355,7 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
             CGFloat offsetX = CTLineGetOffsetForStringIndex(line, runRange.location, NULL);
             
             // 获取高亮文案:
-            NSString *highlightText = [self.textDic valueForKey:rangeString];
-            NSLog(@"highlightText: %@",highlightText);
+            NSString *highlightText = [attributedString.textDic valueForKey:rangeString];
             if (!highlightText || highlightText.length == 0) {
                 continue;
             }
@@ -415,14 +400,12 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                     int position = i - 1;
                     NSString *rangeString_previous = [self.highlightRanges objectAtIndex:position];
                     NSRange highlightRange_previous = NSRangeFromString(rangeString_previous);
-                    NSString *highlightText_previous = [self.textDic valueForKey:rangeString_previous];
+                    NSString *highlightText_previous = [attributedString.textDic valueForKey:rangeString_previous];
                     NSString *highlightText_previous_saved = [_saveDoneDic valueForKey:rangeString_previous];
-                    NSLog(@"highlightText_previous_saved: %@",highlightText_previous_saved);
                     if (highlightText_previous_saved) {
                         length_previous = highlightText_previous.length - highlightText_previous_saved.length;
                         NSRange subRange = NSMakeRange(0, length_previous);
                         NSString *subString = [currentRunString substringWithRange:subRange];
-                        NSLog(@"subString 【 0 】: %@",subString);
                         
                         // 获取高亮文案的Rect:
                         CGRect runRect;
@@ -434,7 +417,6 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                         transform = CGAffineTransformScale(transform, 1.f, -1.f);
                         CGRect highlightRect_previous = CGRectApplyAffineTransform(runRect, transform);
                         offsetX_previous = runRect.size.width;
-                        NSLog(@"highlightRect_previous【0】: %@",NSStringFromCGRect(highlightRect_previous));
 
                         [self saveHighlightRect:highlightRect_previous
                                   highlightText:subString
@@ -442,7 +424,6 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                                      encodedKey:[_saveDoneDic valueForKey:@"encodedKey"]];
                         
                         [currentRunString deleteCharactersInRange:subRange];
-                        NSLog(@"currentRunString【 END - 0 】: %@",currentRunString);
                         
                         NSInteger current_highlightText_previous_totalLength = highlightText_previous_saved.length + subString.length;
                         if (current_highlightText_previous_totalLength == highlightText_previous.length) {
@@ -455,7 +436,6 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                 NSRange subRange = NSMakeRange(0, overlappingRange.length - length_previous);
                 while ([highlightText containsString:currentRunString]) {
                     NSString *subString = [currentRunString substringWithRange:subRange];
-                    NSLog(@"subString 【 1 】: %@",subString);
                     
                     // 获取高亮文案的Rect:
                     CGRect runRect;
@@ -467,7 +447,6 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                     CGAffineTransform transform = CGAffineTransformMakeTranslation(0, contentHeight);
                     transform = CGAffineTransformScale(transform, 1.f, -1.f);
                     CGRect highlightRect = CGRectApplyAffineTransform(runRect, transform);
-                    NSLog(@"highlightRect【1】: %@",NSStringFromCGRect(highlightRect));
 
                     [self saveHighlightRect:highlightRect
                               highlightText:subString
@@ -485,7 +464,6 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                     
                     NSInteger length = currentRunString.length - subRange.length;
                     [currentRunString deleteCharactersInRange:subRange];
-                    NSLog(@"currentRunString【 END - 1 】: %@",currentRunString);
                     subRange = NSMakeRange(0, length);
                     if (currentRunString.length == 0) {
                         break;

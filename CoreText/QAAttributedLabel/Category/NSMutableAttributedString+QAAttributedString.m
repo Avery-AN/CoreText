@@ -287,4 +287,18 @@
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
+- (void)setTextDic:(NSMutableDictionary *)textDic {
+    objc_setAssociatedObject(self, @selector(textDic), textDic, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (NSMutableDictionary *)textDic {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setTextTypeDic:(NSMutableDictionary *)textTypeDic {
+    objc_setAssociatedObject(self, @selector(textTypeDic), textTypeDic, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (NSMutableDictionary *)textTypeDic {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
 @end

@@ -171,11 +171,11 @@ static void *TouchingContext = &TouchingContext;
                     self.tapedHighlightRange = highlightRange;
                     [layer drawHighlightColor:highlightRange];
 
-                    NSDictionary *highlightTextDic = layer.textDrawer.textDic;
+                    NSDictionary *highlightTextDic = attributedText.textDic;
                     if (highlightTextDic && highlightTextDic.count > 0) {
                         NSString *key = NSStringFromRange(highlightRange);
                         NSString *highlightText = [highlightTextDic valueForKey:key];
-                        NSString *tapedType = [layer.textDrawer.textTypeDic valueForKey:key];
+                        NSString *tapedType = [self.attributedText.textTypeDic valueForKey:key];
                         if (!tapedType) {
                             return;
                         }
