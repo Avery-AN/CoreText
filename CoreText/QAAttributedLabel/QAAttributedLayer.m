@@ -261,8 +261,8 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
 /**
  针对ranges处的text批量进行高亮绘制 (SearchText时使用)
  */
-- (void)drawHighlightColorInRanges:(NSArray * _Nonnull)ranges
-                     attributeInfo:(NSDictionary * _Nonnull)info {
+- (void)drawHighlightColorWithSearchRanges:(NSArray * _Nonnull)ranges
+                             attributeInfo:(NSDictionary * _Nonnull)info {
     QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
     NSMutableAttributedString *attributedText = attributedLabel.attributedText;
     CGRect bounds = attributedLabel.bounds;
@@ -287,16 +287,16 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
     
     // 文案的绘制:
     NSInteger numberOfLines = attributedLabel.numberOfLines;
-    [self.textDrawer drawText:attributedText
-                      context:context
-                  contentSize:bounds.size
-                    wordSpace:attributedLabel.wordSpace
-             maxNumberOfLines:numberOfLines
-                textAlignment:attributedLabel.textAlignment
-               truncationText:attributedText.truncationInfo
-               isSaveTextInfo:YES
-                        check:nil
-                       cancel:nil];
+    [self.textDrawer drawAttributedText:attributedText
+                                context:context
+                            contentSize:bounds.size
+                              wordSpace:attributedLabel.wordSpace
+                       maxNumberOfLines:numberOfLines
+                          textAlignment:attributedLabel.textAlignment
+                         truncationText:attributedText.truncationInfo
+                      saveHighlightText:NO
+                    checkAttributedText:nil
+                                 cancel:nil];
     
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
@@ -340,7 +340,7 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
                    truncationInfo:attributedString.truncationInfo
                   attributedLabel:attributedLabel
                  attributedString:attributedString
-                            check:nil
+              checkAttributedText:nil
                            cancel:nil];
         
         // 获取上下文:
@@ -349,38 +349,17 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
         
         CGSize contentSize = CGSizeMake(ceil(boundsWidth), ceil(boundsHeight));
         NSInteger numberOfLines = attributedLabel.numberOfLines;
-        [self.textDrawer drawText:attributedString
-                          context:context
-                      contentSize:contentSize
-                        wordSpace:attributedLabel.wordSpace
-                 maxNumberOfLines:numberOfLines
-                    textAlignment:attributedLabel.textAlignment
-                   truncationText:attributedString.truncationInfo
-                   isSaveTextInfo:YES
-                            check:nil
-                           cancel:nil];
+        [self.textDrawer drawAttributedText:attributedString
+                                    context:context
+                                contentSize:contentSize
+                                  wordSpace:attributedLabel.wordSpace
+                           maxNumberOfLines:numberOfLines
+                              textAlignment:attributedLabel.textAlignment
+                             truncationText:attributedString.truncationInfo
+                          saveHighlightText:YES
+                        checkAttributedText:nil
+                                     cancel:nil];
     });
-}
-
-- (void)fillHighlightContentsWithRange:(NSRange)highlightRange
-                               inLabel:(QAAttributedLabel * _Nonnull)label {
-    self.cornerRadius = 3;
-    self.masksToBounds = YES;
-    
-    // 获取上下文:
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(self.bounds.size.width, self.bounds.size.height), self.opaque, 0);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    
-    // 绘制文案:
-    [self fillHighlightContentsWithContext:context
-                            highlightRange:highlightRange
-                                styleLabel:label
-                                selfBounds:self.bounds];
-    
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    image = [image decodeImage];  // image的解码
-    self.contents = (__bridge id _Nullable)(image.CGImage);
 }
 
 
@@ -425,7 +404,7 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
         [self fillContentsWithContext:context
                                 label:attributedLabel
                            selfBounds:bounds
-                                check:^BOOL (NSString *content) {
+                  checkAttributedText:^BOOL (NSString *content) {
                                     // 检查绘制是否应该被取消:
                                     return [self checkWithContent:content];
                                 } cancel:^{
@@ -458,7 +437,7 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
     [self fillContentsWithContext:context
                             label:attributedLabel
                        selfBounds:self.bounds
-                           check:^BOOL (NSString *content) {
+              checkAttributedText:^BOOL (NSString *content) {
                                     // 检查绘制是否应该被取消:
                                     return [self checkWithContent:content];
                                 } cancel:^{
@@ -475,7 +454,7 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
 - (void)fillContentsWithContext:(CGContextRef)context
                           label:(QAAttributedLabel *)attributedLabel
                      selfBounds:(CGRect)bounds
-                          check:(BOOL(^)(NSString *content))check
+            checkAttributedText:(BOOL(^)(NSString *content))checkAttributedText
                          cancel:(void(^)(void))cancel
                      completion:(void(^)(void))completion {
     NSString *content = attributedLabel.text;
@@ -509,7 +488,7 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
                                 truncationInfo:attributedText.truncationInfo
                                attributedLabel:attributedLabel
                               attributedString:attributedText
-                                         check:check
+                           checkAttributedText:checkAttributedText
                                         cancel:cancel];
     if (saveResult == -1) {
         return;
@@ -517,16 +496,16 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
     
     CGSize contentSize = CGSizeMake(ceil(boundsWidth), ceil(boundsHeight));
     NSInteger numberOfLines = attributedLabel.numberOfLines;
-    int drawResult = [self.textDrawer drawText:attributedText
-                                       context:context
-                                   contentSize:contentSize
-                                     wordSpace:attributedLabel.wordSpace
-                              maxNumberOfLines:numberOfLines
-                                 textAlignment:attributedLabel.textAlignment
-                                truncationText:attributedText.truncationInfo
-                                isSaveTextInfo:YES
-                                         check:check
-                                        cancel:cancel];
+    int drawResult = [self.textDrawer drawAttributedText:attributedText
+                                                 context:context
+                                             contentSize:contentSize
+                                               wordSpace:attributedLabel.wordSpace
+                                        maxNumberOfLines:numberOfLines
+                                           textAlignment:attributedLabel.textAlignment
+                                          truncationText:attributedText.truncationInfo
+                                       saveHighlightText:YES
+                                     checkAttributedText:checkAttributedText
+                                                  cancel:cancel];
     if (drawResult == -1) {
         return;
     }
@@ -534,50 +513,6 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
     if (completion) {
         completion();
     }
-}
-- (void)fillHighlightContentsWithContext:(CGContextRef)context
-                          highlightRange:(NSRange)highlightRange
-                              styleLabel:(QAAttributedLabel *)styleLabel
-                              selfBounds:(CGRect)bounds {
-    QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
-    CGFloat boundsWidth = bounds.size.width;
-    CGFloat boundsHeight = bounds.size.height;
-    
-    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:attributedLabel.text attributes:attributedLabel.textLayout.textAttributes];
-    
-//    QAAttributedLayer *layer = (QAAttributedLayer *)styleLabel.layer;
-//    NSString *contentType = [layer.textDrawer.textTypeDic valueForKey:NSStringFromRange(highlightRange)];
-    NSLog(@"  【 【 这里可能有隐患。。。。。。 】 】");
-    NSString *contentType = [attributedText.textTypeDic valueForKey:NSStringFromRange(highlightRange)];
-    UIColor *tapedTextColor = nil;
-    UIColor *tapedBackgroundColor = nil;
-    [self getTapedTextColor:&tapedTextColor
-       tapedBackgroundColor:&tapedBackgroundColor
-            withContentType:contentType
-                    inLabel:attributedLabel];
-    UIFont *highlightFont = attributedLabel.highlightFont;
-    if (!highlightFont) {
-        highlightFont = attributedLabel.font;
-    }
-    
-    NSRange range = NSMakeRange(0, attributedLabel.text.length);
-    [attributedText updateAttributeStringWithHighlightColor:tapedTextColor
-                                            backgroundColor:tapedBackgroundColor
-                                              highlightFont:highlightFont
-                                             highlightRange:range];
-    
-    CGSize contentSize = CGSizeMake(ceil(boundsWidth), ceil(boundsHeight));
-    NSInteger numberOfLines = attributedLabel.numberOfLines;
-    [self.textDrawer drawText:attributedText
-                      context:context
-                  contentSize:contentSize
-                    wordSpace:attributedLabel.wordSpace
-             maxNumberOfLines:numberOfLines
-                textAlignment:attributedLabel.textAlignment
-               truncationText:attributedText.truncationInfo
-               isSaveTextInfo:NO
-                        check:nil
-                       cancel:nil];
 }
 - (void)getTapedTextColor:(UIColor * __strong *)tapedTextColor
      tapedBackgroundColor:(UIColor * __strong *)tapedBackgroundColor
@@ -694,7 +629,7 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
             truncationInfo:(NSDictionary *)truncationInfo
            attributedLabel:(QAAttributedLabel *)attributedLabel
           attributedString:(NSMutableAttributedString *)attributedText
-                     check:(BOOL(^)(NSString *content))check
+       checkAttributedText:(BOOL(^)(NSString *content))checkAttributedText
                     cancel:(void(^)(void))cancel {
     UIColor *highlightTextColor = attributedLabel.highlightTextColor;
     if (!highlightTextColor) {
@@ -710,7 +645,7 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
     }
     
     // 异常处理:
-    if (check && check(attributedText.string)) {
+    if (checkAttributedText && checkAttributedText(attributedText.string)) {
         if (cancel) {
             cancel();
         }
@@ -985,16 +920,16 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
     // 文案的绘制:
     QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
     NSInteger numberOfLines = attributedLabel.numberOfLines;
-    [self.textDrawer drawText:attributedText
-                      context:context
-                  contentSize:bounds.size
-                    wordSpace:attributedLabel.wordSpace
-             maxNumberOfLines:numberOfLines
-                textAlignment:attributedLabel.textAlignment
-               truncationText:attributedText.truncationInfo
-               isSaveTextInfo:NO
-                        check:nil
-                       cancel:nil];
+    [self.textDrawer drawAttributedText:attributedText
+                                context:context
+                            contentSize:bounds.size
+                              wordSpace:attributedLabel.wordSpace
+                       maxNumberOfLines:numberOfLines
+                          textAlignment:attributedLabel.textAlignment
+                         truncationText:attributedText.truncationInfo
+                      saveHighlightText:NO
+                    checkAttributedText:nil
+                                 cancel:nil];
     
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();

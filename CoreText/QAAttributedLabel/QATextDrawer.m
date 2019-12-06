@@ -24,7 +24,10 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
 }
 
 @interface QATextDrawer () {
-    NSMutableDictionary *_saveDoneDic;
+    NSInteger _currentPositionInRun;
+    CGFloat _currentPosition_offsetXInRun;
+    NSMutableDictionary *_saveUnfinishedDic;
+    CTRunRef _currentRun;
 }
 
 /**
@@ -64,9 +67,9 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
 /**
  根据size的大小在context里绘制文本attributedString
  */
-- (void)drawText:(NSMutableAttributedString *)attributedString
-         context:(CGContextRef)context
-     contentSize:(CGSize)size {
+- (void)drawAttributedText:(NSMutableAttributedString *)attributedString
+                   context:(CGContextRef)context
+               contentSize:(CGSize)size {
     if (context == NULL) {
         return;
     }
@@ -101,22 +104,22 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     }
 }
 
-- (int)drawText:(NSMutableAttributedString *)attributedString
-        context:(CGContextRef)context
-    contentSize:(CGSize)size
-      wordSpace:(CGFloat)wordSpace
-maxNumberOfLines:(NSInteger)maxNumberOfLines
-  textAlignment:(NSTextAlignment)textAlignment
- truncationText:(NSDictionary *)truncationTextInfo
- isSaveTextInfo:(BOOL)isSave
-          check:(BOOL(^)(NSString *content))check
-         cancel:(void(^)(void))cancel {
+- (int)drawAttributedText:(NSMutableAttributedString *)attributedString
+                  context:(CGContextRef)context
+              contentSize:(CGSize)size
+                wordSpace:(CGFloat)wordSpace
+         maxNumberOfLines:(NSInteger)maxNumberOfLines
+            textAlignment:(NSTextAlignment)textAlignment
+           truncationText:(NSDictionary *)truncationTextInfo
+        saveHighlightText:(BOOL)saveHighlightText
+      checkAttributedText:(BOOL(^)(NSString *content))checkAttributedText
+                   cancel:(void(^)(void))cancel {
     if (context == NULL || !attributedString || CGSizeEqualToSize(size, CGSizeZero)) {
         return -1;
     }
     
     // 异常处理:
-    if (check && check(attributedString.string)) {
+    if (checkAttributedText && checkAttributedText(attributedString.string)) {
         if (cancel) {
             cancel();
         }
@@ -125,7 +128,7 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
     
     @autoreleasepool {
         // 保存TextInfo的情况
-        if (isSave) {
+        if (saveHighlightText) {
             // 先清空数据
             [self.highlightFrameDic removeAllObjects];
             [self.highlightRanges removeAllObjects];
@@ -233,7 +236,7 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                 }
                 else {
                     // 保存高亮文案在字符中的NSRange以及在CTFrame中的CGRect (以便在label中处理点击事件):
-                    if (isSave) {
+                    if (saveHighlightText) {
                         CGFloat contentHeight = size.height;
                         int result = [self saveHighlightRangeAndFrame:line
                                                            lineOrigin:lineOrigin
@@ -242,7 +245,7 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                                                                   run:run
                                                         ContentHeight:contentHeight
                                                      attributedString:attributedString
-                                                                check:check];
+                                                checkAttributedText:checkAttributedText];
                         if (result == -1) {
                             if (cancel) {
                                 cancel();
@@ -263,8 +266,6 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
         CFRelease(ctFrame);
         CFRelease(ctFramesetter);
     }
-    
-    [_saveDoneDic removeAllObjects];
     
     return 0;
 }
@@ -335,19 +336,36 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                               run:(CTRunRef)run
                     ContentHeight:(CGFloat)contentHeight
                  attributedString:(NSMutableAttributedString *)attributedString
-                            check:(BOOL(^)(NSString *content))check {
-    if (!_saveDoneDic) {
-        _saveDoneDic = [NSMutableDictionary dictionary];
+              checkAttributedText:(BOOL(^)(NSString *content))checkAttributedText {
+    if (!_saveUnfinishedDic) {
+        _saveUnfinishedDic = [NSMutableDictionary dictionary];
+    }
+    if (_currentRun != run) {
+        _currentRun = run;
+        _currentPositionInRun = 0;
+        _currentPosition_offsetXInRun = 0;
     }
     CFRange runRange = CTRunGetStringRange(run);
     NSRange currentRunRange = NSMakeRange(runRange.location, runRange.length);
     NSString *runContent = [attributedString.string substringWithRange:currentRunRange];
     NSMutableString *currentRunString = [NSMutableString stringWithString:runContent];
+    NSLog(@"currentRunRange (start): %@", NSStringFromRange(currentRunRange));
+    NSLog(@"currentRunString (start): %@",currentRunString);
     
     for (int i = 0; i < self.highlightRanges.count; i++) {
         NSString *rangeString = [self.highlightRanges objectAtIndex:i];
         CGFloat runAscent, runDescent, runLeading;
         NSRange highlightRange = NSRangeFromString(rangeString);  // 存放高亮文本的range
+
+//        if ([runContent isEqualToString:@"#www.avery.com#12##12#"]) {
+//            NSLog(@"【 rangeString 】: %@",rangeString);
+//            if ([rangeString isEqualToString:@"{27, 4}"]) {
+//                NSLog(@" ");
+//            }
+//            if ([rangeString isEqualToString:@"{23, 4}"]) {
+//                NSLog(@" ");
+//            }
+//        }
         
         // 找出highlightRange与currentRunRange的重合位置:
         NSRange overlappingRange = NSIntersectionRange(highlightRange, currentRunRange);
@@ -360,16 +378,8 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                 continue;
             }
             
-            /**
-             textNewlineDic中使用
-             保存某个attributedString的某个highlightText在绘制过程中的换行信息
-             textNewlineDic的值是个数组、数组中元素的个数代表highlightText在绘制过程中所占用的行数
-             */
-            NSString *keyString = [NSString stringWithFormat:@"%@%@", attributedString.string, highlightText];
-            NSString *encodedKey = [keyString md5Hash];
-            
             // 异常处理:
-            if (check && check(attributedString.string)) {
+            if (checkAttributedText && checkAttributedText(attributedString.string)) {
                 return -1;
             }
             
@@ -388,87 +398,146 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
                 
                 [self saveHighlightRect:highlightRect
                           highlightText:highlightText
-                     withHighlightRange:highlightRange
-                             encodedKey:encodedKey];
+                     withHighlightRange:highlightRange];
                 
                 currentRunString = nil;
             }
             else {
-                NSInteger length_previous = 0;
-                CGFloat offsetX_previous = 0;
-                if (i > 0) {  // 查看之前的高亮文案是否已被完整的保存
+                NSLog(@"highlightText【0】: %@",highlightText);
+                NSLog(@"currentRunString【0】: %@",currentRunString);
+                NSLog(@"currentRunString.length【0】: %ld",currentRunString.length);
+                
+                if (_saveUnfinishedDic.count != 0 && i > 0) {   // 查看之前的高亮文案是否已被完整的保存
                     int position = i - 1;
                     NSString *rangeString_previous = [self.highlightRanges objectAtIndex:position];
                     NSRange highlightRange_previous = NSRangeFromString(rangeString_previous);
                     NSString *highlightText_previous = [attributedString.textDic valueForKey:rangeString_previous];
-                    NSString *highlightText_previous_saved = [_saveDoneDic valueForKey:rangeString_previous];
+                    NSString *highlightText_previous_saved = [_saveUnfinishedDic valueForKey:rangeString_previous];
                     if (highlightText_previous_saved) {
-                        length_previous = highlightText_previous.length - highlightText_previous_saved.length;
-                        NSRange subRange = NSMakeRange(0, length_previous);
-                        NSString *subString = [currentRunString substringWithRange:subRange];
+                        NSInteger length_previousSaved_last = highlightText_previous.length - highlightText_previous_saved.length;
+                        NSRange subRange_previous = NSMakeRange(0, length_previousSaved_last);
+                        NSString *subHighlightText = [currentRunString substringWithRange:subRange_previous];
                         
                         // 获取高亮文案的Rect:
                         CGRect runRect;
-                        runRect.size.width = CTRunGetTypographicBounds(run, CFRangeMake(subRange.location, subRange.length), &runAscent, &runDescent, &runLeading);
+                        runRect.size.width = CTRunGetTypographicBounds(run, CFRangeMake(subRange_previous.location, subRange_previous.length), &runAscent, &runDescent, &runLeading);
                         runRect.origin.x = lineOrigin.x + offsetX;
                         runRect.origin.y = lineOrigin.y - runDescent;
                         runRect.size.height = lineHeight;
                         CGAffineTransform transform = CGAffineTransformMakeTranslation(0, contentHeight);
                         transform = CGAffineTransformScale(transform, 1.f, -1.f);
                         CGRect highlightRect_previous = CGRectApplyAffineTransform(runRect, transform);
-                        offsetX_previous = runRect.size.width;
+                        _currentPosition_offsetXInRun = runRect.size.width;
+                        _currentPositionInRun = subRange_previous.length;
 
                         [self saveHighlightRect:highlightRect_previous
-                                  highlightText:subString
-                             withHighlightRange:highlightRange_previous
-                                     encodedKey:[_saveDoneDic valueForKey:@"encodedKey"]];
+                                  highlightText:subHighlightText
+                             withHighlightRange:highlightRange_previous];
                         
-                        [currentRunString deleteCharactersInRange:subRange];
+                        [currentRunString deleteCharactersInRange:subRange_previous];
                         
-                        NSInteger current_highlightText_previous_totalLength = highlightText_previous_saved.length + subString.length;
-                        if (current_highlightText_previous_totalLength == highlightText_previous.length) {
-                            [_saveDoneDic removeObjectForKey:rangeString_previous];
-                            [_saveDoneDic removeObjectForKey:@"encodedKey"];
-                        }
+                        [self check_saveUnfinishedDicWithHighlightRange:highlightRange_previous
+                                                          highlightText:highlightText_previous
+                                                       subHighlightText:nil];
                     }
                 }
-
-                NSRange subRange = NSMakeRange(0, overlappingRange.length - length_previous);
-                while ([highlightText containsString:currentRunString]) {
-                    NSString *subString = [currentRunString substringWithRange:subRange];
+                NSLog(@"highlightText【0-1】: %@",highlightText);
+                NSLog(@"currentRunString【0-1】: %@",currentRunString);
+                NSLog(@"currentRunString.length【0-1】: %ld",currentRunString.length);
+                
+                
+                while ([currentRunString hasPrefix:highlightText]) {
+                    NSArray *newLineTexts = [self.textNewlineDic valueForKey:NSStringFromRange(highlightRange)];
+                    NSInteger totalLength = 0;
+                    for (NSString *text in newLineTexts) {
+                        totalLength += text.length;
+                    }
+                    if (totalLength == highlightText.length) {
+                        break;
+                    }
+                    
+                    NSRange subRange = NSMakeRange(0, highlightText.length);
+                    NSString *subHighlightText = [currentRunString substringWithRange:subRange];
+                    if ([currentRunString hasPrefix:@"#34##"]) {  // 宽度计算有问题
+                        NSLog(@"");
+                    }
                     
                     // 获取高亮文案的Rect:
                     CGRect runRect;
-                    runRect.size.width = CTRunGetTypographicBounds(run, CFRangeMake(length_previous, subRange.length), &runAscent, &runDescent, &runLeading);
-                    runRect.origin.x = lineOrigin.x + offsetX + offsetX_previous;
-                    offsetX_previous = 0;
+                    runRect.size.width = CTRunGetTypographicBounds(run, CFRangeMake(_currentPositionInRun, subRange.length), &runAscent, &runDescent, &runLeading);
+                    runRect.origin.x = lineOrigin.x + offsetX + _currentPosition_offsetXInRun;
                     runRect.origin.y = lineOrigin.y - runDescent;
                     runRect.size.height = lineHeight;
                     CGAffineTransform transform = CGAffineTransformMakeTranslation(0, contentHeight);
                     transform = CGAffineTransformScale(transform, 1.f, -1.f);
                     CGRect highlightRect = CGRectApplyAffineTransform(runRect, transform);
-
+                    _currentPosition_offsetXInRun += runRect.size.width;
+                    _currentPositionInRun += subRange.length;
+                    
+                    
                     [self saveHighlightRect:highlightRect
-                              highlightText:subString
-                         withHighlightRange:highlightRange
-                                 encodedKey:encodedKey];
+                              highlightText:subHighlightText
+                         withHighlightRange:highlightRange];
                     
-                    if (subString.length < highlightText.length) {
-                        [_saveDoneDic setValue:subString forKey:NSStringFromRange(highlightRange)];
-                        [_saveDoneDic setValue:encodedKey forKey:@"encodedKey"];
-                    }
-                    else if (subString.length == highlightText.length) {
-                        [_saveDoneDic removeObjectForKey:NSStringFromRange(highlightRange)];
-                        [_saveDoneDic removeObjectForKey:@"encodedKey"];
-                    }
+                    [self check_saveUnfinishedDicWithHighlightRange:highlightRange
+                                                      highlightText:highlightText
+                                                   subHighlightText:subHighlightText];
                     
-                    NSInteger length = currentRunString.length - subRange.length;
                     [currentRunString deleteCharactersInRange:subRange];
+                    NSInteger length = currentRunString.length;
                     subRange = NSMakeRange(0, length);
                     if (currentRunString.length == 0) {
                         break;
                     }
                 }
+                
+                
+                NSRange subRange = NSMakeRange(0, overlappingRange.length);
+                while ([highlightText containsString:currentRunString]) {
+                    NSArray *newLineTexts = [self.textNewlineDic valueForKey:NSStringFromRange(highlightRange)];
+                    NSInteger totalLength = 0;
+                    for (NSString *text in newLineTexts) {
+                        totalLength += text.length;
+                    }
+                    if (totalLength == highlightText.length) {
+                        break;
+                    }
+                    
+                    NSString *subHighlightText = [currentRunString substringWithRange:subRange];
+                    
+                    // 获取高亮文案的Rect:
+                    CGRect runRect;
+                    runRect.size.width = CTRunGetTypographicBounds(run, CFRangeMake(_currentPositionInRun, subRange.length), &runAscent, &runDescent, &runLeading);
+                    runRect.origin.x = lineOrigin.x + offsetX + _currentPosition_offsetXInRun;
+                    runRect.origin.y = lineOrigin.y - runDescent;
+                    runRect.size.height = lineHeight;
+                    CGAffineTransform transform = CGAffineTransformMakeTranslation(0, contentHeight);
+                    transform = CGAffineTransformScale(transform, 1.f, -1.f);
+                    CGRect highlightRect = CGRectApplyAffineTransform(runRect, transform);
+                    
+                    NSLog(@"currentRunString【1】: %@",currentRunString);
+                    [self saveHighlightRect:highlightRect
+                              highlightText:subHighlightText
+                         withHighlightRange:highlightRange];
+                    
+                    [self check_saveUnfinishedDicWithHighlightRange:highlightRange
+                                                      highlightText:highlightText
+                                                   subHighlightText:subHighlightText];
+                    
+                    NSLog(@"currentRunString【1-1】: %@",currentRunString);
+                    NSLog(@"currentRunString.length【1-1】: %ld",currentRunString.length);
+                    [currentRunString deleteCharactersInRange:subRange];
+                    NSLog(@"currentRunString【1-2】: %@",currentRunString);
+                    NSLog(@"currentRunString.length【1-2】: %ld",currentRunString.length);
+                    
+                    NSInteger length = currentRunString.length;
+                    subRange = NSMakeRange(0, length);
+                    if (currentRunString.length == 0) {
+                        break;
+                    }
+                    NSLog(@"currentRunString【2】: %@",currentRunString);
+                }
+                
             }
             
             if (!currentRunString || currentRunString.length == 0) {
@@ -485,13 +554,12 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
 }
 - (void)saveHighlightRect:(CGRect)highlightRect
             highlightText:(NSString *)highlightText
-       withHighlightRange:(NSRange)highlightRange
-               encodedKey:(NSString *)encodedKey {
+       withHighlightRange:(NSRange)highlightRange {
     NSMutableArray *highlightRects = [self.highlightFrameDic valueForKey:NSStringFromRange(highlightRange)];
     if (!highlightRects) {
         highlightRects = [NSMutableArray array];
     }
-    NSMutableArray *newlineTexts = [self.textNewlineDic valueForKey:encodedKey];
+    NSMutableArray *newlineTexts = [self.textNewlineDic valueForKey:NSStringFromRange(highlightRange)];
     if (!newlineTexts) {
         newlineTexts = [NSMutableArray array];
     }
@@ -513,21 +581,22 @@ maxNumberOfLines:(NSInteger)maxNumberOfLines
         [newlineTexts addObject:highlightText];
     }
     [self.highlightFrameDic setValue:highlightRects forKey:NSStringFromRange(highlightRange)];
-    [self.textNewlineDic setValue:newlineTexts forKey:encodedKey];
-    
-    
-//    NSInteger current_highlightText_previous_totalLength = 0;
-//    for (NSString *text in newlineTexts) {
-//        current_highlightText_previous_totalLength = current_highlightText_previous_totalLength + text.length;
-//    }
-//    if (current_highlightText_previous_totalLength == highlightText.length) {
-//        [_saveDoneDic removeObjectForKey:NSStringFromRange(highlightRange)];
-//        [_saveDoneDic removeObjectForKey:@"encodedKey"];
-//    }
-//    else if (current_highlightText_previous_totalLength < highlightText.length) {
-//        [_saveDoneDic setValue:highlightText forKey:NSStringFromRange(highlightRange)];
-//        [_saveDoneDic setValue:encodedKey forKey:@"encodedKey"];
-//    }
+    [self.textNewlineDic setValue:newlineTexts forKey:NSStringFromRange(highlightRange)];
+}
+- (void)check_saveUnfinishedDicWithHighlightRange:(NSRange)highlightRange
+                                    highlightText:(NSString *)highlightText
+                                 subHighlightText:(NSString *)subHighlightText {
+    NSArray *array = [self.textNewlineDic valueForKey:NSStringFromRange(highlightRange)];
+    NSInteger totalLength = 0;
+    for (NSString *text in array) {
+        totalLength = totalLength + text.length;
+    }
+    if (totalLength == highlightText.length) {
+        [_saveUnfinishedDic removeObjectForKey:NSStringFromRange(highlightRange)];
+    }
+    else if (subHighlightText) {
+        [_saveUnfinishedDic setValue:subHighlightText forKey:NSStringFromRange(highlightRange)];
+    }
 }
 
 

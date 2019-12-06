@@ -379,7 +379,7 @@ static void *TouchingContext = &TouchingContext;
     if (searchRanges && [searchRanges isKindOfClass:[NSArray class]] && searchRanges.count > 0 &&
         info && [info isKindOfClass:[NSDictionary class]] && info.count > 0) {
         QAAttributedLayer *layer = (QAAttributedLayer *)self.layer;
-        [layer drawHighlightColorInRanges:searchRanges attributeInfo:info];
+        [layer drawHighlightColorWithSearchRanges:searchRanges attributeInfo:info];
     }
 }
 - (void)observeValueForKeyPath:(NSString *)keyPath
