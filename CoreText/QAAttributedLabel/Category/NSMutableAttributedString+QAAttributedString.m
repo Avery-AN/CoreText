@@ -293,6 +293,13 @@
 - (NSMutableDictionary *)textDic {
     return objc_getAssociatedObject(self, _cmd);
 }
+- (void)setTextChangedDic:(NSMutableDictionary *)textChangedDic {
+    objc_setAssociatedObject(self, @selector(textChangedDic), textChangedDic, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (NSMutableDictionary *)textChangedDic {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
 
 - (void)setTextTypeDic:(NSMutableDictionary *)textTypeDic {
     objc_setAssociatedObject(self, @selector(textTypeDic), textTypeDic, OBJC_ASSOCIATION_RETAIN_NONATOMIC);

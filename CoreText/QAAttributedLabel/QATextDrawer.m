@@ -351,6 +351,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     NSMutableString *currentRunString = [NSMutableString stringWithString:runContent];
     NSLog(@"currentRunRange (start): %@", NSStringFromRange(currentRunRange));
     NSLog(@"currentRunString (start): %@",currentRunString);
+    NSLog(@"attributedString.textDic: %@",attributedString.textDic);
     
     for (int i = 0; i < self.highlightRanges.count; i++) {
         NSString *rangeString = [self.highlightRanges objectAtIndex:i];
@@ -373,9 +374,12 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
             CGFloat offsetX = CTLineGetOffsetForStringIndex(line, runRange.location, NULL);
             
             // 获取高亮文案:
-            NSString *highlightText = [attributedString.textDic valueForKey:rangeString];
+            NSString *highlightText = [attributedString.textChangedDic valueForKey:rangeString];
             if (!highlightText || highlightText.length == 0) {
-                continue;
+                highlightText = [attributedString.textDic valueForKey:rangeString];
+                if (!highlightText || highlightText.length == 0) {
+                    continue;
+                }
             }
             
             // 异常处理:

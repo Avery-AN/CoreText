@@ -25,6 +25,12 @@
 @property (nonatomic, strong) NSMutableDictionary * _Nullable textDic;
 
 /**
+ 存储高亮文本 (key:range - value:highlightText_Changed)
+ highlightText_Changed 是指经过变化的高亮文案、 PS: "https://www.avery.com.cn -> 网页短连接"  (key:range - value:"网页短连接")
+ */
+@property (nonatomic, strong) NSMutableDictionary * _Nullable textChangedDic;
+
+/**
  存储高亮文本所属的类型 (key:range - value:link/at/topic)
  */
 @property (nonatomic, strong) NSMutableDictionary * _Nullable textTypeDic;

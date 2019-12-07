@@ -11,15 +11,6 @@
 #import "QATextLayout.h"
 #import "QATextDrawer.h"
 #import "QAAttributedLabelConfig.h"
-#import <os/lock.h>
-
-
-#define HighlightTextColor_DEFAULT              [UIColor whiteColor]
-#define HighlightTextBackgroundColor_DEFAULT    [UIColor clearColor]
-#define MoreTextColor_DEFAULT                   [UIColor greenColor]
-#define MoreTextBackgroundColor_DEFAULT         [UIColor clearColor]
-static NSString *SeeMoreText_DEFAULT = @"...查看全文";
-
 
 @interface QAAttributedLayer () {
     NSRange _currentTapedRange;  // 当点击高亮文案时保存点击处的range
@@ -213,6 +204,9 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
     }
     if (attributedText.textDic == nil) {
         attributedText.textDic = [NSMutableDictionary dictionary];
+    }
+    if (attributedText.textChangedDic == nil) {
+        attributedText.textChangedDic = [NSMutableDictionary dictionary];
     }
 
     // 更新attributedLabel的 attributedText & text 的属性值:
@@ -482,7 +476,7 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
         }
     }
     
-    // 保存高亮相关信息(link & at & Topic & Seemore)到layer的attributedText中:
+    // 保存高亮相关信息(link & at & Topic & Seemore)到attributedText中:
     int saveResult = [self saveHighlightRanges:attributedText.highlightRanges
                              highlightContents:attributedText.highlightContents
                                 truncationInfo:attributedText.truncationInfo
@@ -665,13 +659,13 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
             }
             ranges = linkRanges;
             contents = linkContents;
-            [self saveWithType:@"link"
-                        ranges:ranges
-                      contents:contents
-            highlightTextColor:highlightTextColor
-  highlightTextBackgroundColor:highlightTextBackgroundColor
-                 highlightFont:highlightFont
-              attributedString:attributedText];
+            [self saveHighlightTextWithType:@"link"
+                                     ranges:ranges
+                                   contents:contents
+                         highlightTextColor:highlightTextColor
+               highlightTextBackgroundColor:highlightTextBackgroundColor
+                              highlightFont:highlightFont
+                           attributedString:attributedText];
         }
         
         NSMutableArray *atRanges = [highlightRanges valueForKey:@"at"];
@@ -683,13 +677,13 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
             }
             ranges = atRanges;
             contents = atContents;
-            [self saveWithType:@"at"
-                        ranges:ranges
-                      contents:contents
-            highlightTextColor:highlightTextColor
-  highlightTextBackgroundColor:highlightTextBackgroundColor
-                 highlightFont:highlightFont
-              attributedString:attributedText];
+            [self saveHighlightTextWithType:@"at"
+                                     ranges:ranges
+                                   contents:contents
+                         highlightTextColor:highlightTextColor
+               highlightTextBackgroundColor:highlightTextBackgroundColor
+                              highlightFont:highlightFont
+                           attributedString:attributedText];
         }
         
         NSMutableArray *topicRanges = [highlightRanges valueForKey:@"topic"];
@@ -701,13 +695,13 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
             }
             ranges = topicRanges;
             contents = topicContents;
-            [self saveWithType:@"topic"
-                        ranges:ranges
-                      contents:contents
-            highlightTextColor:highlightTextColor
-  highlightTextBackgroundColor:highlightTextBackgroundColor
-                 highlightFont:highlightFont
-              attributedString:attributedText];
+            [self saveHighlightTextWithType:@"topic"
+                                     ranges:ranges
+                                   contents:contents
+                         highlightTextColor:highlightTextColor
+               highlightTextBackgroundColor:highlightTextBackgroundColor
+                              highlightFont:highlightFont
+                           attributedString:attributedText];
         }
         
         if (attributedText.showMoreTextEffected && truncationInfo && truncationInfo.count > 0) {
@@ -721,25 +715,28 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
             if (truncationRangeString && truncationText) {
                 ranges = [NSMutableArray arrayWithObject:truncationRangeString];
                 contents = [NSMutableArray arrayWithObject:truncationText];
-                [self saveWithType:@"seeMore"
-                            ranges:ranges
-                          contents:contents
-                highlightTextColor:highlightTextColor
-      highlightTextBackgroundColor:highlightTextBackgroundColor
-                     highlightFont:highlightFont
-                  attributedString:attributedText];
+                [self saveHighlightTextWithType:@"seeMore"
+                                         ranges:ranges
+                                       contents:contents
+                             highlightTextColor:highlightTextColor
+                   highlightTextBackgroundColor:highlightTextBackgroundColor
+                                  highlightFont:highlightFont
+                               attributedString:attributedText];
             }
         }
     }
     
     return 0;
 }
-- (void)saveWithType:(NSString *)type ranges:(NSMutableArray *)ranges
-                                    contents:(NSMutableArray *)contents
-                          highlightTextColor:(UIColor *)highlightTextColor
-                highlightTextBackgroundColor:(UIColor *)highlightTextBackgroundColor
-                                highlightFont:(UIFont *)highlightFont
-                             attributedString:(NSMutableAttributedString *)attributedText {
+- (void)saveHighlightTextWithType:(NSString *)type
+                           ranges:(NSMutableArray *)ranges
+                         contents:(NSMutableArray *)contents
+               highlightTextColor:(UIColor *)highlightTextColor
+     highlightTextBackgroundColor:(UIColor *)highlightTextBackgroundColor
+                    highlightFont:(UIFont *)highlightFont
+                 attributedString:(NSMutableAttributedString *)attributedText {
+    QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
+    
     for (int i = 0; i < ranges.count; i++) {
         NSString *rangeString = [ranges objectAtIndex:i];
         NSRange highlightRange = NSRangeFromString(rangeString);
@@ -747,6 +744,16 @@ static NSString *SeeMoreText_DEFAULT = @"...查看全文";
         
         [attributedText.textTypeDic setValue:type forKey:NSStringFromRange(highlightRange)];
         [attributedText.textDic setValue:highlightContent forKey:NSStringFromRange(highlightRange)];
+        if ([type isEqualToString:@"link"]) {
+            if (attributedLabel.showShortLink) {
+                NSString *shortLink = attributedLabel.shortLink;
+                shortLink = shortLink ? : ShortLink_Default;
+                [attributedText.textChangedDic setValue:shortLink forKey:NSStringFromRange(highlightRange)];
+            }
+            else {
+                [attributedText.textChangedDic removeAllObjects];
+            }
+        }
     }
 }
 
