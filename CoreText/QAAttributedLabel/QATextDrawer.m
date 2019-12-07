@@ -349,24 +349,11 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     NSRange currentRunRange = NSMakeRange(runRange.location, runRange.length);
     NSString *runContent = [attributedString.string substringWithRange:currentRunRange];
     NSMutableString *currentRunString = [NSMutableString stringWithString:runContent];
-    NSLog(@"currentRunRange (start): %@", NSStringFromRange(currentRunRange));
-    NSLog(@"currentRunString (start): %@",currentRunString);
-    NSLog(@"attributedString.textDic: %@",attributedString.textDic);
     
     for (int i = 0; i < self.highlightRanges.count; i++) {
         NSString *rangeString = [self.highlightRanges objectAtIndex:i];
         CGFloat runAscent, runDescent, runLeading;
         NSRange highlightRange = NSRangeFromString(rangeString);  // 存放高亮文本的range
-
-//        if ([runContent isEqualToString:@"#www.avery.com#12##12#"]) {
-//            NSLog(@"【 rangeString 】: %@",rangeString);
-//            if ([rangeString isEqualToString:@"{27, 4}"]) {
-//                NSLog(@" ");
-//            }
-//            if ([rangeString isEqualToString:@"{23, 4}"]) {
-//                NSLog(@" ");
-//            }
-//        }
         
         // 找出highlightRange与currentRunRange的重合位置:
         NSRange overlappingRange = NSIntersectionRange(highlightRange, currentRunRange);
@@ -407,10 +394,6 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                 currentRunString = nil;
             }
             else {
-                NSLog(@"highlightText【0】: %@",highlightText);
-                NSLog(@"currentRunString【0】: %@",currentRunString);
-                NSLog(@"currentRunString.length【0】: %ld",currentRunString.length);
-                
                 if (_saveUnfinishedDic.count != 0 && i > 0) {   // 查看之前的高亮文案是否已被完整的保存
                     int position = i - 1;
                     NSString *rangeString_previous = [self.highlightRanges objectAtIndex:position];
@@ -445,10 +428,6 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                                                        subHighlightText:nil];
                     }
                 }
-                NSLog(@"highlightText【0-1】: %@",highlightText);
-                NSLog(@"currentRunString【0-1】: %@",currentRunString);
-                NSLog(@"currentRunString.length【0-1】: %ld",currentRunString.length);
-                
                 
                 while ([currentRunString hasPrefix:highlightText]) {
                     NSArray *newLineTexts = [self.textNewlineDic valueForKey:NSStringFromRange(highlightRange)];
@@ -462,9 +441,6 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                     
                     NSRange subRange = NSMakeRange(0, highlightText.length);
                     NSString *subHighlightText = [currentRunString substringWithRange:subRange];
-                    if ([currentRunString hasPrefix:@"#34##"]) {  // 宽度计算有问题
-                        NSLog(@"");
-                    }
                     
                     // 获取高亮文案的Rect:
                     CGRect runRect;
@@ -519,7 +495,6 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                     transform = CGAffineTransformScale(transform, 1.f, -1.f);
                     CGRect highlightRect = CGRectApplyAffineTransform(runRect, transform);
                     
-                    NSLog(@"currentRunString【1】: %@",currentRunString);
                     [self saveHighlightRect:highlightRect
                               highlightText:subHighlightText
                          withHighlightRange:highlightRange];
@@ -528,20 +503,13 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                                                       highlightText:highlightText
                                                    subHighlightText:subHighlightText];
                     
-                    NSLog(@"currentRunString【1-1】: %@",currentRunString);
-                    NSLog(@"currentRunString.length【1-1】: %ld",currentRunString.length);
                     [currentRunString deleteCharactersInRange:subRange];
-                    NSLog(@"currentRunString【1-2】: %@",currentRunString);
-                    NSLog(@"currentRunString.length【1-2】: %ld",currentRunString.length);
-                    
                     NSInteger length = currentRunString.length;
                     subRange = NSMakeRange(0, length);
                     if (currentRunString.length == 0) {
                         break;
                     }
-                    NSLog(@"currentRunString【2】: %@",currentRunString);
                 }
-                
             }
             
             if (!currentRunString || currentRunString.length == 0) {
@@ -549,10 +517,6 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
             }
         }
     }
-    
-    NSLog(@"self.highlightFrameDic: %@",self.highlightFrameDic);
-    NSLog(@"self.textNewlineDic: %@",self.textNewlineDic);
-    NSLog(@" ");
     
     return 0;
 }

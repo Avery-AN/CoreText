@@ -84,7 +84,7 @@
         // label.highlightTapedBackgroundColor = [UIColor yellowColor];
         label.highlightAtTextColor = [UIColor greenColor];
         label.highlightLinkTextColor = [UIColor orangeColor];
-        label.highlightTopicTextColor = [UIColor orangeColor];
+        label.highlightTopicTextColor = [UIColor blueColor];
         label.highlightAtTapedTextColor = [UIColor blueColor];
         label.highlightLinkTapedTextColor = [UIColor magentaColor];
         label.highlightTopicTapedTextColor = [UIColor redColor];
