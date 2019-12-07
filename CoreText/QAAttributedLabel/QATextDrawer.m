@@ -534,10 +534,12 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     
     if (highlightRects.count > 0) {
         NSValue *value = [highlightRects lastObject];
+        NSString *text = [newlineTexts lastObject];
         CGRect rect = value.CGRectValue;
-        if (fabs(highlightRect.origin.y - rect.origin.y) <= 0.1 ) {  // 仍处在同一line里
+        if (fabs(highlightRect.origin.y - rect.origin.y) <= 3 ) {  // 仍处在同一line里
             CGRect newRect = CGRectMake(rect.origin.x, highlightRect.origin.y, (rect.size.width + highlightRect.size.width), highlightRect.size.height);
             [highlightRects replaceObjectAtIndex:(highlightRects.count-1) withObject:[NSValue valueWithCGRect:newRect]];
+            [newlineTexts replaceObjectAtIndex:(highlightRects.count-1) withObject:[NSString stringWithFormat:@"%@%@",text,highlightText]];
         }
         else {
             [highlightRects addObject:[NSValue valueWithCGRect:highlightRect]];
