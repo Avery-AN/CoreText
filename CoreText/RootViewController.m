@@ -42,17 +42,7 @@
     //label.textAlignment = NSTextAlignmentLeft;
     //label.lineBreakMode = NSLineBreakByCharWrapping;
     label.lineBreakMode = NSLineBreakByWordWrapping;
-//    label.text = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#https://github.com/Avery-AN哈哈哈哈#12345# Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@AveryAN:本例中的Label在tableView中的使用详见:https://github.com/Avery-AN/TableView";
-//    label.text = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#www.baidu.com/detail/dgdgshshjdjfjhdgdgdgdfdffdfsffsfsdfsfdfdsheheh哈哈哈哈#12345# Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@AveryAN:本例中的Label在tableView中的使用详见:https://github.com/Avery-AN/TableView";
-//    label.text = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#https://github.com/Avery-AN哈哈哈哈#12345# Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@AveryAN:本例中的Label在tableView中的使用详见:https://github.com/Avery-AN/TableView";
-//    label.text = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#https://github.com#123##456# Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@AveryAN:本例中的Label在tableView中的使用详见:https://github.com/Avery-AN/TableView";
-//    label.text = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#www.a.com#12##34#0560 Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@AveryAN:本例中的Label在tableView中的使用详见:https://github.com/Avery-AN/TableView";
-//    label.text = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#www.a.com#12##34##56# Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@AveryAN:本例中的Label在tableView中的使用详见:https://github.com/Avery-AN/TableView";
-//    label.text = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#www.avery.com#12##12#11111#12# Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@AveryAN:本例中的Label在tableView中的使用详见:https://github.com/Avery-AN/TableView";
-//    label.text = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#www.avery.com#1##1##1##1##1##1##1##1##1# Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@AveryAN:本例中的Label在tableView中的使用详见:https://github.com/Avery-AN/TableView";
-    
-    // 有问题
-    label.text = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#www.avery.com#12##34##56# Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@AveryAN:本例中的Label在tableView中的使用详见:https://github.com/Avery-AN/TableView";
+    label.text = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#https://github.com/Avery-AN哈哈哈哈#12345# Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@AveryAN:本例中的Label在tableView中的使用详见:https://github.com/Avery-AN/TableView";
         
     
     
@@ -74,8 +64,8 @@
         label.linkHighlight = YES;
         label.atHighlight = YES;
         label.topicHighlight = YES;
-//        label.showShortLink = YES;
-//        label.shortLink = @"网页短链接";
+        label.showShortLink = YES;
+        label.shortLink = @"网页短链接";
         // label.highlightFont = [UIFont systemFontOfSize:22];
 
         label.highLightTexts = [NSArray arrayWithObjects:@"调用底层的接口进行绘制", nil];
@@ -96,7 +86,6 @@
     {
 //        label.numberOfLines = 0;
         
-//        label.numberOfLines = 7;
         label.numberOfLines = 10;
         label.showMoreText = YES;
         label.seeMoreText = @"...全文";
