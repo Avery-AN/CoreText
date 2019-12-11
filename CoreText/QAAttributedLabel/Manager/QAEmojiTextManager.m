@@ -10,9 +10,6 @@
 #import "QATextRunDelegate.h"
 #import "QAAttributedLabelConfig.h"
 
-static NSString *EmojiTextPattern = @"\\[[0-9a-zA-Z\\u4e00-\\u9fa5]+\\]";  // 匹配Emoji表情的正则表达式
-static NSString *SpaceReplaceString = @"\uFFFC";   // 空的占位字符
-
 static void qa_deallocCallback(void *ref) {
     QATextRunDelegate *delegate = (__bridge_transfer QATextRunDelegate *)(ref);
     delegate = nil;
@@ -48,7 +45,7 @@ static CGFloat qa_widthCallback(void *ref) {
         NSMutableArray *matches_tmp = [NSMutableArray array];
         
         // 通过正则表达式识别出EmojiText:
-        NSRegularExpression *regExpress = [[NSRegularExpression alloc] initWithPattern:EmojiTextPattern options:0 error:nil];
+        NSRegularExpression *regExpress = [[NSRegularExpression alloc] initWithPattern:QAEmojiRegularExpression options:0 error:nil];
         NSArray *matches = [regExpress matchesInString:attributedString.string options:0 range:NSMakeRange(0, attributedString.string.length)];
         if (matches.count > 0) {
             for (NSTextCheckingResult *result in [matches reverseObjectEnumerator]) {
@@ -159,7 +156,7 @@ static CGFloat qa_widthCallback(void *ref) {
     runDelegateCallbacks.getDescent = qa_descentCallback;
     runDelegateCallbacks.getWidth = qa_widthCallback;
     CTRunDelegateRef delegateRef = CTRunDelegateCreate(&runDelegateCallbacks, (__bridge_retained void *)(delegate));
-    NSMutableAttributedString *spaceString = [[NSMutableAttributedString alloc] initWithString:SpaceReplaceString attributes:textAttributes];
+    NSMutableAttributedString *spaceString = [[NSMutableAttributedString alloc] initWithString:QAEmojiSpaceReplaceString attributes:textAttributes];
     CFAttributedStringSetAttribute((CFMutableAttributedStringRef)spaceString, CFRangeMake(0, 1),
                                    kCTRunDelegateAttributeName, delegateRef);
     /**
