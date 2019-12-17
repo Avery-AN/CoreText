@@ -40,5 +40,5 @@ static NSString *QAEmojiSpaceReplaceString = @"\uFFFC";   // 空的占位字符
  */
 static NSString *QAEmojiRegularExpression = @"\\[[0-9a-zA-Z\\u4e00-\\u9fa5]+\\]";  // 匹配自定义Emoji表情的正则表达式 [XXX]
 static NSString *QALinkRegularExpression = @"((http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?)|(www.[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?)";  // 网页链接的正则表达式
-static NSString *QAAtRegularExpression = @"@[0-9a-zA-Z\\u4e00-\\u9fa5\\-]+";       // @user 艾特的正则表达式
+static NSString *QAAtRegularExpression = @"@[0-9a-zA-Z\\u4e00-\\u9fa5\\-]+";    // @user 艾特的正则表达式
 static NSString *QATopicRegularExpression = @"#[0-9a-zA-Z\\u4e00-\\u9fa5]+#";   // "#...#" 话题的正则表达式
