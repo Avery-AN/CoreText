@@ -10,6 +10,7 @@
 #import "QAAttributedLayer.h"
 #import "QATextLayout.h"
 #import "QATextDrawer.h"
+#import "QATextTransaction.h"
 
 
 #define LinkHighlight_MASK          (1 << 0)  // 0000 0001
@@ -18,6 +19,8 @@
 #define TopicHighlight_MASK         (1 << 3)  // 0000 1000
 #define ShowMoreText_MASK           (1 << 4)  // 0001 0000
 #define Display_async_MASK          (1 << 5)  // 0010 0000
+#define NeedUpdate_MASK             (1 << 6)  // 0100 0000
+#define DrawDone_MASK               (1 << 7)  // 1000 0000
 
 #define TapedLink_MASK              (1 << 0)  // 0000 0001
 #define TapedAt_MASK                (1 << 1)  // 0000 0010
@@ -32,6 +35,7 @@ typedef struct {
     char topicHighlight : 1;
     char showMoreText : 1;
     char display_async : 1;
+    char needUpdate : 1;
 } Bits_struct_property;
 typedef union {
     char bits;  // char 占用1个字节
@@ -56,11 +60,14 @@ static void *TouchingContext = &TouchingContext;
 @interface QAAttributedLabel () {
     Bits_union_property _bits_union_property;
     Bits_union_taped _bits_union_taped;
-    NSMutableArray *_searchRanges;
-    NSDictionary *_searchAttributeInfo;
+    __block NSMutableArray *_searchRanges;
+    __block NSDictionary *_searchAttributeInfo;
 }
+@property (nonatomic, assign) BOOL drawDone;
 @property (nonatomic, copy, nullable) NSString *tapedHighlightContent;
 @property (nonatomic, assign) NSRange tapedHighlightRange;
+@property (nonatomic, unsafe_unretained) QAAttributedLayer *currentLayer;
+@property (nonatomic) CGRect currentBounds;
 @end
 
 @implementation QAAttributedLabel
@@ -80,8 +87,14 @@ static void *TouchingContext = &TouchingContext;
     _textColor = [UIColor blackColor];
     _font = [UIFont systemFontOfSize:14];
     _numberOfLines = 0;
+    self.currentBounds = self.bounds;
     self.backgroundColor = [UIColor whiteColor];
     self.layer.contentsScale = [UIScreen mainScreen].scale;
+    
+    [CATransaction setCompletionBlock:^{
+        self.drawDone = YES;
+        [self _updateAfterDraw];
+    }];
 }
 
 
@@ -133,7 +146,7 @@ static void *TouchingContext = &TouchingContext;
     [self didChangeValueForKey:NSStringFromSelector(@selector(isTouching))];
     
     // 处理"...查看全文":
-    NSMutableAttributedString *attributedText = self.attributedText;
+    NSMutableAttributedString *attributedText = self.showingAttributedText;
     if (self.numberOfLines != 0 && self.showMoreText && attributedText.showMoreTextEffected) {
         NSDictionary *highlightFrameDic = layer.textDrawer.highlightFrameDic; // (key:range - value:CGRect-array)
         NSString *truncationRangeKey = [attributedText.truncationInfo valueForKey:@"truncationRange"];
@@ -175,7 +188,7 @@ static void *TouchingContext = &TouchingContext;
                     if (highlightTextDic && highlightTextDic.count > 0) {
                         NSString *key = NSStringFromRange(highlightRange);
                         NSString *highlightText = [highlightTextDic valueForKey:key];
-                        NSString *tapedType = [self.attributedText.textTypeDic valueForKey:key];
+                        NSString *tapedType = [self.showingAttributedText.textTypeDic valueForKey:key];
                         if (!tapedType) {
                             return;
                         }
@@ -322,40 +335,45 @@ static void *TouchingContext = &TouchingContext;
     if (!texts || texts.count == 0) {
         return;
     }
-    
-    NSMutableArray *searchRanges = [NSMutableArray array];
-    [self.attributedText searchTexts:texts saveWithRangeArray:&searchRanges];
-    if (searchRanges.count > 0) {
-        NSDictionary *info = searchResultInfo();
-        if (self.isTouching == NO) {
-            [self processSearchResult:searchRanges searchAttributeInfo:info];
+
+    QAAttributedLayer *layer = (QAAttributedLayer *)self.layer;
+    self.currentLayer = layer;
+    dispatch_async(QAAttributedLayerDrawQueue(), ^{
+        NSMutableArray *searchRanges = [NSMutableArray array];
+        [self.showingAttributedText searchTexts:texts saveWithRangeArray:&searchRanges];
+        if (searchRanges.count > 0) {
+            NSDictionary *info = searchResultInfo();
+            if (self.isTouching == NO) {
+                [self processSearchResult:searchRanges searchAttributeInfo:info];
+            }
+            else {
+                self->_searchRanges = searchRanges;
+                self->_searchAttributeInfo = info;
+                [self addObserver:self forKeyPath:NSStringFromSelector(@selector(isTouching)) options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:TouchingContext];
+            }
         }
-        else {
-            _searchRanges = searchRanges;
-            _searchAttributeInfo = info;
-            [self addObserver:self forKeyPath:NSStringFromSelector(@selector(isTouching)) options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:TouchingContext];
-        }
-    }
+    });
 }
 
 
 #pragma mark - Private Methods -
 - (void)updateText:(NSString *)text {
-    _text = text;
+//    _text = text;
+    _showingText = text;
 }
 - (void)updateAttributedText:(NSMutableAttributedString *)attributedText {
     if ([attributedText isKindOfClass:[NSMutableAttributedString class]]) {
-        _attributedText = attributedText;
+        _showingAttributedText = attributedText;
     }
     else {
-        _attributedText = [[NSMutableAttributedString alloc] initWithAttributedString:attributedText];
+        _showingAttributedText = [[NSMutableAttributedString alloc] initWithAttributedString:attributedText];
     }
 }
 - (CGSize)getContentSize {
     NSMutableAttributedString *attributedText;
-    if (self.attributedText && self.attributedText.string &&
-        self.attributedText.length > 0 && self.attributedText.string.length > 0) {
-        attributedText = self.attributedText;
+    if (self.showingAttributedText && self.showingAttributedText.string &&
+        self.showingAttributedText.length > 0 && self.showingAttributedText.string.length > 0) {
+        attributedText = self.showingAttributedText;
     }
     else {
         [self.textLayout getTextAttributes];
@@ -372,14 +390,18 @@ static void *TouchingContext = &TouchingContext;
     }
     return size;
 }
-- (void)processSearchResult:(NSMutableArray *)searchRanges searchAttributeInfo:(NSDictionary *)info {
-    self.attributedText.searchRanges = searchRanges;
-    self.attributedText.searchAttributeInfo = info;
+- (void)processSearchResult:(NSMutableArray *)searchRanges
+        searchAttributeInfo:(NSDictionary *)info {
+    self.showingAttributedText.searchRanges = searchRanges;
+    self.showingAttributedText.searchAttributeInfo = info;
     
     if (searchRanges && [searchRanges isKindOfClass:[NSArray class]] && searchRanges.count > 0 &&
         info && [info isKindOfClass:[NSDictionary class]] && info.count > 0) {
-        QAAttributedLayer *layer = (QAAttributedLayer *)self.layer;
-        [layer drawHighlightColorWithSearchRanges:searchRanges attributeInfo:info];
+        [self.currentLayer drawHighlightColorWithSearchRanges:searchRanges
+                                                attributeInfo:info
+                                              attributedLabel:self
+                                               attributedText:self.showingAttributedText
+                                                       bounds:self.currentBounds];
     }
 }
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -392,11 +414,40 @@ static void *TouchingContext = &TouchingContext;
             NSString *newKey = [change objectForKey:NSKeyValueChangeNewKey];
             
             if (oldKey.intValue == 1 && newKey.intValue == 0) {
-                [self processSearchResult:_searchRanges searchAttributeInfo:_searchAttributeInfo];
+                dispatch_async(QAAttributedLayerDrawQueue(), ^{
+                    [self processSearchResult:self->_searchRanges searchAttributeInfo:self->_searchAttributeInfo];
+                });
                 
                 [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(isTouching))];
             }
         }
+    }
+}
+
+
+#pragma mark - Update Layout -
+- (void)_commitUpdate {
+    // NSLog(@"%s",__func__);
+    self.needUpdate = YES;
+}
+- (void)_updateAfterDraw {
+    #if !TARGET_INTERFACE_BUILDER
+        [[QATextTransaction transactionWithTarget:self selector:@selector(_updateIfNeeded)] commit];
+    #else
+        [self _update];
+    #endif
+}
+- (void)_updateIfNeeded {
+    // NSLog(@"%s",__func__);
+    if (self.needUpdate) {
+        [self _update];
+    }
+}
+- (void)_update {
+    // NSLog(@"%s",__func__);
+    if (self.drawDone == YES) {
+        [(QAAttributedLayer *)self.layer updateContent:self];
+        self.needUpdate = NO;
     }
 }
 
@@ -409,6 +460,7 @@ static void *TouchingContext = &TouchingContext;
     else {
         _bits_union_property.bits &= ~LinkHighlight_MASK;
     }
+    [self _commitUpdate];
 }
 - (BOOL)linkHighlight {
     return !!(_bits_union_property.bits & LinkHighlight_MASK); //位移后的值不一定是bool类型、2次取反操作可以将任何类型数据变为bool
@@ -420,6 +472,7 @@ static void *TouchingContext = &TouchingContext;
     else {
         _bits_union_property.bits &= ~ShowShortLink_MASK;
     }
+    [self _commitUpdate];
 }
 - (BOOL)showShortLink {
     return !!(_bits_union_property.bits & ShowShortLink_MASK);
@@ -431,6 +484,7 @@ static void *TouchingContext = &TouchingContext;
     else {
         _bits_union_property.bits &= ~AtHighlight_MASK;
     }
+    [self _commitUpdate];
 }
 - (BOOL)atHighlight {
     return !!(_bits_union_property.bits & AtHighlight_MASK);
@@ -442,6 +496,7 @@ static void *TouchingContext = &TouchingContext;
     else {
         _bits_union_property.bits &= ~TopicHighlight_MASK;
     }
+    [self _commitUpdate];
 }
 - (BOOL)topicHighlight {
     return !!(_bits_union_property.bits & TopicHighlight_MASK);
@@ -453,6 +508,7 @@ static void *TouchingContext = &TouchingContext;
     else {
         _bits_union_property.bits &= ~ShowMoreText_MASK;
     }
+    [self _commitUpdate];
 }
 - (BOOL)showMoreText {
     return !!(_bits_union_property.bits & ShowMoreText_MASK);
@@ -468,6 +524,17 @@ static void *TouchingContext = &TouchingContext;
 - (BOOL)display_async {
     return !!(_bits_union_property.bits & Display_async_MASK);
 }
+- (void)setNeedUpdate:(BOOL)needUpdate {
+    if (needUpdate) {
+        _bits_union_property.bits |= NeedUpdate_MASK;
+    }
+    else {
+        _bits_union_property.bits &= ~NeedUpdate_MASK;
+    }
+}
+- (BOOL)needUpdate {
+    return !!(_bits_union_property.bits & NeedUpdate_MASK);
+}
 - (BOOL)isTouching {
     return !!(_bits_union_taped.bits & Touching_MASK);
 }
@@ -475,18 +542,22 @@ static void *TouchingContext = &TouchingContext;
 - (void)setFont:(UIFont *)font {
     _font = font;
     self.textLayout.font = font;
+    [self _commitUpdate];
 }
 - (void)setTextAlignment:(NSTextAlignment)textAlignment {
     _textAlignment = textAlignment;
     self.textLayout.textAlignment = _textAlignment;
+    [self _commitUpdate];
 }
 - (void)setLineBreakMode:(NSLineBreakMode)lineBreakMode {
     _lineBreakMode = lineBreakMode;
     self.textLayout.lineBreakMode = _lineBreakMode;
+    [self _commitUpdate];
 }
 - (void)setTextColor:(UIColor *)textColor {
     _textColor = textColor;
     self.textLayout.textColor = _textColor;
+    [self _commitUpdate];
 }
 - (void)setNumberOfLines:(NSUInteger)numberOfLines {
     if (numberOfLines < 0) {
@@ -494,63 +565,89 @@ static void *TouchingContext = &TouchingContext;
     }
     _numberOfLines = numberOfLines;
     self.textLayout.numberOfLines = _numberOfLines;
+    [self _commitUpdate];
 }
 - (void)setLineSpace:(CGFloat)lineSpace {
     _lineSpace = lineSpace;
     self.textLayout.lineSpace = _lineSpace;
+    [self _commitUpdate];
 }
 - (void)setWordSpace:(NSUInteger)wordSpace {
     _wordSpace = wordSpace;
     self.textLayout.wordSpace = _wordSpace;
+    [self _commitUpdate];
 }
 - (void)setParagraphSpace:(CGFloat)paragraphSpace {
     _paragraphSpace = paragraphSpace;
     self.textLayout.paragraphSpace = _paragraphSpace;
+    [self _commitUpdate];
 }
 - (void)setHighlightFont:(UIFont *)highlightFont {
     _highlightFont = highlightFont;
+    [self _commitUpdate];
 }
 - (void)setHighlightTextColor:(UIColor *)highlightTextColor {
     _highlightTextColor = highlightTextColor;
+    [self _commitUpdate];
 }
 - (void)setHighlightTextBackgroundColor:(UIColor *)highlightTextBackgroundColor {
     _highlightTextBackgroundColor = highlightTextBackgroundColor;
+    [self _commitUpdate];
 }
 - (void)setHighlightTapedBackgroundColor:(UIColor *)highlightTapedBackgroundColor {
     _highlightTapedBackgroundColor = highlightTapedBackgroundColor;
+    [self _commitUpdate];
 }
 - (void)setSeeMoreText:(NSString *)seeMoreText {
     _seeMoreText = seeMoreText;
+    [self _commitUpdate];
 }
 - (void)setMoreTextFont:(UIFont *)moreTextFont {
     _moreTextFont = moreTextFont;
     self.textLayout.moreTextFont = _moreTextFont;
+    [self _commitUpdate];
 }
 - (void)setMoreTextColor:(UIColor *)moreTextColor {
     _moreTextColor = moreTextColor;
     self.textLayout.moreTextColor = _moreTextColor;
+    [self _commitUpdate];
 }
 - (void)setMoreTextBackgroundColor:(UIColor *)moreTextBackgroundColor {
     _moreTextBackgroundColor = moreTextBackgroundColor;
     self.textLayout.moreTextBackgroundColor = _moreTextBackgroundColor;
+    [self _commitUpdate];
 }
 - (void)setMoreTapedBackgroundColor:(UIColor *)moreTapedBackgroundColor {
     _moreTapedBackgroundColor = moreTapedBackgroundColor;
+    [self _commitUpdate];
 }
 
 - (void)setText:(NSString *)text {
-    _text = text;
-    self.attributedText = nil;
-}
-- (void)setAttributedText:(NSMutableAttributedString *)attributedText {
-    if (!attributedText || attributedText.length == 0) {
-        _attributedText = nil;
+    if (!text) {
+        return;
     }
-    else if ([attributedText isKindOfClass:[NSMutableAttributedString class]]) {
-        _attributedText = attributedText;
+    
+    _text = [text copy];
+    
+    if ([NSThread isMainThread]) {
+        [self.layer setNeedsDisplay];
     }
     else {
-        _attributedText = [[NSMutableAttributedString alloc] initWithAttributedString:attributedText];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.layer setNeedsDisplay];
+        });
+    }
+}
+- (void)setAttributedString:(NSMutableAttributedString *)attributedString {
+    if (!attributedString) {
+        return;
+    }
+    
+    if ([attributedString isMemberOfClass:[NSAttributedString class]]) {
+        _attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
+    }
+    else {
+        _attributedString = [attributedString copy];
     }
     
     if ([NSThread isMainThread]) {
@@ -571,7 +668,7 @@ static void *TouchingContext = &TouchingContext;
 }
 
 - (NSInteger)length {
-    return self.attributedText.length;
+    return self.showingAttributedText.length;
 }
 
 

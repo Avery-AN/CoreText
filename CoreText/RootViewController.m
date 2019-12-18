@@ -34,6 +34,7 @@
     
     // 【 QAAttributedLabel的使用方法 】
     QAAttributedLabel *label = [[QAAttributedLabel alloc] initWithFrame:CGRectMake(10, 90, [UIScreen mainScreen].bounds.size.width - 10*2, 300)];
+    [self.view addSubview:label];
     self.label = label;
     label.backgroundColor = [UIColor grayColor];
     label.font = [UIFont fontWithName:@"PingFangTC-Regular" size:19];
@@ -42,8 +43,18 @@
     //label.textAlignment = NSTextAlignmentLeft;
     //label.lineBreakMode = NSLineBreakByCharWrapping;
     label.lineBreakMode = NSLineBreakByWordWrapping;
-    label.text = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#https://github.com/Avery-AN哈哈哈哈#12345# Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@Avery-AN:本例中的Label在tableView中的使用详见:www.github.com/Avery-AN/TableView";
-        
+    NSString *content = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#https://github.com/Avery-AN哈哈哈哈#12345# Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@Avery-AN:本例中的Label在tableView中的使用详见:www.github.com/Avery-AN/TableView";
+    label.text = content;
+    
+    
+    /*
+     NSMutableAttributedString *mutableAttributedString = [[NSMutableAttributedString alloc] initWithString:content];
+     [mutableAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(67, 4)];
+     [mutableAttributedString addAttribute:NSBackgroundColorAttributeName value:[UIColor yellowColor] range:NSMakeRange(67, 4)];
+     [mutableAttributedString addAttribute:NSStrikethroughColorAttributeName value:[UIColor blueColor] range:NSMakeRange(67, 4)];
+     [mutableAttributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:23] range:NSMakeRange(0, mutableAttributedString.length)];
+     label.attributedString = mutableAttributedString;
+     */
     
     
     // *** 【0】是否需要进行异步绘制:
@@ -96,7 +107,6 @@
         label.moreTapedTextColor = [UIColor blueColor];
     }
     
-    [self.view addSubview:label];
     
     // 需要等label渲染完毕后再进行搜索:
     [self performSelector:@selector(searchText:) withObject:@"直接绘制" afterDelay:1];

@@ -28,9 +28,11 @@ typedef NS_ENUM(NSUInteger, QAAttributedLabel_TapedStyle) {
  */
 
 @property (nonatomic, copy, nullable) NSString *text;
+@property (nonatomic, copy, nullable) NSMutableAttributedString *attributedString;  // 若text也同时存在则优先显示text
+
 @property (nonatomic, copy, nullable) UIFont *font;
 @property (nonatomic, copy, null_resettable) UIColor *textColor;
-@property (nonatomic, assign, readonly) NSInteger length;           // 显示的文本长度
+@property (nonatomic, assign, readonly) NSInteger length;           // 显示文案的长度
 @property (nonatomic, assign) NSTextAlignment textAlignment;        // 文本的对齐方式
 @property (nonatomic, assign) NSLineBreakMode lineBreakMode;        // 换行模式
 @property (nonatomic, assign) NSUInteger numberOfLines;             // 需要显示文本的行数
@@ -70,14 +72,24 @@ typedef NS_ENUM(NSUInteger, QAAttributedLabel_TapedStyle) {
 @property (nonatomic, copy, nullable) UIColor *moreTapedBackgroundColor;    // 点击seeMoreText时的背景颜色
 @property (nonatomic, copy, nullable) UIColor *moreTapedTextColor;          // 点击seeMoreText时的字体颜色
 
-/**
- 如果直接传入次参数、那么则会忽略上面的属性设置 (font、textColor、lineSpace、highlightTextColor等)。
- */
-@property (nonatomic, copy, nullable) NSMutableAttributedString *attributedText;
-
 @property (nonatomic, strong, nullable) QATextLayout *textLayout;
 @property (nonatomic, copy) void (^ _Nullable QAAttributedLabelTapAction)(NSString * _Nullable content, QAAttributedLabel_TapedStyle style);
 @property (nonatomic, copy, nullable) GetTextContentSizeBlock getTextContentSizeBlock;
+
+/**
+ label已渲染完毕后、若再次更改其属性此值为被设为YES、并且后续还会调用layer的updateContent方法
+ */
+@property (nonatomic, assign) BOOL needUpdate;
+
+/**
+ 当前显示的文案对应的NSMutableAttributedString字符串
+ */
+@property (nonatomic, copy, nullable, readonly) NSMutableAttributedString *showingAttributedText;
+
+/**
+当前显示的文案
+*/
+@property (nonatomic, copy, nullable, readonly) NSString *showingText;
 
 /**
  获取文案所占用的size

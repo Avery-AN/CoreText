@@ -29,6 +29,7 @@
 		BB9F6BF623817A7A00F05116 /* QAAttributedStringSizeMeasurement.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BE723817A7A00F05116 /* QAAttributedStringSizeMeasurement.m */; };
 		BB9F6BFA2382E94200F05116 /* emoji_default@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6BF82382E94200F05116 /* emoji_default@3x.png */; };
 		BB9F6BFB2382E94200F05116 /* emoji_default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6BF92382E94200F05116 /* emoji_default@2x.png */; };
+		BBFB190023A8E1E2009CD0C1 /* QATextTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = BBFB18FF23A8E1E2009CD0C1 /* QATextTransaction.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -73,6 +74,8 @@
 		BB9F6BE823817A7A00F05116 /* QAAttributedStringSizeMeasurement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAAttributedStringSizeMeasurement.h; sourceTree = "<group>"; };
 		BB9F6BF82382E94200F05116 /* emoji_default@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "emoji_default@3x.png"; sourceTree = "<group>"; };
 		BB9F6BF92382E94200F05116 /* emoji_default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "emoji_default@2x.png"; sourceTree = "<group>"; };
+		BBFB18FE23A8E1E2009CD0C1 /* QATextTransaction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QATextTransaction.h; sourceTree = "<group>"; };
+		BBFB18FF23A8E1E2009CD0C1 /* QATextTransaction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QATextTransaction.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +138,8 @@
 				BB9F6BD923817A7A00F05116 /* QAAttributedLabel.m */,
 				BB9F6BE323817A7A00F05116 /* QAAttributedLayer.h */,
 				BB9F6BCA23817A7A00F05116 /* QAAttributedLayer.m */,
+				BBFB18FE23A8E1E2009CD0C1 /* QATextTransaction.h */,
+				BBFB18FF23A8E1E2009CD0C1 /* QATextTransaction.m */,
 				BB9F6BDA23817A7A00F05116 /* QATextLayout.h */,
 				BB9F6BE423817A7A00F05116 /* QATextLayout.m */,
 				BB9F6BC923817A7A00F05116 /* QATextDrawer.h */,
@@ -284,6 +289,7 @@
 				BB9F6B7E2381789100F05116 /* AppDelegate.m in Sources */,
 				BB9F6BEE23817A7A00F05116 /* NSString+QAReplace.m in Sources */,
 				BB9F6BE923817A7A00F05116 /* QATextRunDelegate.m in Sources */,
+				BBFB190023A8E1E2009CD0C1 /* QATextTransaction.m in Sources */,
 				BB9F6BF023817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.m in Sources */,
 				BB9F6BEA23817A7A00F05116 /* QAAttributedLayer.m in Sources */,
 				BB9F6BEF23817A7A00F05116 /* UIImage+DecodeImage.m in Sources */,

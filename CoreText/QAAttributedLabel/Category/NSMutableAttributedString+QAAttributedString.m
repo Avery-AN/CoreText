@@ -126,18 +126,22 @@
                                   highlightFont:(UIFont * _Nonnull)highlightFont
                                  highlightRange:(NSRange)highlightRange {
     // 高亮字体颜色:
-    [self removeAttribute:(NSString *)kCTForegroundColorAttributeName
-                    range:highlightRange];
-    [self addAttribute:(NSString *)kCTForegroundColorAttributeName
-                 value:(id)highlightColor.CGColor
-                 range:highlightRange];
+    if (highlightRange.location + highlightRange.length <= self.length) {
+        [self removeAttribute:(NSString *)kCTForegroundColorAttributeName
+                        range:highlightRange];
+        [self addAttribute:(NSString *)kCTForegroundColorAttributeName
+                     value:(id)highlightColor.CGColor
+                     range:highlightRange];
+    }
     
     // 高亮字体背景色:
-    [self removeAttribute:(NSString *)kCTBackgroundColorAttributeName
-                    range:highlightRange];
-    [self addAttribute:(NSString *)kCTBackgroundColorAttributeName
-                 value:(id)backgroundColor.CGColor
-                 range:highlightRange];
+    if (highlightRange.location + highlightRange.length <= self.length) {
+        [self removeAttribute:(NSString *)kCTBackgroundColorAttributeName
+                        range:highlightRange];
+        [self addAttribute:(NSString *)kCTBackgroundColorAttributeName
+                     value:(id)backgroundColor.CGColor
+                     range:highlightRange];
+    }
     
     // 高亮字体:
     CGFloat fontSize = highlightFont.pointSize;
@@ -152,11 +156,15 @@
     else {
         fontRef = CTFontCreateWithName((__bridge CFStringRef)fontName, fontSize, NULL);
     }
-    [self removeAttribute:(NSString *)kCTFontAttributeName
-                    range:highlightRange];
-    [self addAttribute:(NSString *)kCTFontAttributeName
-                 value:(__bridge id)fontRef
-                 range:highlightRange];
+    
+    if (highlightRange.location + highlightRange.length <= self.length) {
+        [self removeAttribute:(NSString *)kCTFontAttributeName
+                        range:highlightRange];
+        [self addAttribute:(NSString *)kCTFontAttributeName
+                     value:(__bridge id)fontRef
+                     range:highlightRange];
+    }
+    
     CFRelease(fontRef);
 }
 - (NSDictionary * _Nullable)getInstanceProperty {
@@ -299,7 +307,6 @@
 - (NSMutableDictionary *)textChangedDic {
     return objc_getAssociatedObject(self, _cmd);
 }
-
 
 - (void)setTextTypeDic:(NSMutableDictionary *)textTypeDic {
     objc_setAssociatedObject(self, @selector(textTypeDic), textTypeDic, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
