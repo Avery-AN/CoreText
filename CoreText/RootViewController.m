@@ -34,7 +34,6 @@
     
     // 【 QAAttributedLabel的使用方法 】
     QAAttributedLabel *label = [[QAAttributedLabel alloc] initWithFrame:CGRectMake(10, 90, [UIScreen mainScreen].bounds.size.width - 10*2, 300)];
-    [self.view addSubview:label];
     self.label = label;
     label.backgroundColor = [UIColor grayColor];
     label.font = [UIFont fontWithName:@"PingFangTC-Regular" size:19];
@@ -107,13 +106,33 @@
         label.moreTapedTextColor = [UIColor blueColor];
     }
     
+    [self.view addSubview:label];
     
     // 需要等label渲染完毕后再进行搜索:
-    [self performSelector:@selector(searchText:) withObject:@"直接绘制" afterDelay:1];
+//    [self performSelector:@selector(searchText:) withObject:@"直接绘制" afterDelay:1];
     
     label.QAAttributedLabelTapAction = ^(NSString * _Nullable content, QAAttributedLabel_TapedStyle style) {
         NSLog(@"   点击高亮文案 style: %ld; content: %@", style, content);
     };
+    
+    
+    
+    
+    /*
+     // 测试代码:
+     {
+         UIView *view = [[UIView alloc] initWithFrame:CGRectMake(30, 180, 100, 100)];
+         view.backgroundColor = [UIColor blueColor];
+         [self.view addSubview:view];
+         
+         [UIView animateWithDuration:5 animations:^{
+             view.frame = CGRectMake(260, 660, 100, 100);
+         }];
+         
+         [label performSelector:@selector(setTextColor:) withObject:[UIColor blackColor] afterDelay:2];
+         [label performSelector:@selector(setFont:) withObject:[UIFont systemFontOfSize:21] afterDelay:2];
+     }
+     */
 }
 
 

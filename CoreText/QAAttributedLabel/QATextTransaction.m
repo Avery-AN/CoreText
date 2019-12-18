@@ -13,7 +13,7 @@
 @property (nonatomic, assign) SEL selector;
 @end
 
-CFRunLoopObserverRef _observer;
+
 static NSMutableSet *transactionSet = nil;
 static void QARunLoopObserverCallBack(CFRunLoopObserverRef observer, CFRunLoopActivity activity, void *info) {
     if (transactionSet.count == 0) {
@@ -36,13 +36,15 @@ static void QATextTransactionSetup() {
         transactionSet = [NSMutableSet new];
         
         CFRunLoopRef runloop = CFRunLoopGetMain();
-        _observer = CFRunLoopObserverCreate(CFAllocatorGetDefault(),
-                                            kCFRunLoopBeforeWaiting | kCFRunLoopExit,
-                                            true,        // repeat
-                                            0xFFFFFF,    // after CATransaction (2000000)
-                                            QARunLoopObserverCallBack,
-                                            NULL);
-        CFRunLoopAddObserver(runloop, _observer, kCFRunLoopCommonModes);
+        CFRunLoopObserverRef observer;
+        observer = CFRunLoopObserverCreate(CFAllocatorGetDefault(),
+                                           kCFRunLoopBeforeWaiting | kCFRunLoopExit,
+                                           true,        // repeat
+                                           0xFFFFFF,    // after CATransaction (2000000)
+                                           QARunLoopObserverCallBack,
+                                           NULL);
+        CFRunLoopAddObserver(runloop, observer, kCFRunLoopCommonModes);
+        CFRelease(observer);
     });
 }
 
@@ -51,8 +53,7 @@ static void QATextTransactionSetup() {
 
 #pragma mark - Life Cycle -
 - (void)dealloc {
-    CFRunLoopRemoveObserver(CFRunLoopGetMain(), _observer, kCFRunLoopCommonModes);
-    CFRelease(_observer);
+    // NSLog(@"%s",__func__);
 }
 
 

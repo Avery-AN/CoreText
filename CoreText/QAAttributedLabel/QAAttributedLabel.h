@@ -28,7 +28,23 @@ typedef NS_ENUM(NSUInteger, QAAttributedLabel_TapedStyle) {
  */
 
 @property (nonatomic, copy, nullable) NSString *text;
-@property (nonatomic, copy, nullable) NSMutableAttributedString *attributedString;  // 若text也同时存在则优先显示text
+@property (nonatomic, copy, nullable) NSMutableAttributedString *attributedString;  // 若text也同时存在则优先显示attributedString
+/**
+ 关于attributedString使用strong的解释: @property (nonatomic, strong, nullable) NSMutableAttributedString *attributedString;
+ 当在tableView中使用时、给cell中的attributedLabel赋的值attributedString是赋值之前已经处理过的、包含有highlightRanges、highlightContents等信息; 所以如果使用copy、在赋值时这些数据就会丢失。
+ 
+ 当然也可以这样使用:
+ @property (nonatomic, copy, nullable) NSMutableAttributedString *attributedString;
+ - (void)setAttributedString:(NSMutableAttributedString *)attributedString {
+    _attributedString = [attributedString mutableCopy];
+    _attributedString.xxx = attributedString.xxx;  // 手动赋值一下属性、缺点是后续追加属性时难以维护。 (也可以借助runtime)
+ }
+ */
+
+/**
+ 保存label被赋的attributedString的初始值 (此处用的strong)
+ */
+@property (nonatomic, strong, nullable, readonly) NSMutableAttributedString *srcAttributedString;
 
 @property (nonatomic, copy, nullable) UIFont *font;
 @property (nonatomic, copy, null_resettable) UIColor *textColor;
@@ -80,16 +96,6 @@ typedef NS_ENUM(NSUInteger, QAAttributedLabel_TapedStyle) {
  label已渲染完毕后、若再次更改其属性此值为被设为YES、并且后续还会调用layer的updateContent方法
  */
 @property (nonatomic, assign) BOOL needUpdate;
-
-/**
- 当前显示的文案对应的NSMutableAttributedString字符串
- */
-@property (nonatomic, copy, nullable, readonly) NSMutableAttributedString *showingAttributedText;
-
-/**
-当前显示的文案
-*/
-@property (nonatomic, copy, nullable, readonly) NSString *showingText;
 
 /**
  获取文案所占用的size

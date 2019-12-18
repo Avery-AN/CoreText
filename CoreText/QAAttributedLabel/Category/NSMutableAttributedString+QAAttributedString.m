@@ -187,7 +187,7 @@
     
     return dic;
 }
-- (void)setFunctions:(NSDictionary * _Nonnull)dic {
+- (void)setProperties:(NSDictionary * _Nonnull)dic {
     if (!dic || dic.count == 0) {
         return;
     }
@@ -260,10 +260,10 @@
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setSearchRanges:(NSMutableArray *)searchRanges {
+- (void)setSearchRanges:(NSArray *)searchRanges {
     objc_setAssociatedObject(self, @selector(searchRanges), searchRanges, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
-- (NSMutableArray *)searchRanges {
+- (NSArray *)searchRanges {
     return objc_getAssociatedObject(self, _cmd);
 }
 

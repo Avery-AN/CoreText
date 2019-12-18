@@ -46,6 +46,7 @@ static dispatch_queue_t _Nonnull QAAttributedLayerDrawQueue() {
 @property (nonatomic, nullable) QATextDrawer *textDrawer;
 @property (nonatomic, nullable) __block id currentCGImage;
 @property (nonatomic, copy, nullable) NSDictionary *truncationInfo;
+@property (nonatomic, strong, nullable) NSMutableAttributedString *renderText;
 
 /**
  获取文案所占用的size
@@ -63,9 +64,7 @@ static dispatch_queue_t _Nonnull QAAttributedLayerDrawQueue() {
  */
 - (void)drawHighlightColorWithSearchRanges:(NSArray * _Nonnull)ranges
                              attributeInfo:(NSDictionary * _Nonnull)info
-                           attributedLabel:(QAAttributedLabel * _Nonnull)QAAttributedLabel
-                            attributedText:(NSMutableAttributedString * _Nonnull)attributedText
-                                    bounds:(CGRect)bounds;
+                        inAttributedString:(NSMutableAttributedString * _Nonnull)attributedText;
 
 /**
  清除range处的text的高亮状态

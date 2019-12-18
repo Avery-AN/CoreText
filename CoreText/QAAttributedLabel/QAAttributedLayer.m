@@ -17,7 +17,6 @@
     __block NSDictionary *_currentTapedAttributeInfo;  // 当点击高亮文案时保存点击处的attributeInfo
     __block NSMutableArray *_currentTapedAttributeInfo_other;  // 当点击高亮文案时保存点击处文案里包含的其它高亮文本的attributeInfo (PS: 高亮文案中包含有搜索到的高亮文案)
 }
-@property (nonatomic, strong, nullable) NSMutableAttributedString *renderText;
 @property (nonatomic, copy, nullable, readonly) NSMutableAttributedString *attributedText_backup;
 @property (nonatomic, copy, nullable, readonly) NSString *text_backup;
 @property (nonatomic) BOOL contentUpdating;  // 正在更新UI
@@ -47,7 +46,7 @@
         self.contents = nil;
         return;
     }
-    else if ([self.attributedText_backup isEqual:attributedLabel.showingAttributedText]) {
+    else if ([self.attributedText_backup isEqual:attributedLabel.attributedString]) {
         if (self.currentCGImage) {
             self.contents = self.currentCGImage;
         }
@@ -208,9 +207,11 @@
     if (attributedText.textChangedDic == nil) {
         attributedText.textChangedDic = [NSMutableDictionary dictionary];
     }
-
-    // 更新attributedLabel的 attributedText & text 的属性值:
-    [self updateAttributeText:attributedText forAttributedLabel:attributedLabel];
+    
+    // 在赋值text的情况下更新attributedLabel的 attributedString 的属性值:
+    if (attributedLabel.srcAttributedString == nil) {
+        [self updateAttributeText:attributedText forAttributedLabel:attributedLabel];
+    }
     
     return attributedText;
 }
@@ -218,7 +219,7 @@
     self.currentCGImage = self.contents;   // 保存当前的self.contents以供clearHighlightColor方法中使用
     
     QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
-    NSMutableAttributedString *attributedText = attributedLabel.showingAttributedText;
+    NSMutableAttributedString *attributedText = attributedLabel.attributedString;
     CGRect bounds = attributedLabel.bounds;
     
     if ((attributedLabel.text && [attributedLabel.text isKindOfClass:[NSString class]] && attributedLabel.text.length > 0) ||
@@ -257,9 +258,10 @@
  */
 - (void)drawHighlightColorWithSearchRanges:(NSArray * _Nonnull)ranges
                              attributeInfo:(NSDictionary * _Nonnull)info
-                           attributedLabel:(QAAttributedLabel * _Nonnull)attributedLabel
-                            attributedText:(NSMutableAttributedString * _Nonnull)attributedText
-                                    bounds:(CGRect)bounds {
+                        inAttributedString:(NSMutableAttributedString * _Nonnull)attributedText {
+    QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
+    CGRect bounds = attributedLabel.bounds;
+    
     // 更新attributedText的相关属性设置 (设置attributedText中搜索到的文案的高亮属性):
     UIColor *textColor = [info valueForKey:@"textColor"];
     UIColor *textBackgroundColor = [info valueForKey:@"textBackgroundColor"];
@@ -271,8 +273,12 @@
                             range:range];
     }
     
-    // 更新attributedLabel的 attributedText & text 的属性值:
-    [self updateAttributeText:attributedText forAttributedLabel:attributedLabel];
+    // 更新搜索数据到数据源中:
+    SEL appendSearchResultSelector = NSSelectorFromString(@"appendSearchResult:");
+    IMP appendSearchResultImp = [attributedLabel methodForSelector:appendSearchResultSelector];
+    void (*appendSearchResult)(id, SEL, NSMutableAttributedString *) = (void *)appendSearchResultImp;
+    appendSearchResult(attributedLabel, appendSearchResultSelector, attributedText);
+    
     
     // 获取上下文:
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(bounds.size.width, bounds.size.height), self.opaque, 0);
@@ -295,19 +301,25 @@
     self.currentCGImage = (__bridge id _Nullable)(image.CGImage);
     UIGraphicsEndImageContext();
     
-    dispatch_async(dispatch_get_main_queue(), ^{
+    if ([[NSThread currentThread] isMainThread]) {
         self.contents = self.currentCGImage;
-    });
+    }
+    else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.contents = self.currentCGImage;
+        });
+    }
 }
 
 - (void)clearHighlightColor:(NSRange)range {
     if (self.currentCGImage) {
-        self.contents = self.currentCGImage;
+        self.contents = self.currentCGImage;  // contents恢复点击之前的状态
         
+        // 在后台去恢复点击之前的数据:
         dispatch_async(QAAttributedLayerDrawQueue(), ^{
             // 清除当点击高亮文案时所做的文案高亮属性的修改 (将点击时添加的高亮颜色去掉、并恢复到点击之前的颜色状态):
             QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
-            NSMutableAttributedString *attributedText = attributedLabel.showingAttributedText;
+            NSMutableAttributedString *attributedText = attributedLabel.attributedString;
             if (attributedText) {
                 // 更新attributedText的相关属性设置:
                 [self updateAttributeText:attributedText
@@ -358,12 +370,12 @@
 }
 - (void)updateContent:(QAAttributedLabel *)attributedLabel {
     // NSLog(@"%s",__func__);
-    
-    self.contentUpdating = YES;
-    
+
     if (!attributedLabel) {
         return;
     }
+
+    self.contentUpdating = YES;
     [self fillContents:attributedLabel];
 }
 
@@ -425,6 +437,7 @@
                                     UIGraphicsEndImageContext();
                                     
                                     dispatch_async(dispatch_get_main_queue(), ^{
+                                        strongSelf.contentUpdating = NO;
                                         strongSelf.contents = strongSelf.currentCGImage;
                                     });
                                 }];
@@ -462,6 +475,7 @@
                                     UIGraphicsEndImageContext();
                                     image = [image decodeImage];  // image的解码
                                     strongSelf.currentCGImage = (__bridge id _Nullable)(image.CGImage);
+                                    strongSelf.contentUpdating = NO;
                                     strongSelf.contents = strongSelf.currentCGImage;
                                 }];
 }
@@ -478,53 +492,79 @@
     NSMutableAttributedString *attributedText = nil;
     
     if (self.contentUpdating) {  // updateContent的情况
-        if (content == nil) {
-            return;
+        if (attributedLabel.srcAttributedString) {
+            self.contentUpdating = NO;
+            
+            attributedText = attributedLabel.attributedString;
+            if (self.renderText == nil) {
+                self.renderText = attributedLabel.attributedString;
+            }
         }
-        attributedText = [self getAttributedStringWithString:content
-                                                    maxWidth:boundsWidth];
-        
-        if (self.text_backup) {
-            self->_attributedText_backup = attributedText;
-            self->_text_backup = nil;
+        else {
+            if (content == nil) {
+                return;
+            }
+            attributedText = [self getAttributedStringWithString:content
+                                                        maxWidth:boundsWidth];
+            
+            if (self.text_backup) {
+                self->_attributedText_backup = attributedText;
+                self->_text_backup = nil;
+            }
         }
     }
     else {
-        if (attributedLabel.showingAttributedText &&
-            attributedLabel.showingAttributedText.string &&
-            attributedLabel.showingAttributedText.string.length > 0) {
-            attributedText = [attributedLabel.showingAttributedText mutableCopy];
-            NSDictionary *dic = [attributedLabel.showingAttributedText getInstanceProperty];
-            [attributedText setFunctions:dic];
+        if (attributedLabel.attributedString && attributedLabel.attributedString.string.length > 0) {
+            attributedText = attributedLabel.attributedString;
+            if (self.renderText == nil) {
+                self.renderText = attributedLabel.attributedString;
+            }
+            
+            /*
+             if (attributedLabel.attributedString) {
+                 attributedText = [self getAttributedStringWithAttributedString:attributedLabel.attributedString
+                                                                       maxWidth:boundsWidth];
+                 
+                 if (self.attributedText_backup) {
+                     self->_attributedText_backup = attributedText;
+                     self->_text_backup = nil;
+                 }
+             }
+             */
         }
         else {
-            if (attributedLabel.attributedString) {
-                attributedText = [self getAttributedStringWithAttributedString:attributedLabel.attributedString
-                                                                      maxWidth:boundsWidth];
-
-                NSLog(@"attributedText.truncationInfo: %@",attributedText.truncationInfo);
-                
-                if (self.attributedText_backup) {
-                    self->_attributedText_backup = attributedText;
-                    self->_text_backup = nil;
-                }
+            if (content == nil) {
+                return;
             }
-            else {
-                if (content == nil) {
-                    return;
-                }
-                attributedText = [self getAttributedStringWithString:content
-                                                            maxWidth:boundsWidth];
-                
-                if (self.text_backup) {
-                    self->_attributedText_backup = attributedText;
-                    self->_text_backup = nil;
-                }
+            attributedText = [self getAttributedStringWithString:content
+                                                        maxWidth:boundsWidth];
+            
+            if (self.text_backup) {
+                self->_attributedText_backup = attributedText;
+                self->_text_backup = nil;
             }
         }
     }
     
-    // 保存高亮相关信息(link & at & Topic & Seemore)到attributedText中:
+
+    
+    // 处理搜索结果:
+    if (attributedText.searchRanges && attributedText.searchRanges.count > 0) {
+        UIColor *textColor = [attributedText.searchAttributeInfo valueForKey:@"textColor"];
+        UIColor *textBackgroundColor = [attributedText.searchAttributeInfo valueForKey:@"textBackgroundColor"];
+        for (NSString *rangeString in attributedText.searchRanges) {
+            NSRange range = NSRangeFromString(rangeString);
+            [self updateAttributeText:attributedText
+                        withTextColor:textColor
+                  textBackgroundColor:textBackgroundColor
+                                range:range];
+        }
+    }
+    
+    
+    
+    
+    // 保存高亮相关信息(link & at & Topic & Seemore)到attributedText对应的属性中:
     int saveResult = [self saveHighlightRanges:attributedText.highlightRanges
                              highlightContents:attributedText.highlightContents
                                 truncationInfo:attributedText.truncationInfo
@@ -1017,7 +1057,7 @@
         if (self.currentCGImage) {
             // 保存当前点击处的attributeInfo:
             NSRange effectiveRange = NSMakeRange(0, 0);
-            self->_currentTapedAttributeInfo = [attributedText attributesAtIndex:range.location effectiveRange:&effectiveRange];  //effectiveRange参数是引用参数，该参数反映了在所检索的位置上字符串中具有当前属性的范围
+            self->_currentTapedAttributeInfo = [attributedText attributesAtIndex:range.location effectiveRange:&effectiveRange];  // effectiveRange参数是引用参数，该参数反映了在所检索的位置上字符串中具有当前属性的范围
             self->_currentTapedAttributeInfo_other = [NSMutableArray array];
             for (NSString *searchRangeString in attributedText.searchRanges) {
                 NSRange searchRange = NSRangeFromString(searchRangeString);
@@ -1061,13 +1101,13 @@
          forAttributedLabel:(QAAttributedLabel *)attributedLabel {
     /*
      [attributedLabel performSelector:@selector(updateText:) withObject:attributedText.string];
-     [attributedLabel performSelector:@selector(updateAttributedText:) withObject:attributedText];
+
+     SEL updateTextSelector = NSSelectorFromString(@"updateText:");
+     IMP updateTextSelectorImp = [attributedLabel methodForSelector:updateTextSelector];
+     void (*updateText)(id, SEL, NSString *) = (void *)updateTextSelectorImp;
+     updateText(attributedLabel, updateTextSelector, attributedText.string);
      */
-    SEL updateTextSelector = NSSelectorFromString(@"updateText:");
-    IMP updateTextSelectorImp = [attributedLabel methodForSelector:updateTextSelector];
-    void (*updateText)(id, SEL, NSString *) = (void *)updateTextSelectorImp;
-    updateText(attributedLabel, updateTextSelector, attributedText.string);
-    
+
     SEL updateAttributedTextSelector = NSSelectorFromString(@"updateAttributedText:");
     IMP updateAttributedTextImp = [attributedLabel methodForSelector:updateAttributedTextSelector];
     void (*updateAttributedText)(id, SEL, NSMutableAttributedString *) = (void *)updateAttributedTextImp;
@@ -1106,6 +1146,10 @@
     
     return NO;
 }
+
+/**
+ 处理attributedString中的自定义emoji & 文本末尾的"...全文"
+ */
 - (NSMutableAttributedString * _Nullable)getAttributedStringWithAttributedString:(NSMutableAttributedString * _Nonnull)attributedString maxWidth:(CGFloat)maxWidth {
     __block NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
     QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
@@ -1140,9 +1184,6 @@
     if (attributedText.textDic == nil) {
         attributedText.textDic = [NSMutableDictionary dictionary];
     }
-    
-    // 更新attributedLabel的 attributedText & text 的属性值:
-    [self updateAttributeText:attributedText forAttributedLabel:attributedLabel];
     
     return attributedText;
 }
