@@ -423,8 +423,15 @@ static void *TouchingContext = &TouchingContext;
 - (void)_commitUpdate {
     // NSLog(@"%s",__func__);
     
+//    self.needUpdate = YES;
+//    [self _update];
+    
+    
+    
     self.needUpdate = YES;
-    [self _update];
+    [[QATextTransaction transactionWithTarget:self selector:@selector(_updateIfNeeded)] commit];
+    
+    
     
     /**
      self.needUpdate = YES;

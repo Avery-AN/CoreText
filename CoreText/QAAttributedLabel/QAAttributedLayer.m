@@ -44,7 +44,7 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
 
 #pragma mark - Override Methods -
 - (void)display {
-    // NSLog(@"%s",__func__);
+    NSLog(@"%s",__func__);
     super.contents = super.contents;
 
     QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
