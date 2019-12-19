@@ -17,7 +17,6 @@ typedef void (^QAEmojiCompletionBlock)(BOOL success, NSArray * _Nullable emojiTe
                       font:(UIFont * _Nonnull)font
                  wordSpace:(NSUInteger)wordSpace
             textAttributes:(NSDictionary * _Nonnull)textAttributes
-       checkAttributedText:(BOOL(^_Nullable)(NSString * _Nullable content))checkAttributedTextBlock
                 completion:(QAEmojiCompletionBlock _Nullable)completion;
 
 @end

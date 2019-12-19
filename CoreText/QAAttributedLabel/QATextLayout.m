@@ -43,9 +43,12 @@
     self.size = size;
     _attributedText = attributedText;
 }
-- (NSDictionary *)getTruncationTextAttributesWithCheckAttributedText:(BOOL(^)(void))checkAttributedTextBlock {
+- (NSDictionary *)getTruncationTextAttributesWithCheckBlock:(BOOL(^_Nullable)(void))checkBlock {
     if (!_truncationTextAttributes) {
         _truncationTextAttributes = [NSMutableDictionary dictionary];
+    }
+    else {
+        [_truncationTextAttributes removeAllObjects];
     }
     
     // 字号 & 字体:
@@ -60,8 +63,8 @@
         fontName = self.font.fontName;
     }
     
-    // 异常处理:
-    if (checkAttributedTextBlock && checkAttributedTextBlock()) {
+    // 判断是否已取消:
+    if (checkBlock && checkBlock()) {
         return nil;
     }
     
@@ -112,16 +115,19 @@
     
     return _truncationTextAttributes;
 }
-- (NSDictionary *)getTextAttributesWithCheckAttributedText:(BOOL(^_Nullable)(void))checkAttributedTextBlock {
+- (NSDictionary *)getTextAttributesWithCheckBlock:(BOOL(^_Nullable)(void))checkBlock {
     if (!_textAttributes) {
         _textAttributes = [NSMutableDictionary dictionary];
     }
+    else {
+        [_textAttributes removeAllObjects];
+    }
     
-    // 异常处理:
-    if (checkAttributedTextBlock && checkAttributedTextBlock()) {
+    // 判断是否已取消:
+    if (checkBlock && checkBlock()) {
         return nil;
     }
-
+    
     // 设置字体:
     CGFloat fontSize = self.font.pointSize;
     NSString *fontName = self.font.fontName;

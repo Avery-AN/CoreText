@@ -26,7 +26,7 @@
     {  // <自适应高度>按钮
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         button.backgroundColor = [UIColor orangeColor];
-        button.frame = CGRectMake(100, 500, [UIScreen mainScreen].bounds.size.width - 100*2, 50);
+        button.frame = CGRectMake(100, 560, [UIScreen mainScreen].bounds.size.width - 100*2, 50);
         [button setTitle:@"自适应高度" forState:UIControlStateNormal];
         [button addTarget:self action:@selector(action_sizeToFit) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:button];
@@ -35,7 +35,7 @@
     
     
     // 【 QAAttributedLabel的使用方法 】
-    QAAttributedLabel *label = [[QAAttributedLabel alloc] initWithFrame:CGRectMake(10, 90, [UIScreen mainScreen].bounds.size.width - 10*2, 400)];
+    QAAttributedLabel *label = [[QAAttributedLabel alloc] initWithFrame:CGRectMake(10, 90, [UIScreen mainScreen].bounds.size.width - 10*2, 450)];
     [self.view addSubview:label];
     self.label = label;
     label.backgroundColor = [UIColor grayColor];
@@ -131,16 +131,17 @@
 //             view.frame = CGRectMake(260, 660, 100, 100);
 //         }];
          
-//         [label performSelector:@selector(setTextColor:) withObject:[UIColor blackColor] afterDelay:1.5];
-//         [label performSelector:@selector(setFont:) withObject:[UIFont systemFontOfSize:21] afterDelay:2];
-//         [label performSelector:@selector(setHighlightFont:) withObject:[UIFont systemFontOfSize:29] afterDelay:2.5];
-         [self performSelector:@selector(test) withObject:nil afterDelay:2];
+//         [label performSelector:@selector(setTextColor:) withObject:[UIColor blackColor] afterDelay:1.3];
+//         [label performSelector:@selector(setFont:) withObject:[UIFont systemFontOfSize:21] afterDelay:1.8];
+//         [label performSelector:@selector(setHighlightFont:) withObject:[UIFont systemFontOfSize:29] afterDelay:2.2];
          
+//         [self performSelector:@selector(testMethod) withObject:nil afterDelay:2];
      }
-     
 }
-- (void)test {
-    self.label.highlightFont = [UIFont systemFontOfSize:29];
+- (void)testMethod {
+    self.label.font = [UIFont systemFontOfSize:16];
+    self.label.highlightFont = [UIFont systemFontOfSize:26];
+    self.label.textColor = [UIColor orangeColor];
 }
 
 

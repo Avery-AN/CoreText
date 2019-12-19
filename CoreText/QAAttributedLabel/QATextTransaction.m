@@ -21,7 +21,7 @@ static void QARunLoopObserverCallBack(CFRunLoopObserverRef observer, CFRunLoopAc
     }
     
     NSSet *currentSet = transactionSet;
-    transactionSet = [NSMutableSet new];
+    transactionSet = [[NSMutableSet alloc] init];
     [currentSet enumerateObjectsUsingBlock:^(QATextTransaction *transaction, BOOL *stop) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
@@ -33,7 +33,7 @@ static void QARunLoopObserverCallBack(CFRunLoopObserverRef observer, CFRunLoopAc
 static void QATextTransactionSetup() {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        transactionSet = [NSMutableSet new];
+        transactionSet = [[NSMutableSet alloc] init];
         
         CFRunLoopRef runloop = CFRunLoopGetMain();
         CFRunLoopObserverRef observer;
@@ -64,7 +64,7 @@ static void QATextTransactionSetup() {
         return nil;
     }
     
-    QATextTransaction *transaction = [QATextTransaction new];
+    QATextTransaction *transaction = [[QATextTransaction alloc] init];
     transaction.target = target;
     transaction.selector = selector;
     return transaction;

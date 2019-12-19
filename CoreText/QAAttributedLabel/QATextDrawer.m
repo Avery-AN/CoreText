@@ -113,23 +113,20 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
             textAlignment:(NSTextAlignment)textAlignment
            truncationText:(NSDictionary *)truncationTextInfo
         saveHighlightText:(BOOL)saveHighlightText
-      checkAttributedText:(BOOL(^)(NSString *content))checkAttributedTextBlock
-                   cancel:(void(^)(void))cancel {
+               checkBlock:(BOOL(^)(NSString *content))checkBlock {
     NSLog(@"  < drawAttributedText: >");
     if (context == NULL || !attributedString || CGSizeEqualToSize(size, CGSizeZero)) {
         return -10;
     }
     
-    // 异常处理:
-    if (checkAttributedTextBlock && checkAttributedTextBlock(attributedString.string)) {
-        if (cancel) {
-            cancel();
-        }
-        return -11;
-    }
-    
     @autoreleasepool {
         if (saveHighlightText) { // 保存TextInfo的情况
+            
+            // 异常处理:
+            if (checkBlock && checkBlock(attributedString.string)) {
+                return -11;
+            }
+            
             // 先清空数据
             [self.highlightFrameDic removeAllObjects];
             [self.highlightRanges removeAllObjects];
@@ -206,10 +203,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
         for (CFIndex lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
             
             // 异常处理:
-            if (checkAttributedTextBlock && checkAttributedTextBlock(attributedString.string)) {
-                if (cancel) {
-                    cancel();
-                }
+            if (checkBlock && checkBlock(attributedString.string)) {
                 return -12;
             }
             
@@ -268,11 +262,8 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                                                                   run:run
                                                         ContentHeight:contentHeight
                                                      attributedString:attributedString
-                                                  checkAttributedText:checkAttributedTextBlock];
+                                                           checkBlock:checkBlock];
                         if (result < 0) {
-                            if (cancel) {
-                                cancel();
-                            }
                             
                             CFRelease(drawPath);
                             CFRelease(ctFrame);
@@ -289,9 +280,6 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
         CFRelease(ctFrame);
         CFRelease(ctFramesetter);
     }
-    
-    NSLog(@"textNewlineDic: %@",self.textNewlineDic);
-    NSLog(@"highlightFrameDic: %@",self.highlightFrameDic);
     
     return 0;
 }
@@ -362,7 +350,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                               run:(CTRunRef)run
                     ContentHeight:(CGFloat)contentHeight
                  attributedString:(NSMutableAttributedString *)attributedString
-              checkAttributedText:(BOOL(^)(NSString *content))checkAttributedTextBlock {
+                       checkBlock:(BOOL(^)(NSString *content))checkBlock {
     if (_currentRun != run) {
         _currentRun = run;
         _currentPositionInRun = 0;
@@ -370,7 +358,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     }
 
     // 异常处理:
-    if (checkAttributedTextBlock && checkAttributedTextBlock(attributedString.string)) {
+    if (checkBlock && checkBlock(attributedString.string)) {
         return -20;
     }
     
@@ -416,7 +404,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                                   withHighlightRange:highlightRange
                                            lineIndex:lineIndex
                                     attributedString:attributedString
-                                 checkAttributedText:checkAttributedTextBlock];
+                                          checkBlock:checkBlock];
                 if (result < 0) {
                     return result;
                 }
@@ -452,7 +440,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                                           withHighlightRange:highlightRange_previous
                                                    lineIndex:lineIndex
                                             attributedString:attributedString
-                                         checkAttributedText:checkAttributedTextBlock];
+                                                  checkBlock:checkBlock];
                         if (result < 0) {
                             return result;
                         }
@@ -463,7 +451,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                                                                    highlightText:highlightText_previous
                                                                 subHighlightText:nil
                                                                 attributedString:attributedString
-                                                             checkAttributedText:checkAttributedTextBlock];
+                                                                      checkBlock:checkBlock];
                         if (result < 0) {
                             return result;
                         }
@@ -500,7 +488,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                                       withHighlightRange:highlightRange
                                                lineIndex:lineIndex
                                         attributedString:attributedString
-                                     checkAttributedText:checkAttributedTextBlock];
+                                              checkBlock:checkBlock];
                     if (result < 0) {
                         return result;
                     }
@@ -509,7 +497,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                                                                highlightText:highlightText
                                                             subHighlightText:subHighlightText
                                                             attributedString:attributedString
-                                                         checkAttributedText:checkAttributedTextBlock];
+                                                                  checkBlock:checkBlock];
                     if (result < 0) {
                         return result;
                     }
@@ -553,7 +541,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                                       withHighlightRange:highlightRange
                                                lineIndex:lineIndex
                                         attributedString:attributedString
-                                     checkAttributedText:checkAttributedTextBlock];
+                                              checkBlock:checkBlock];
                     if (result < 0) {
                         return result;
                     }
@@ -562,7 +550,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                                                                highlightText:highlightText
                                                             subHighlightText:subHighlightText
                                                             attributedString:attributedString
-                                                         checkAttributedText:checkAttributedTextBlock];
+                                                                  checkBlock:checkBlock];
                     if (result < 0) {
                         return result;
                     }
@@ -589,7 +577,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
       withHighlightRange:(NSRange)highlightRange
                lineIndex:(CFIndex)lineIndex
         attributedString:(NSMutableAttributedString *)attributedString
-     checkAttributedText:(BOOL(^)(NSString *content))checkAttributedTextBlock {
+              checkBlock:(BOOL(^)(NSString *content))checkBlock {
     NSMutableArray *highlightRects = [self.highlightFrameDic valueForKey:NSStringFromRange(highlightRange)];
     if (!highlightRects) {
         highlightRects = [NSMutableArray array];
@@ -600,7 +588,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     }
     
     // 异常处理:
-    if (checkAttributedTextBlock && checkAttributedTextBlock(attributedString.string)) {
+    if (checkBlock && checkBlock(attributedString.string)) {
         return -30;
     }
     
@@ -636,7 +624,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                                    highlightText:(NSString *)highlightText
                                 subHighlightText:(NSString *)subHighlightText
                                 attributedString:(NSMutableAttributedString *)attributedString
-                             checkAttributedText:(BOOL(^)(NSString *content))checkAttributedTextBlock {
+                                      checkBlock:(BOOL(^)(NSString *content))checkBlock {
     NSArray *array = [self.textNewlineDic valueForKey:NSStringFromRange(highlightRange)];
     NSInteger totalLength = 0;
     for (NSString *text in array) {
@@ -644,7 +632,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     }
     
     // 异常处理:
-    if (checkAttributedTextBlock && checkAttributedTextBlock(attributedString.string)) {
+    if (checkBlock && checkBlock(attributedString.string)) {
         return -40;
     }
     

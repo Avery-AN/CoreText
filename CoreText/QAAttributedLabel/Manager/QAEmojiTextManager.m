@@ -38,7 +38,6 @@ static CGFloat qa_widthCallback(void *ref) {
                       font:(UIFont * _Nonnull)font
                  wordSpace:(NSUInteger)wordSpace
             textAttributes:(NSDictionary * _Nonnull)textAttributes
-       checkAttributedText:(BOOL(^_Nullable)(NSString * _Nullable content))checkAttributedTextBlock
                 completion:(QAEmojiCompletionBlock _Nullable)completion {
     @autoreleasepool {
         BOOL success = NO;
@@ -74,11 +73,6 @@ static CGFloat qa_widthCallback(void *ref) {
                             [matches_tmp addObject:result];
                             [emojiTexts addObject:emojiText];
                         }
-                    }
-                    
-                    // 异常处理:
-                    if (checkAttributedTextBlock && checkAttributedTextBlock(attributedString.string)) {
-                        return -70;
                     }
                     
                     NSString *imageName = [emojiText substringWithRange:NSMakeRange(1, emojiText.length-2)];

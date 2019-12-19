@@ -76,9 +76,4 @@ static dispatch_queue_t _Nonnull QAAttributedLayerDrawQueue() {
  */
 - (void)drawTextBackgroundWithAttributedString:(NSMutableAttributedString * _Nonnull)attributedString;
 
-/**
- 更新attributedLabel的attributedString
- */
-- (void)updateContent:(QAAttributedLabel * _Nonnull)attributedLabel;
-
 @end
