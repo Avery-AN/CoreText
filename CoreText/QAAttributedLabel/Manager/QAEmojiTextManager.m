@@ -34,11 +34,12 @@ static CGFloat qa_widthCallback(void *ref) {
 @implementation QAEmojiTextManager
 
 #pragma mark - Public Apis -
-+ (void)processDiyEmojiText:(NSMutableAttributedString * _Nonnull)attributedString
-                       font:(UIFont * _Nonnull)font
-                  wordSpace:(NSUInteger)wordSpace
-             textAttributes:(NSDictionary * _Nonnull)textAttributes
-                 completion:(QAEmojiCompletionBlock _Nullable)completion {
++ (int)processDiyEmojiText:(NSMutableAttributedString * _Nonnull)attributedString
+                      font:(UIFont * _Nonnull)font
+                 wordSpace:(NSUInteger)wordSpace
+            textAttributes:(NSDictionary * _Nonnull)textAttributes
+       checkAttributedText:(BOOL(^_Nullable)(NSString * _Nullable content))checkAttributedTextBlock
+                completion:(QAEmojiCompletionBlock _Nullable)completion {
     @autoreleasepool {
         BOOL success = NO;
         NSMutableArray *emojiTexts = [NSMutableArray array];
@@ -75,6 +76,11 @@ static CGFloat qa_widthCallback(void *ref) {
                         }
                     }
                     
+                    // 异常处理:
+                    if (checkAttributedTextBlock && checkAttributedTextBlock(attributedString.string)) {
+                        return -70;
+                    }
+                    
                     NSString *imageName = [emojiText substringWithRange:NSMakeRange(1, emojiText.length-2)];
                     image = [UIImage imageNamed:imageName];
                     if (!image) {
@@ -101,6 +107,8 @@ static CGFloat qa_widthCallback(void *ref) {
             completion(success, emojiTexts, matches_tmp);
         }
     }
+    
+    return 0;
 }
 
 + (NSMutableAttributedString *)qa_attachmentWithContent:(nullable id)content

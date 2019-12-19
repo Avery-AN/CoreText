@@ -375,7 +375,9 @@ static void *TouchingContext = &TouchingContext;
         attributedText = self.attributedString;
     }
     else {
-        [self.textLayout getTextAttributes];
+        [self.textLayout getTextAttributesWithCheckAttributedText:^BOOL{
+            return NO;
+        }];
         attributedText = [[NSMutableAttributedString alloc] initWithString:self.text attributes:self.textLayout.textAttributes];
     }
     
@@ -425,9 +427,7 @@ static void *TouchingContext = &TouchingContext;
 - (void)_commitUpdate {
     // NSLog(@"%s",__func__);
     
-    if (self.superview) {
-        self.needUpdate = YES;
-    }
+    self.needUpdate = YES;
 }
 - (void)_updateAfterDraw {
     #if !TARGET_INTERFACE_BUILDER

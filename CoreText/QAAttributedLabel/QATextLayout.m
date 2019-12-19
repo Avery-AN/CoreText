@@ -43,7 +43,7 @@
     self.size = size;
     _attributedText = attributedText;
 }
-- (NSDictionary *)getTruncationTextAttributes {
+- (NSDictionary *)getTruncationTextAttributesWithCheckAttributedText:(BOOL(^)(void))checkAttributedTextBlock {
     if (!_truncationTextAttributes) {
         _truncationTextAttributes = [NSMutableDictionary dictionary];
     }
@@ -58,6 +58,11 @@
     else {
         fontSize = self.font.pointSize;
         fontName = self.font.fontName;
+    }
+    
+    // 异常处理:
+    if (checkAttributedTextBlock && checkAttributedTextBlock()) {
+        return nil;
     }
     
     // 设置字体:
@@ -107,9 +112,14 @@
     
     return _truncationTextAttributes;
 }
-- (NSDictionary *)getTextAttributes {
+- (NSDictionary *)getTextAttributesWithCheckAttributedText:(BOOL(^_Nullable)(void))checkAttributedTextBlock {
     if (!_textAttributes) {
         _textAttributes = [NSMutableDictionary dictionary];
+    }
+    
+    // 异常处理:
+    if (checkAttributedTextBlock && checkAttributedTextBlock()) {
+        return nil;
     }
 
     // 设置字体:

@@ -27,6 +27,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     NSInteger _currentPositionInRun;
     CGFloat _currentPosition_offsetXInRun;
     NSMutableDictionary *_saveUnfinishedDic;
+    NSMutableDictionary *_saveLineInfoDic;
     CTRunRef _currentRun;
 }
 
@@ -114,8 +115,9 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
         saveHighlightText:(BOOL)saveHighlightText
       checkAttributedText:(BOOL(^)(NSString *content))checkAttributedTextBlock
                    cancel:(void(^)(void))cancel {
+    NSLog(@"  < drawAttributedText: >");
     if (context == NULL || !attributedString || CGSizeEqualToSize(size, CGSizeZero)) {
-        return -1;
+        return -10;
     }
     
     // 异常处理:
@@ -123,7 +125,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
         if (cancel) {
             cancel();
         }
-        return -1;
+        return -11;
     }
     
     @autoreleasepool {
@@ -132,6 +134,19 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
             [self.highlightFrameDic removeAllObjects];
             [self.highlightRanges removeAllObjects];
             [self.textNewlineDic removeAllObjects];
+
+            if (!_saveUnfinishedDic) {
+                _saveUnfinishedDic = [NSMutableDictionary dictionary];
+            }
+            else {
+                [_saveUnfinishedDic removeAllObjects];
+            }
+            if (!_saveLineInfoDic) {
+                _saveLineInfoDic = [NSMutableDictionary dictionary];
+            }
+            else {
+                [_saveLineInfoDic removeAllObjects];
+            }
             
             // 保存高亮文案的highlightRange & highlightFont:
             if (attributedString.textDic && attributedString.textDic.count > 0) {
@@ -189,6 +204,15 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
         
         // 遍历CTFrame中的每一行CTLine:
         for (CFIndex lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
+            
+            // 异常处理:
+            if (checkAttributedTextBlock && checkAttributedTextBlock(attributedString.string)) {
+                if (cancel) {
+                    cancel();
+                }
+                return -12;
+            }
+            
             CGPoint lineOrigin = lineOrigins[lineIndex];
             CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
             
@@ -245,7 +269,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                                                         ContentHeight:contentHeight
                                                      attributedString:attributedString
                                                   checkAttributedText:checkAttributedTextBlock];
-                        if (result == -1) {
+                        if (result < 0) {
                             if (cancel) {
                                 cancel();
                             }
@@ -254,7 +278,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                             CFRelease(ctFrame);
                             CFRelease(ctFramesetter);
                             
-                            return -1;
+                            return result;
                         }
                     }
                 }
@@ -265,6 +289,9 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
         CFRelease(ctFrame);
         CFRelease(ctFramesetter);
     }
+    
+    NSLog(@"textNewlineDic: %@",self.textNewlineDic);
+    NSLog(@"highlightFrameDic: %@",self.highlightFrameDic);
     
     return 0;
 }
@@ -336,14 +363,17 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                     ContentHeight:(CGFloat)contentHeight
                  attributedString:(NSMutableAttributedString *)attributedString
               checkAttributedText:(BOOL(^)(NSString *content))checkAttributedTextBlock {
-    if (!_saveUnfinishedDic) {
-        _saveUnfinishedDic = [NSMutableDictionary dictionary];
-    }
     if (_currentRun != run) {
         _currentRun = run;
         _currentPositionInRun = 0;
         _currentPosition_offsetXInRun = 0;
     }
+
+    // 异常处理:
+    if (checkAttributedTextBlock && checkAttributedTextBlock(attributedString.string)) {
+        return -20;
+    }
+    
     CFRange runRange = CTRunGetStringRange(run);
     NSRange currentRunRange = NSMakeRange(runRange.location, runRange.length);
     NSString *runContent = [attributedString.string substringWithRange:currentRunRange];
@@ -368,11 +398,6 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                 }
             }
             
-            // 异常处理:
-            if (checkAttributedTextBlock && checkAttributedTextBlock(attributedString.string)) {
-                return -1;
-            }
-            
             // 保存高亮文案的CGRect & 以及文案的换行信息:
             if (highlightRange.location == currentRunRange.location &&
                 highlightRange.length == currentRunRange.length) {
@@ -386,9 +411,15 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                 transform = CGAffineTransformScale(transform, 1.f, -1.f);
                 CGRect highlightRect = CGRectApplyAffineTransform(runRect, transform);
                 
-                [self saveHighlightRect:highlightRect
-                          highlightText:highlightText
-                     withHighlightRange:highlightRange];
+                int result = [self saveHighlightRect:highlightRect
+                                       highlightText:highlightText
+                                  withHighlightRange:highlightRange
+                                           lineIndex:lineIndex
+                                    attributedString:attributedString
+                                 checkAttributedText:checkAttributedTextBlock];
+                if (result < 0) {
+                    return result;
+                }
                 
                 currentRunString = nil;
             }
@@ -416,15 +447,26 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                         _currentPosition_offsetXInRun = runRect.size.width;
                         _currentPositionInRun = subRange_previous.length;
 
-                        [self saveHighlightRect:highlightRect_previous
-                                  highlightText:subHighlightText
-                             withHighlightRange:highlightRange_previous];
+                        int result = [self saveHighlightRect:highlightRect_previous
+                                               highlightText:subHighlightText
+                                          withHighlightRange:highlightRange_previous
+                                                   lineIndex:lineIndex
+                                            attributedString:attributedString
+                                         checkAttributedText:checkAttributedTextBlock];
+                        if (result < 0) {
+                            return result;
+                        }
                         
                         [currentRunString deleteCharactersInRange:subRange_previous];
                         
-                        [self check_saveUnfinishedDicWithHighlightRange:highlightRange_previous
-                                                          highlightText:highlightText_previous
-                                                       subHighlightText:nil];
+                        result = [self check_saveUnfinishedDicWithHighlightRange:highlightRange_previous
+                                                                   highlightText:highlightText_previous
+                                                                subHighlightText:nil
+                                                                attributedString:attributedString
+                                                             checkAttributedText:checkAttributedTextBlock];
+                        if (result < 0) {
+                            return result;
+                        }
                     }
                 }
                 
@@ -453,13 +495,24 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                     _currentPosition_offsetXInRun += runRect.size.width;
                     _currentPositionInRun += subRange.length;
                     
-                    [self saveHighlightRect:highlightRect
-                              highlightText:subHighlightText
-                         withHighlightRange:highlightRange];
+                    int result = [self saveHighlightRect:highlightRect
+                                           highlightText:subHighlightText
+                                      withHighlightRange:highlightRange
+                                               lineIndex:lineIndex
+                                        attributedString:attributedString
+                                     checkAttributedText:checkAttributedTextBlock];
+                    if (result < 0) {
+                        return result;
+                    }
                     
-                    [self check_saveUnfinishedDicWithHighlightRange:highlightRange
-                                                      highlightText:highlightText
-                                                   subHighlightText:subHighlightText];
+                    result = [self check_saveUnfinishedDicWithHighlightRange:highlightRange
+                                                               highlightText:highlightText
+                                                            subHighlightText:subHighlightText
+                                                            attributedString:attributedString
+                                                         checkAttributedText:checkAttributedTextBlock];
+                    if (result < 0) {
+                        return result;
+                    }
                     
                     [currentRunString deleteCharactersInRange:subRange];
                     NSInteger length = currentRunString.length;
@@ -480,6 +533,9 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                         break;
                     }
                     
+                    if (subRange.length > currentRunString.length) {
+                        subRange = NSMakeRange(subRange.location, currentRunString.length);
+                    }
                     NSString *subHighlightText = [currentRunString substringWithRange:subRange];
                     
                     // 获取高亮文案的Rect:
@@ -492,13 +548,24 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                     transform = CGAffineTransformScale(transform, 1.f, -1.f);
                     CGRect highlightRect = CGRectApplyAffineTransform(runRect, transform);
                     
-                    [self saveHighlightRect:highlightRect
-                              highlightText:subHighlightText
-                         withHighlightRange:highlightRange];
+                    int result = [self saveHighlightRect:highlightRect
+                                           highlightText:subHighlightText
+                                      withHighlightRange:highlightRange
+                                               lineIndex:lineIndex
+                                        attributedString:attributedString
+                                     checkAttributedText:checkAttributedTextBlock];
+                    if (result < 0) {
+                        return result;
+                    }
                     
-                    [self check_saveUnfinishedDicWithHighlightRange:highlightRange
-                                                      highlightText:highlightText
-                                                   subHighlightText:subHighlightText];
+                    result = [self check_saveUnfinishedDicWithHighlightRange:highlightRange
+                                                               highlightText:highlightText
+                                                            subHighlightText:subHighlightText
+                                                            attributedString:attributedString
+                                                         checkAttributedText:checkAttributedTextBlock];
+                    if (result < 0) {
+                        return result;
+                    }
                     
                     [currentRunString deleteCharactersInRange:subRange];
                     NSInteger length = currentRunString.length;
@@ -517,9 +584,12 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     
     return 0;
 }
-- (void)saveHighlightRect:(CGRect)highlightRect
-            highlightText:(NSString *)highlightText
-       withHighlightRange:(NSRange)highlightRange {
+- (int)saveHighlightRect:(CGRect)highlightRect
+           highlightText:(NSString *)highlightText
+      withHighlightRange:(NSRange)highlightRange
+               lineIndex:(CFIndex)lineIndex
+        attributedString:(NSMutableAttributedString *)attributedString
+     checkAttributedText:(BOOL(^)(NSString *content))checkAttributedTextBlock {
     NSMutableArray *highlightRects = [self.highlightFrameDic valueForKey:NSStringFromRange(highlightRange)];
     if (!highlightRects) {
         highlightRects = [NSMutableArray array];
@@ -529,11 +599,19 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
         newlineTexts = [NSMutableArray array];
     }
     
+    // 异常处理:
+    if (checkAttributedTextBlock && checkAttributedTextBlock(attributedString.string)) {
+        return -30;
+    }
+    
     if (highlightRects.count > 0) {
         NSValue *value = [highlightRects lastObject];
         NSString *text = [newlineTexts lastObject];
         CGRect rect = value.CGRectValue;
-        if (fabs(highlightRect.origin.y - rect.origin.y) <= 3 ) {  // 仍处在同一line里
+        
+        NSString *line = [_saveLineInfoDic valueForKey:NSStringFromRange(highlightRange)];
+        CFIndex line_index = line.intValue;
+        if (line_index == lineIndex) {  // 仍处在同一line里
             CGRect newRect = CGRectMake(rect.origin.x, highlightRect.origin.y, (rect.size.width + highlightRect.size.width), highlightRect.size.height);
             [highlightRects replaceObjectAtIndex:(highlightRects.count-1) withObject:[NSValue valueWithCGRect:newRect]];
             [newlineTexts replaceObjectAtIndex:(highlightRects.count-1) withObject:[NSString stringWithFormat:@"%@%@",text,highlightText]];
@@ -547,23 +625,37 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
         [highlightRects addObject:[NSValue valueWithCGRect:highlightRect]];
         [newlineTexts addObject:highlightText];
     }
+    
+    [_saveLineInfoDic setValue:@(lineIndex) forKey:NSStringFromRange(highlightRange)];
     [self.highlightFrameDic setValue:highlightRects forKey:NSStringFromRange(highlightRange)];
     [self.textNewlineDic setValue:newlineTexts forKey:NSStringFromRange(highlightRange)];
+    
+    return 0;
 }
-- (void)check_saveUnfinishedDicWithHighlightRange:(NSRange)highlightRange
-                                    highlightText:(NSString *)highlightText
-                                 subHighlightText:(NSString *)subHighlightText {
+- (int)check_saveUnfinishedDicWithHighlightRange:(NSRange)highlightRange
+                                   highlightText:(NSString *)highlightText
+                                subHighlightText:(NSString *)subHighlightText
+                                attributedString:(NSMutableAttributedString *)attributedString
+                             checkAttributedText:(BOOL(^)(NSString *content))checkAttributedTextBlock {
     NSArray *array = [self.textNewlineDic valueForKey:NSStringFromRange(highlightRange)];
     NSInteger totalLength = 0;
     for (NSString *text in array) {
         totalLength = totalLength + text.length;
     }
+    
+    // 异常处理:
+    if (checkAttributedTextBlock && checkAttributedTextBlock(attributedString.string)) {
+        return -40;
+    }
+    
     if (totalLength == highlightText.length) {
         [_saveUnfinishedDic removeObjectForKey:NSStringFromRange(highlightRange)];
     }
     else if (subHighlightText) {
         [_saveUnfinishedDic setValue:subHighlightText forKey:NSStringFromRange(highlightRange)];
     }
+    
+    return 0;
 }
 
 
