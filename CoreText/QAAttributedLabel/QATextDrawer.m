@@ -114,7 +114,6 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
            truncationText:(NSDictionary *)truncationTextInfo
         saveHighlightText:(BOOL)saveHighlightText
                checkBlock:(BOOL(^)(NSString *content))checkBlock {
-    NSLog(@"  < drawAttributedText: >");
     if (context == NULL || !attributedString || CGSizeEqualToSize(size, CGSizeZero)) {
         return -10;
     }

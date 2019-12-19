@@ -49,16 +49,6 @@
     label.text = content;
     
     
-    /*
-     NSMutableAttributedString *mutableAttributedString = [[NSMutableAttributedString alloc] initWithString:content];
-     [mutableAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(67, 4)];
-     [mutableAttributedString addAttribute:NSBackgroundColorAttributeName value:[UIColor yellowColor] range:NSMakeRange(67, 4)];
-     [mutableAttributedString addAttribute:NSStrikethroughColorAttributeName value:[UIColor blueColor] range:NSMakeRange(67, 4)];
-     [mutableAttributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:23] range:NSMakeRange(0, mutableAttributedString.length)];
-     label.attributedString = mutableAttributedString;
-     */
-    
-    
     // *** 【0】是否需要进行异步绘制:
     {
         label.display_async = YES;
@@ -137,16 +127,18 @@
          
 //         [self performSelector:@selector(testMethod) withObject:nil afterDelay:2];
      }
-}
-- (void)testMethod {
-    self.label.font = [UIFont systemFontOfSize:16];
-    self.label.highlightFont = [UIFont systemFontOfSize:26];
-    self.label.textColor = [UIColor orangeColor];
+    
 }
 
+//- (void)testMethod {
+//    self.label.font = [UIFont systemFontOfSize:16];
+//    self.label.highlightFont = [UIFont systemFontOfSize:26];
+//    self.label.textColor = [UIColor orangeColor];
+//}
 
 
-#pragma mark - Action -
+
+#pragma mark - Actions -
 - (void)action_sizeToFit {
     [self.label sizeToFit];
 }

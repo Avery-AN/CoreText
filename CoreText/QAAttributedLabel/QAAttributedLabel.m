@@ -446,7 +446,14 @@ static void *TouchingContext = &TouchingContext;
     // NSLog(@"%s",__func__);
     
     self.needUpdate = NO;
-    [self.layer setNeedsDisplay];
+    if ([[NSThread currentThread] isMainThread]) {
+        [self.layer setNeedsDisplay];
+    }
+    else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.layer setNeedsDisplay];
+        });
+    }
 }
 
 

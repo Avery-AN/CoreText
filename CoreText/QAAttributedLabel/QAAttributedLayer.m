@@ -44,7 +44,7 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
 
 #pragma mark - Override Methods -
 - (void)display {
-    NSLog(@"%s",__func__);
+    // NSLog(@"%s",__func__);
     super.contents = super.contents;
 
     QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
@@ -556,7 +556,6 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
                                              range:range];
             if (result < 0) {
                 if (cancel) {
-                    NSLog(@"result(0): %d",result);
                     cancel();
                 }
                 return;
@@ -572,7 +571,6 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
                               attributedString:attributedText];
     if (saveResult < 0) {
         if (cancel) {
-            NSLog(@"saveResult(1): %d",saveResult);
             cancel();
         }
         return;
@@ -591,7 +589,6 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
                                               checkBlock:checkBlock];
     if (drawResult < 0) {
         if (cancel) {
-            NSLog(@"drawResult(2): %d",drawResult);
             cancel();
         }
         return;
@@ -1181,18 +1178,15 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
 - (BOOL)isCancelByCheckingContent:(NSString *)content {  // 返回YES表示需要取消本次绘制
     QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
     if (_drawState == QAAttributedLayer_State_Canled) {
-        NSLog(@" +++++++ canceled 0");
         return YES;
     }
     else if (!content) {
-        NSLog(@" +++++++ canceled 1");
         return YES;
     }
     else if (self.text_backup && [content isEqualToString:self.text_backup]) {
         return NO;
     }
     else if (attributedLabel.srcAttributedString && self.attributedText_backup && ![self.attributedText_backup.string isEqualToString:content]) {
-        NSLog(@" +++++++ canceled 2");
         return YES;
     }
     
