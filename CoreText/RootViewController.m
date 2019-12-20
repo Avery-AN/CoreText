@@ -127,7 +127,9 @@
          [label performSelector:@selector(setTextColor:) withObject:[UIColor cyanColor] afterDelay:1.8];
          [label performSelector:@selector(setFont:) withObject:[UIFont systemFontOfSize:25] afterDelay:1.8];
          
-         [label performSelector:@selector(setHighlightFont:) withObject:[UIFont systemFontOfSize:29] afterDelay:2.2];
+         [label performSelector:@selector(setHighlightFont:) withObject:[UIFont systemFontOfSize:39] afterDelay:2.2];
+         
+         [label performSelector:@selector(setTextColor:) withObject:[UIColor redColor] afterDelay:3.6];
          
 //         [self performSelector:@selector(testMethod) withObject:nil afterDelay:2];
      }
