@@ -26,7 +26,7 @@
     {  // <自适应高度>按钮
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         button.backgroundColor = [UIColor orangeColor];
-        button.frame = CGRectMake(100, 560, [UIScreen mainScreen].bounds.size.width - 100*2, 50);
+        button.frame = CGRectMake(100, 600, [UIScreen mainScreen].bounds.size.width - 100*2, 50);
         [button setTitle:@"自适应高度" forState:UIControlStateNormal];
         [button addTarget:self action:@selector(action_sizeToFit) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:button];
@@ -35,7 +35,7 @@
     
     
     // 【 QAAttributedLabel的使用方法 】
-    QAAttributedLabel *label = [[QAAttributedLabel alloc] initWithFrame:CGRectMake(10, 90, [UIScreen mainScreen].bounds.size.width - 10*2, 450)];
+    QAAttributedLabel *label = [[QAAttributedLabel alloc] initWithFrame:CGRectMake(10, 90, [UIScreen mainScreen].bounds.size.width - 10*2, 490)];
     [self.view addSubview:label];
     self.label = label;
     label.backgroundColor = [UIColor grayColor];
@@ -67,8 +67,8 @@
         label.linkHighlight = YES;
         label.atHighlight = YES;
         label.topicHighlight = YES;
-//        label.showShortLink = YES;
-//        label.shortLink = @"网页短链接";
+        label.showShortLink = YES;
+        label.shortLink = @"网页短链接";
         // label.highlightFont = [UIFont systemFontOfSize:29];
 
         label.highLightTexts = [NSArray arrayWithObjects:@"调用底层的接口进行绘制", nil];
@@ -110,30 +110,30 @@
     
     
     
-    
-     // 测试代码:
-     {
-//         UIView *view = [[UIView alloc] initWithFrame:CGRectMake(30, 180, 100, 100)];
-//         view.backgroundColor = [UIColor blueColor];
-//         [self.view addSubview:view];
 //
-//         [UIView animateWithDuration:5 animations:^{
-//             view.frame = CGRectMake(260, 660, 100, 100);
-//         }];
-         
-         [label performSelector:@selector(setTextColor:) withObject:[UIColor blackColor] afterDelay:1.3];
-         [label performSelector:@selector(setFont:) withObject:[UIFont systemFontOfSize:21] afterDelay:1.3];
-         
-         [label performSelector:@selector(setTextColor:) withObject:[UIColor cyanColor] afterDelay:1.8];
-         [label performSelector:@selector(setFont:) withObject:[UIFont systemFontOfSize:25] afterDelay:1.8];
-         
-         [label performSelector:@selector(setHighlightFont:) withObject:[UIFont systemFontOfSize:39] afterDelay:2.2];
-         
-         [label performSelector:@selector(setTextColor:) withObject:[UIColor redColor] afterDelay:3.6];
-         
-//         [self performSelector:@selector(testMethod) withObject:nil afterDelay:2];
-     }
-    
+//     // 测试代码:
+//     {
+////         UIView *view = [[UIView alloc] initWithFrame:CGRectMake(30, 180, 100, 100)];
+////         view.backgroundColor = [UIColor blueColor];
+////         [self.view addSubview:view];
+////
+////         [UIView animateWithDuration:5 animations:^{
+////             view.frame = CGRectMake(260, 660, 100, 100);
+////         }];
+//
+//         [label performSelector:@selector(setTextColor:) withObject:[UIColor blackColor] afterDelay:1.3];
+//         [label performSelector:@selector(setFont:) withObject:[UIFont systemFontOfSize:21] afterDelay:1.3];
+//
+//         [label performSelector:@selector(setTextColor:) withObject:[UIColor cyanColor] afterDelay:1.8];
+//         [label performSelector:@selector(setFont:) withObject:[UIFont systemFontOfSize:25] afterDelay:1.8];
+//
+//         [label performSelector:@selector(setHighlightFont:) withObject:[UIFont systemFontOfSize:39] afterDelay:1.9];
+//
+//         [label performSelector:@selector(setTextColor:) withObject:[UIColor redColor] afterDelay:2.];
+//
+////         [self performSelector:@selector(testMethod) withObject:nil afterDelay:2];
+//     }
+//
 }
 
 //- (void)testMethod {

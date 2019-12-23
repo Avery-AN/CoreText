@@ -22,13 +22,13 @@
 		BB9F6BEF23817A7A00F05116 /* UIImage+DecodeImage.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD623817A7A00F05116 /* UIImage+DecodeImage.m */; };
 		BB9F6BF023817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD823817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.m */; };
 		BB9F6BF123817A7A00F05116 /* QAAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD923817A7A00F05116 /* QAAttributedLabel.m */; };
-		BB9F6BF223817A7A00F05116 /* QATextDrawer.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BDB23817A7A00F05116 /* QATextDrawer.m */; };
 		BB9F6BF323817A7A00F05116 /* QAHighlightTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BDD23817A7A00F05116 /* QAHighlightTextManager.m */; };
 		BB9F6BF423817A7A00F05116 /* QAEmojiTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BE023817A7A00F05116 /* QAEmojiTextManager.m */; };
 		BB9F6BF523817A7A00F05116 /* QATextLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BE423817A7A00F05116 /* QATextLayout.m */; };
 		BB9F6BF623817A7A00F05116 /* QAAttributedStringSizeMeasurement.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BE723817A7A00F05116 /* QAAttributedStringSizeMeasurement.m */; };
 		BB9F6BFA2382E94200F05116 /* emoji_default@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6BF82382E94200F05116 /* emoji_default@3x.png */; };
 		BB9F6BFB2382E94200F05116 /* emoji_default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6BF92382E94200F05116 /* emoji_default@2x.png */; };
+		BBA5395B23B0FE9400977DD7 /* QATextDraw.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA5395A23B0FE9400977DD7 /* QATextDraw.m */; };
 		BBFB190023A8E1E2009CD0C1 /* QATextTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = BBFB18FF23A8E1E2009CD0C1 /* QATextTransaction.m */; };
 /* End PBXBuildFile section */
 
@@ -44,7 +44,6 @@
 		BB9F6BAF23817A7400F05116 /* nezha@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nezha@2x.png"; sourceTree = "<group>"; };
 		BB9F6BB023817A7400F05116 /* nezha@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nezha@3x.png"; sourceTree = "<group>"; };
 		BB9F6BC823817A7A00F05116 /* QATextRunDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATextRunDelegate.m; sourceTree = "<group>"; };
-		BB9F6BC923817A7A00F05116 /* QATextDrawer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATextDrawer.h; sourceTree = "<group>"; };
 		BB9F6BCA23817A7A00F05116 /* QAAttributedLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAAttributedLayer.m; sourceTree = "<group>"; };
 		BB9F6BCD23817A7A00F05116 /* NSData+Md5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Md5.m"; sourceTree = "<group>"; };
 		BB9F6BCE23817A7A00F05116 /* NSString+Md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Md5.h"; sourceTree = "<group>"; };
@@ -60,7 +59,6 @@
 		BB9F6BD823817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+QAAttributedString.m"; sourceTree = "<group>"; };
 		BB9F6BD923817A7A00F05116 /* QAAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAAttributedLabel.m; sourceTree = "<group>"; };
 		BB9F6BDA23817A7A00F05116 /* QATextLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATextLayout.h; sourceTree = "<group>"; };
-		BB9F6BDB23817A7A00F05116 /* QATextDrawer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATextDrawer.m; sourceTree = "<group>"; };
 		BB9F6BDD23817A7A00F05116 /* QAHighlightTextManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAHighlightTextManager.m; sourceTree = "<group>"; };
 		BB9F6BDE23817A7A00F05116 /* QAEmojiTextManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAEmojiTextManager.h; sourceTree = "<group>"; };
 		BB9F6BDF23817A7A00F05116 /* QAHighlightTextManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAHighlightTextManager.h; sourceTree = "<group>"; };
@@ -74,6 +72,8 @@
 		BB9F6BE823817A7A00F05116 /* QAAttributedStringSizeMeasurement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAAttributedStringSizeMeasurement.h; sourceTree = "<group>"; };
 		BB9F6BF82382E94200F05116 /* emoji_default@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "emoji_default@3x.png"; sourceTree = "<group>"; };
 		BB9F6BF92382E94200F05116 /* emoji_default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "emoji_default@2x.png"; sourceTree = "<group>"; };
+		BBA5395923B0FE9400977DD7 /* QATextDraw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATextDraw.h; sourceTree = "<group>"; };
+		BBA5395A23B0FE9400977DD7 /* QATextDraw.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATextDraw.m; sourceTree = "<group>"; };
 		BBFB18FE23A8E1E2009CD0C1 /* QATextTransaction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QATextTransaction.h; sourceTree = "<group>"; };
 		BBFB18FF23A8E1E2009CD0C1 /* QATextTransaction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QATextTransaction.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -142,8 +142,8 @@
 				BBFB18FF23A8E1E2009CD0C1 /* QATextTransaction.m */,
 				BB9F6BDA23817A7A00F05116 /* QATextLayout.h */,
 				BB9F6BE423817A7A00F05116 /* QATextLayout.m */,
-				BB9F6BC923817A7A00F05116 /* QATextDrawer.h */,
-				BB9F6BDB23817A7A00F05116 /* QATextDrawer.m */,
+				BBA5395923B0FE9400977DD7 /* QATextDraw.h */,
+				BBA5395A23B0FE9400977DD7 /* QATextDraw.m */,
 				BB9F6BE223817A7A00F05116 /* QATextRunDelegate.h */,
 				BB9F6BC823817A7A00F05116 /* QATextRunDelegate.m */,
 				BB9F6BCB23817A7A00F05116 /* Category */,
@@ -282,7 +282,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB9F6BF223817A7A00F05116 /* QATextDrawer.m in Sources */,
 				BB9F6BF123817A7A00F05116 /* QAAttributedLabel.m in Sources */,
 				BB9F6BF623817A7A00F05116 /* QAAttributedStringSizeMeasurement.m in Sources */,
 				BB9F6BEC23817A7A00F05116 /* NSString+Md5.m in Sources */,
@@ -297,6 +296,7 @@
 				BB9F6BF423817A7A00F05116 /* QAEmojiTextManager.m in Sources */,
 				BB9F6BEB23817A7A00F05116 /* NSData+Md5.m in Sources */,
 				BB9F6BF323817A7A00F05116 /* QAHighlightTextManager.m in Sources */,
+				BBA5395B23B0FE9400977DD7 /* QATextDraw.m in Sources */,
 				BB9F6B8F2381789300F05116 /* main.m in Sources */,
 				BB9F6BF523817A7A00F05116 /* QATextLayout.m in Sources */,
 				BB9F6B972381793900F05116 /* RootViewController.m in Sources */,
