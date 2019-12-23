@@ -121,19 +121,19 @@
 ////             view.frame = CGRectMake(260, 660, 100, 100);
 ////         }];
 //
-//         [label performSelector:@selector(setTextColor:) withObject:[UIColor blackColor] afterDelay:1.3];
+//         [label performSelector:@selector(setTextColor:) withObject:[UIColor lightGrayColor] afterDelay:1.3];
 //         [label performSelector:@selector(setFont:) withObject:[UIFont systemFontOfSize:21] afterDelay:1.3];
 //
 //         [label performSelector:@selector(setTextColor:) withObject:[UIColor cyanColor] afterDelay:1.8];
 //         [label performSelector:@selector(setFont:) withObject:[UIFont systemFontOfSize:25] afterDelay:1.8];
 //
-//         [label performSelector:@selector(setHighlightFont:) withObject:[UIFont systemFontOfSize:39] afterDelay:1.9];
+//         [label performSelector:@selector(setHighlightFont:) withObject:[UIFont systemFontOfSize:39] afterDelay:2.2];
 //
-//         [label performSelector:@selector(setTextColor:) withObject:[UIColor redColor] afterDelay:2.];
+//         [label performSelector:@selector(setTextColor:) withObject:[UIColor redColor] afterDelay:2.5];
 //
 ////         [self performSelector:@selector(testMethod) withObject:nil afterDelay:2];
 //     }
-//
+
 }
 
 //- (void)testMethod {

@@ -443,12 +443,12 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
                                     // 检查绘制是否应该被取消:
                                     return [strongSelf isCancelByCheckingContent:content];
                                 } cancel:^{
-                                    NSLog(@"绘制被取消!!!");
+                                    // NSLog(@"绘制被取消!!!");
                                     UIGraphicsEndImageContext();
                                     
                                     self->_drawState = QAAttributedLayer_State_Normal;
                                 } completion:^(NSMutableAttributedString *attributedText) {
-                                    NSLog(@"绘制完毕");
+                                    // NSLog(@"绘制完毕");
                                     __strong typeof(weakSelf) strongSelf = weakSelf;
                                     
                                     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
@@ -471,8 +471,8 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
                                     dispatch_async(dispatch_get_main_queue(), ^{
                                         strongSelf.contents = strongSelf.currentCGImage;
                                         strongSelf->_drawState = QAAttributedLayer_State_Finished;
-                                        CFAbsoluteTime endTime = CFAbsoluteTimeGetCurrent();
-                                        CFAbsoluteTime loadTime = endTime - self->startTime_beginDraw;
+                                        // CFAbsoluteTime endTime = CFAbsoluteTimeGetCurrent();
+                                        // CFAbsoluteTime loadTime = endTime - self->startTime_beginDraw;
                                         // NSLog(@"loadTime(coretextDraw): %f",loadTime);
                                         // NSLog(@" ");
                                     });
@@ -538,7 +538,7 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
             return;
         }
         else {
-            NSLog(@" 开始绘制 - attributedText");
+            // NSLog(@" 开始绘制 - attributedText");
             CGFloat boundsWidth = bounds.size.width;
             CGFloat boundsHeight = bounds.size.height;
             
