@@ -85,7 +85,7 @@
     }
     
     
-    // *** 【3】 文案的裁剪 ('...全文'):
+    // *** 【3】 超长文案末尾处的裁剪 ('...全文'):
     {
 //        label.numberOfLines = 0;
         
@@ -93,9 +93,9 @@
         label.showMoreText = YES;
         label.seeMoreText = @"...全文";
         label.moreTextFont = [UIFont fontWithName:@"PingFangTC-Regular" size:19];
-        label.moreTextColor = [UIColor whiteColor];
-        label.moreTextBackgroundColor = [UIColor purpleColor];
-        label.moreTapedBackgroundColor = [UIColor redColor];
+        label.moreTextColor = [UIColor yellowColor];
+//        label.moreTextBackgroundColor = [UIColor purpleColor];
+//        label.moreTapedBackgroundColor = [UIColor redColor];
         label.moreTapedTextColor = [UIColor blueColor];
     }
     

@@ -84,12 +84,11 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                            wordSpace:(CGFloat)wordSpace
                     maxNumberOfLines:(NSInteger)maxNumberOfLines
                        textAlignment:(NSTextAlignment)textAlignment
-                      truncationText:(NSDictionary *)truncationTextInfo
-                   saveHighlightText:(BOOL)saveHighlightText {
+                   saveHighlightText:(BOOL)saveHighlightText
+                           justified:(BOOL)justified {
     if (context == NULL || CGSizeEqualToSize(size, CGSizeZero)) {
         return -10;
     }
-    
     
     NSMutableAttributedString *attributedString = self;
     if (attributedString.highlightFrameDic &&
@@ -137,7 +136,14 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
             CGFloat lineHeight = lineAscent + lineDescent;
             CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(line, QAFlushFactorForTextAlignment(textAlignment), drawRect.size.width); // 获取绘制文本时光笔所需的偏移量
             CGContextSetTextPosition(context, penOffset, lineOrigin.y); // 设置每一行位置
-            CTLineDraw(line, context); // 绘制每一行的内容
+            if (justified && lineIndex == numberOfLines - 1) { // 最后一行
+                line = CTLineCreateJustifiedLine(line, 1, size.width);  // 设置最后一行的两端对齐(当添加了"...全文"之后的情况)
+                CTLineDraw(line, context);
+            }
+            else {
+                CTLineDraw(line, context); // 绘制每一行的内容
+            }
+            
             
             // 从CTLine中获取所有的CTRun:
             CFArrayRef runs = CTLineGetGlyphRuns(line);
