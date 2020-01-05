@@ -310,7 +310,7 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
     // 文案的绘制:
     NSInteger numberOfLines = attributedLabel.numberOfLines;
     BOOL justified = NO;
-    if (attributedText.truncationInfo && attributedLabel.textAlignment == NSTextAlignmentJustified) {
+    if (attributedText.showMoreTextEffected && attributedLabel.textAlignment == NSTextAlignmentJustified) {
         justified = YES;
     }
     [attributedText drawAttributedTextWithContext:context
@@ -380,7 +380,7 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
         CGSize contentSize = CGSizeMake(ceil(boundsWidth), ceil(boundsHeight));
         NSInteger numberOfLines = attributedLabel.numberOfLines;
         BOOL justified = NO;
-        if (attributedString.truncationInfo && attributedLabel.textAlignment == NSTextAlignmentJustified) {
+        if (attributedString.showMoreTextEffected && attributedLabel.textAlignment == NSTextAlignmentJustified) {
             justified = YES;
         }
         [attributedString drawAttributedTextWithContext:context
@@ -583,7 +583,7 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
             CGSize contentSize = CGSizeMake(ceil(boundsWidth), ceil(boundsHeight));
             NSInteger numberOfLines = attributedLabel.numberOfLines;
             BOOL justified = NO;
-            if (attributedText.truncationInfo && attributedLabel.textAlignment == NSTextAlignmentJustified) {
+            if (attributedText.showMoreTextEffected && attributedLabel.textAlignment == NSTextAlignmentJustified) {
                 justified = YES;
             }
             int drawResult = [attributedText drawAttributedTextWithContext:context
@@ -1135,7 +1135,7 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
     QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
     NSInteger numberOfLines = attributedLabel.numberOfLines;
     BOOL justified = NO;
-    if (attributedText.truncationInfo && attributedLabel.textAlignment == NSTextAlignmentJustified) {
+    if (attributedText.showMoreTextEffected && attributedLabel.textAlignment == NSTextAlignmentJustified) {
         justified = YES;
     }
     [attributedText drawAttributedTextWithContext:context
