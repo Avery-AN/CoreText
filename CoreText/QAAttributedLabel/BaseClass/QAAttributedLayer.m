@@ -11,6 +11,7 @@
 #import "QATextLayout.h"
 #import "QATextDraw.h"
 #import "QAAttributedLabelConfig.h"
+#import "QABackgroundDraw.h"
 
 typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
     QAAttributedLayer_State_Normal = 0,     // 绘制的默认状态
@@ -81,22 +82,22 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
 
 
 #pragma mark - Public Apis -
-- (NSMutableAttributedString * _Nullable)getAttributedStringWithString:(NSString * _Nonnull)content
-                                                              maxWidth:(CGFloat)maxWidth {
+- (void)getAttributedString:(NSMutableAttributedString * __strong *)attributedText
+          highlightContents:(NSMutableDictionary * __strong *)highlightContents
+            highlightRanges:(NSMutableDictionary * __strong *)highlightRanges
+                withContent:(NSString * _Nonnull)content {
     NSString *showContent = [content copy];
     QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
 
     // 获取需要高亮显示的文案与位置 (link & @user & topic):
-    NSMutableDictionary *highlightContents = [NSMutableDictionary dictionary];
-    NSMutableDictionary *highlightRanges = [NSMutableDictionary dictionary];
     [QAHighlightTextManager getHighlightInfoWithContent:&showContent
                                         isLinkHighlight:attributedLabel.linkHighlight
                                         isShowShortLink:attributedLabel.showShortLink
                                               shortLink:attributedLabel.shortLink
                                           isAtHighlight:attributedLabel.atHighlight
                                        isTopicHighlight:attributedLabel.topicHighlight
-                                      highlightContents:&highlightContents
-                                        highlightRanges:&highlightRanges];
+                                      highlightContents:highlightContents
+                                        highlightRanges:highlightRanges];
     
     // 生成NSMutableAttributedString:
     /* 转换UTF8
@@ -107,10 +108,14 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
         return [self isCancelByCheckingContent:content];
     }];
     if (!textAttributes || textAttributes.count == 0) {
-        return nil;
+        return;
     }
-    __block NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:showContent attributes:attributedLabel.textLayout.textAttributes];
-
+    *attributedText = [[NSMutableAttributedString alloc] initWithString:showContent attributes:attributedLabel.textLayout.textAttributes];
+}
+- (void)processDiyEmojiText:(NSMutableAttributedString *)attributedText
+                      label:(QAAttributedLabel *)attributedLabel
+          highlightContents:(NSMutableDictionary *)highlightContents
+            highlightRanges:(NSMutableDictionary *)highlightRanges {
     // 处理自定义的Emoji:
     [QAEmojiTextManager processDiyEmojiText:attributedText
                                        font:attributedLabel.font
@@ -139,7 +144,9 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
                                          }
                                      }
                                  }];
-
+}
+- (void)setSetedHighlightTexts:(NSMutableAttributedString *)attributedText
+                         label:(QAAttributedLabel *)attributedLabel {
     // 获取highLightTexts设置的需要高亮显示文案的range
     if (attributedLabel.highLightTexts.count > 0) {
         NSMutableDictionary *highlightRanges = [NSMutableDictionary dictionary];
@@ -150,27 +157,33 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
         [self setHighlightAttributeInfoForAttributedText:attributedText
                                          highlightRanges:highlightRanges];
     }
-
+}
+- (void)setHighlightTexts:(NSMutableAttributedString *)attributedText
+          highlightRanges:(NSMutableDictionary *)highlightRanges {
     // 设置attributedText中需要高亮显示的文本(link & at & topic)的属性:
     if (highlightRanges.count > 0) {
         [self setHighlightAttributeInfoForAttributedText:attributedText
                                          highlightRanges:highlightRanges];
     }
-    
+}
+- (void)processSeeMoreText:(NSMutableAttributedString * __strong *)attributedText
+                     label:(QAAttributedLabel *)attributedLabel
+                  maxWidth:(CGFloat)maxWidth
+         highlightContents:(NSMutableDictionary *)highlightContents
+           highlightRanges:(NSMutableDictionary *)highlightRanges {
     // 处理SeeMoreText & 生成renderText (更新了attributedText中SeeMoreText的文本属性)
     // (此处需要放在处理完font、link、自定义emoji等操作之后处理):
     if (attributedLabel.numberOfLines == 0) {  // numberOfLines值为0时表示需要显示所有文本
-        self.renderText = attributedText;
+        self.renderText = *attributedText;
         self.truncationInfo = nil;
     }
     else {
         CGSize size = CGSizeMake(maxWidth, CGFLOAT_MAX);
-        int result =
-        [self processSeemoreText:attributedText
+        [self processSeemoreText:*attributedText
                             size:size
                       completion:^(BOOL showMoreTextEffected, NSMutableAttributedString * _Nonnull attributedString) {
                                   if (showMoreTextEffected == YES) {
-                                      attributedText = attributedString;
+                                      *attributedText = attributedString;
 
                                       // 特殊情况处理:
                                       if (self.truncationInfo && self.truncationInfo.count > 0
@@ -209,11 +222,12 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
                                     }
                                   }
                                 }];
-        if (result < 0) {
-            return nil;
-        }
     }
-
+}
+- (void)saveAttributedTextInfo:(NSMutableAttributedString *)attributedText
+             highlightContents:(NSMutableDictionary *)highlightContents
+               highlightRanges:(NSMutableDictionary *)highlightRanges
+                         label:(QAAttributedLabel *)attributedLabel {
     /**
      保存高亮相关信息(link & at & topic & Seemore)到attributedText中 (从内存的角度上来说不太友好):
      */
@@ -234,10 +248,166 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
     if (attributedLabel.srcAttributedString == nil) {
         [self updateAttributeText:attributedText forAttributedLabel:attributedLabel];
     }
-
-    return attributedText;
 }
-- (void)drawHighlightColor:(NSRange)range {
+
+//- (NSMutableAttributedString * _Nullable)getAttributedStringWithString:(NSString * _Nonnull)content
+//                                                              maxWidth:(CGFloat)maxWidth {
+//    NSString *showContent = [content copy];
+//    QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
+//
+//    // 获取需要高亮显示的文案与位置 (link & @user & topic):
+//    NSMutableDictionary *highlightContents = [NSMutableDictionary dictionary];
+//    NSMutableDictionary *highlightRanges = [NSMutableDictionary dictionary];
+//    [QAHighlightTextManager getHighlightInfoWithContent:&showContent
+//                                        isLinkHighlight:attributedLabel.linkHighlight
+//                                        isShowShortLink:attributedLabel.showShortLink
+//                                              shortLink:attributedLabel.shortLink
+//                                          isAtHighlight:attributedLabel.atHighlight
+//                                       isTopicHighlight:attributedLabel.topicHighlight
+//                                      highlightContents:&highlightContents
+//                                        highlightRanges:&highlightRanges];
+//
+//    // 生成NSMutableAttributedString:
+//    /* 转换UTF8
+//     [string stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];  // iOS 9以前
+//     [string stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];  // iOS 9以后
+//     */
+//    NSDictionary *textAttributes = [attributedLabel.textLayout getTextAttributesWithCheckBlock:^BOOL{
+//        return [self isCancelByCheckingContent:content];
+//    }];
+//    if (!textAttributes || textAttributes.count == 0) {
+//        return nil;
+//    }
+//    __block NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:showContent attributes:attributedLabel.textLayout.textAttributes];
+//
+//    // 处理自定义的Emoji:
+//    [QAEmojiTextManager processDiyEmojiText:attributedText
+//                                       font:attributedLabel.font
+//                                  wordSpace:attributedLabel.wordSpace
+//                             textAttributes:attributedLabel.textLayout.textAttributes
+//                                 completion:^(BOOL success, NSArray * _Nullable emojiTexts, NSArray * _Nullable matches) {
+//                                     if (success && emojiTexts.count > 0 && highlightRanges.count > 0) {
+//                                         for (int i = 0; i < emojiTexts.count; i++) {
+//                                             NSString *emojiText = [emojiTexts objectAtIndex:i];
+//                                             NSTextCheckingResult *result = [matches objectAtIndex:i];
+//
+//                                             NSMutableArray *linkRanges = [highlightRanges valueForKey:@"link"];
+//                                             if (linkRanges && linkRanges.count > 0) {
+//                                                 [self processEmojiRangeWithRanges:linkRanges emojiText:emojiText result:result];
+//                                             }
+//
+//                                             NSMutableArray *atRanges = [highlightRanges valueForKey:@"at"];
+//                                             if (atRanges && atRanges.count > 0) {
+//                                                 [self processEmojiRangeWithRanges:atRanges emojiText:emojiText result:result];
+//                                             }
+//
+//                                             NSMutableArray *topicRanges = [highlightRanges valueForKey:@"topic"];
+//                                             if (topicRanges && topicRanges.count > 0) {
+//                                                 [self processEmojiRangeWithRanges:topicRanges emojiText:emojiText result:result];
+//                                             }
+//                                         }
+//                                     }
+//                                 }];
+//
+//    // 获取highLightTexts设置的需要高亮显示文案的range
+//    if (attributedLabel.highLightTexts.count > 0) {
+//        NSMutableDictionary *highlightRanges = [NSMutableDictionary dictionary];
+//        [QAHighlightTextManager getHighlightRangeWithContent:attributedText.string
+//                                              highLightTexts:attributedLabel.highLightTexts
+//                                             highlightRanges:&highlightRanges];
+//
+//        [self setHighlightAttributeInfoForAttributedText:attributedText
+//                                         highlightRanges:highlightRanges];
+//    }
+//
+//    // 设置attributedText中需要高亮显示的文本(link & at & topic)的属性:
+//    if (highlightRanges.count > 0) {
+//        [self setHighlightAttributeInfoForAttributedText:attributedText
+//                                         highlightRanges:highlightRanges];
+//    }
+//
+//    // 处理SeeMoreText & 生成renderText (更新了attributedText中SeeMoreText的文本属性)
+//    // (此处需要放在处理完font、link、自定义emoji等操作之后处理):
+//    if (attributedLabel.numberOfLines == 0) {  // numberOfLines值为0时表示需要显示所有文本
+//        self.renderText = attributedText;
+//        self.truncationInfo = nil;
+//    }
+//    else {
+//        CGSize size = CGSizeMake(maxWidth, CGFLOAT_MAX);
+//        int result =
+//        [self processSeemoreText:attributedText
+//                            size:size
+//                      completion:^(BOOL showMoreTextEffected, NSMutableAttributedString * _Nonnull attributedString) {
+//                                  if (showMoreTextEffected == YES) {
+//                                      attributedText = attributedString;
+//
+//                                      // 特殊情况处理:
+//                                      if (self.truncationInfo && self.truncationInfo.count > 0
+//                                          && highlightRanges.count > 0) {
+//                                        NSString *truncationRangeString = [self.truncationInfo valueForKey:@"truncationRange"];
+//                                        if (truncationRangeString) {
+//                                            NSRange truncationRange = NSRangeFromString(truncationRangeString);
+//
+//                                            NSMutableArray *linkRanges = [highlightRanges valueForKey:@"link"];
+//                                            NSMutableArray *linkContents = [highlightContents valueForKey:@"link"];
+//                                            if (linkRanges && linkRanges.count > 0 &&
+//                                                linkContents && linkContents.count > 0) {
+//                                                [self processSeemoreRangeWithRanges:linkRanges
+//                                                                           contents:linkContents
+//                                                                    truncationRange:truncationRange];
+//                                            }
+//
+//                                            NSMutableArray *atRanges = [highlightRanges valueForKey:@"at"];
+//                                            NSMutableArray *atContents = [highlightContents valueForKey:@"at"];
+//                                            if (atRanges && atRanges.count > 0 &&
+//                                                atContents && atContents.count > 0) {
+//                                                [self processSeemoreRangeWithRanges:atRanges
+//                                                                           contents:atContents
+//                                                                    truncationRange:truncationRange];
+//                                            }
+//
+//                                            NSMutableArray *topicRanges = [highlightRanges valueForKey:@"topic"];
+//                                            NSMutableArray *topicContents = [highlightContents valueForKey:@"topic"];
+//                                            if (topicRanges && topicRanges.count > 0 &&
+//                                                topicContents && topicContents.count > 0) {
+//                                                [self processSeemoreRangeWithRanges:topicRanges
+//                                                                           contents:topicContents
+//                                                                    truncationRange:truncationRange];
+//                                            }
+//                                        }
+//                                    }
+//                                  }
+//                                }];
+//        if (result < 0) {
+//            return nil;
+//        }
+//    }
+//
+//    /**
+//     保存高亮相关信息(link & at & topic & Seemore)到attributedText中 (从内存的角度上来说不太友好):
+//     */
+//    attributedText.highlightRanges = highlightRanges;
+//    attributedText.highlightContents = highlightContents;
+//    attributedText.truncationInfo = self.truncationInfo;
+//    if (attributedText.highlightTextTypeDic == nil) {
+//        attributedText.highlightTextTypeDic = [NSMutableDictionary dictionary];
+//    }
+//    if (attributedText.highlightTextDic == nil) {
+//        attributedText.highlightTextDic = [NSMutableDictionary dictionary];
+//    }
+//    if (attributedText.highlightTextChangedDic == nil) {
+//        attributedText.highlightTextChangedDic = [NSMutableDictionary dictionary];
+//    }
+//
+//    // 在赋值text的情况下更新attributedLabel的 attributedString 的属性值:
+//    if (attributedLabel.srcAttributedString == nil) {
+//        [self updateAttributeText:attributedText forAttributedLabel:attributedLabel];
+//    }
+//
+//    return attributedText;
+//}
+- (void)drawHighlightColor:(NSRange)range
+            highlightRects:(NSArray *)highlightRects {
     self.currentCGImage = self.contents;   // 保存当前的self.contents以供clearHighlightColor方法中使用
     
     QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
@@ -255,7 +425,8 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
                             inRange:range
                           textColor:attributedLabel.moreTapedTextColor
                 textBackgroundColor:attributedLabel.moreTapedBackgroundColor
-                         truncation:YES];
+                         truncation:YES
+                     highlightRects:highlightRects];
         }
         else {  // 处理 Links & At & Topic 的高亮
             NSString *contentType = [attributedText.highlightTextTypeDic valueForKey:NSStringFromRange(range)];
@@ -271,7 +442,8 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
                             inRange:range
                           textColor:tapedTextColor
                 textBackgroundColor:tapedBackgroundColor
-                         truncation:NO];
+                         truncation:NO
+                     highlightRects:highlightRects];
         }
     }
 }
@@ -313,13 +485,14 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
     if (attributedText.showMoreTextEffected && attributedLabel.textAlignment == NSTextAlignmentJustified) {
         justified = YES;
     }
-    [attributedText drawAttributedTextWithContext:context
-                                      contentSize:bounds.size
-                                        wordSpace:attributedLabel.wordSpace
-                                 maxNumberOfLines:numberOfLines
-                                    textAlignment:attributedLabel.textAlignment
-                                saveHighlightText:NO
-                                        justified:justified];
+    [self drawAttributedString:attributedText
+                       context:context
+                   contentSize:bounds.size
+                     wordSpace:attributedLabel.wordSpace
+                 numberOfLines:numberOfLines
+                 textAlignment:attributedLabel.textAlignment
+             saveHighlightText:NO
+                     justified:justified];
     
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     self.currentCGImage = (__bridge id _Nullable)(image.CGImage);
@@ -383,18 +556,28 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
         if (attributedString.showMoreTextEffected && attributedLabel.textAlignment == NSTextAlignmentJustified) {
             justified = YES;
         }
-        [attributedString drawAttributedTextWithContext:context
-                                            contentSize:contentSize
-                                              wordSpace:attributedLabel.wordSpace
-                                       maxNumberOfLines:numberOfLines
-                                          textAlignment:attributedLabel.textAlignment
-                                      saveHighlightText:YES
-                                              justified:justified];
+        [self drawAttributedString:attributedString
+                           context:context
+                       contentSize:contentSize
+                         wordSpace:attributedLabel.wordSpace
+                     numberOfLines:numberOfLines
+                     textAlignment:attributedLabel.textAlignment
+                 saveHighlightText:YES
+                         justified:justified];
     });
 }
 
 
 #pragma mark - Private Methods -
+- (void)backUpAttributedString:(NSMutableAttributedString * _Nonnull)attributedText {
+    if (!attributedText) {
+        self->_attributedText_backup = attributedText;
+        return;
+    }
+
+    self->_attributedText_backup = attributedText;
+    self->_text_backup = nil;
+}
 - (void)fillContents:(QAAttributedLabel *)attributedLabel {
     // NSLog(@"   %s",__func__);
     
@@ -455,7 +638,7 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
                                     UIGraphicsEndImageContext();
                                     
                                     self->_drawState = QAAttributedLayer_State_Normal;
-                                } completion:^(NSMutableAttributedString *attributedText) {
+                                } completion:^(id attributedTextObj) {
                                     // NSLog(@"绘制完毕");
                                     __strong typeof(weakSelf) strongSelf = weakSelf;
                                     
@@ -467,6 +650,7 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
                                     
                                     /**
                                      // 缓存
+                                     NSMutableAttributedString *attributedText = attributedTextObj;
                                      if (attributedText && image) {
                                          dispatch_async(QAAttributedLayerDrawQueue(), ^{
                                              [strongSelf cacheImage:image withIdentifier:attributedText];
@@ -533,10 +717,10 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
     [self getDrawAttributedTextWithLabel:attributedLabel
                               selfBounds:bounds
                      checkAttributedText:checkBlock
-                              completion:^(NSMutableAttributedString *attributedText) {
+                              completion:^(id attributedTextObj) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         
-        if (!attributedText) {
+        if (!attributedTextObj) {
             if (cancel) {
                 cancel();
             }
@@ -544,157 +728,178 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
         }
         else {
             // NSLog(@" 开始绘制 - attributedText");
-            CGFloat boundsWidth = bounds.size.width;
-            CGFloat boundsHeight = bounds.size.height;
-            
-            // 处理搜索结果:
-            if (attributedText.searchRanges && attributedText.searchRanges.count > 0) {
-                UIColor *textColor = [attributedText.searchAttributeInfo valueForKey:@"textColor"];
-                UIColor *textBackgroundColor = [attributedText.searchAttributeInfo valueForKey:@"textBackgroundColor"];
-                for (NSString *rangeString in attributedText.searchRanges) {
-                    NSRange range = NSRangeFromString(rangeString);
-                    int result = [strongSelf updateAttributeText:attributedText
-                                                   withTextColor:textColor
-                                             textBackgroundColor:textBackgroundColor
-                                                           range:range];
-                    if (result < 0) {
-                        if (cancel) {
-                            cancel();
-                        }
-                        return;
-                    }
-                }
-            }
-            
-            // 保存高亮相关信息(link & at & Topic & Seemore)到attributedText对应的属性中:
-            int saveResult = [strongSelf saveHighlightRanges:attributedText.highlightRanges
-                                           highlightContents:attributedText.highlightContents
-                                              truncationInfo:attributedText.truncationInfo
-                                             attributedLabel:attributedLabel
-                                            attributedString:attributedText];
-            if (saveResult < 0) {
-                if (cancel) {
-                    cancel();
-                }
-                return;
-            }
-            
-            // 文案的绘制:
-            CGSize contentSize = CGSizeMake(ceil(boundsWidth), ceil(boundsHeight));
-            NSInteger numberOfLines = attributedLabel.numberOfLines;
-            BOOL justified = NO;
-            if (attributedText.showMoreTextEffected && attributedLabel.textAlignment == NSTextAlignmentJustified) {
-                justified = YES;
-            }
-            int drawResult = [attributedText drawAttributedTextWithContext:context
-                                                               contentSize:contentSize
-                                                                 wordSpace:attributedLabel.wordSpace
-                                                          maxNumberOfLines:numberOfLines
-                                                             textAlignment:attributedLabel.textAlignment
-                                                         saveHighlightText:YES
-                                                                 justified:justified];
-            if (drawResult < 0) {
+            int result = [strongSelf beginDrawAttributedText:attributedTextObj
+                                                       label:attributedLabel
+                                                  selfBounds:bounds
+                                                     context:context
+                                         checkAttributedText:checkBlock];
+            if (result == -1) {
                 if (cancel) {
                     cancel();
                 }
                 return;
             }
 
-            // 更新搜索数据到数据源中:
-            SEL appendDrawResultSelector = NSSelectorFromString(@"appendDrawResult:");
-            IMP appendDrawResultImp = [attributedLabel methodForSelector:appendDrawResultSelector];
-            void (*appendDrawResult)(id, SEL, NSMutableAttributedString *) = (void *)appendDrawResultImp;
-            appendDrawResult(attributedLabel, appendDrawResultSelector, attributedText);
-            
             if (completion) {
-                completion(attributedText);
+                completion(attributedTextObj);
             }
         }
     }];
 }
-- (void)getDrawAttributedTextWithLabel:(QAAttributedLabel *)attributedLabel
-                            selfBounds:(CGRect)bounds
-                   checkAttributedText:(BOOL(^)(NSString *content))checkBlock
-                            completion:(void(^)(NSMutableAttributedString *))completion {
-    NSString *content = attributedLabel.text;
-    CGFloat boundsWidth = bounds.size.width;
-    
-    NSMutableAttributedString *attributedText = nil;
-    if (attributedLabel.srcAttributedString && attributedLabel.attributedString && attributedLabel.attributedString.string.length > 0) {
-        attributedText = attributedLabel.attributedString;
-        if (self.renderText == nil) {
-            self.renderText = attributedLabel.attributedString;
-        }
-        
-        if (completion) {
-            completion(attributedText);
-        }
-        
-        
-        /**
-         // 获取缓存 (mmap 会造成内存瞬间暴涨):
-         __weak typeof(self) weakSelf = self;
-         [self getCacheWithIdentifier:attributedText
-                             finished:^(NSMutableAttributedString * _Nonnull identifier, UIImage * _Nullable image) {
-             __strong typeof(weakSelf) strongSelf = weakSelf;
 
-             if (image) {   // Hit Cache
-                 NSLog(@"    Hit Cache ~~~");
+//- (void)beginDrawAttributedText:(NSMutableAttributedString *)attributedText
+//                     label:(QAAttributedLabel *)attributedLabel
+//                selfBounds:(CGRect)bounds
+//                   context:(CGContextRef)context
+//       checkAttributedText:(BOOL(^)(NSString *content))checkBlock
+//                    cancel:(void(^)(void))cancel {
+//    // 处理搜索结果:
+//    if (attributedText.searchRanges && attributedText.searchRanges.count > 0) {
+//        UIColor *textColor = [attributedText.searchAttributeInfo valueForKey:@"textColor"];
+//        UIColor *textBackgroundColor = [attributedText.searchAttributeInfo valueForKey:@"textBackgroundColor"];
+//        for (NSString *rangeString in attributedText.searchRanges) {
+//            NSRange range = NSRangeFromString(rangeString);
+//            int result = [self updateAttributeText:attributedText
+//                                           withTextColor:textColor
+//                                     textBackgroundColor:textBackgroundColor
+//                                                   range:range];
+//            if (result < 0) {
+//                if (cancel) {
+//                    cancel();
+//                }
+//                return;
+//            }
+//        }
+//    }
+//    
+//    // 保存高亮相关信息(link & at & Topic & Seemore)到attributedText对应的属性中:
+//    int saveResult = [self saveHighlightRanges:attributedText.highlightRanges
+//                                   highlightContents:attributedText.highlightContents
+//                                      truncationInfo:attributedText.truncationInfo
+//                                     attributedLabel:attributedLabel
+//                                    attributedString:attributedText];
+//    if (saveResult < 0) {
+//        if (cancel) {
+//            cancel();
+//        }
+//        return;
+//    }
+//    
+//    // 文案的绘制:
+//    CGFloat boundsWidth = bounds.size.width;
+//    CGFloat boundsHeight = bounds.size.height;
+//    CGSize contentSize = CGSizeMake(ceil(boundsWidth), ceil(boundsHeight));
+//    NSInteger numberOfLines = attributedLabel.numberOfLines;
+//    BOOL justified = NO;
+//    if (attributedText.showMoreTextEffected && attributedLabel.textAlignment == NSTextAlignmentJustified) {
+//        justified = YES;
+//    }
+//    int drawResult = [self drawAttributedString:attributedText
+//                                        context:context
+//                                    contentSize:contentSize
+//                                      wordSpace:attributedLabel.wordSpace
+//                                  numberOfLines:numberOfLines
+//                                  textAlignment:attributedLabel.textAlignment
+//                              saveHighlightText:YES
+//                                      justified:justified];
+//    if (drawResult < 0) {
+//        if (cancel) {
+//            cancel();
+//        }
+//        return;
+//    }
+//
+//    // 更新搜索数据到数据源中:
+//    SEL appendDrawResultSelector = NSSelectorFromString(@"appendDrawResult:");
+//    IMP appendDrawResultImp = [attributedLabel methodForSelector:appendDrawResultSelector];
+//    void (*appendDrawResult)(id, SEL, NSMutableAttributedString *) = (void *)appendDrawResultImp;
+//    appendDrawResult(attributedLabel, appendDrawResultSelector, attributedText);
+//}
 
-                 UIGraphicsEndImageContext();
-                 strongSelf.currentCGImage = (__bridge id _Nullable)(image.CGImage);
-                 strongSelf.contents = nil;
-                 strongSelf.contents = strongSelf.currentCGImage;
-                 strongSelf->_drawState = QAAttributedLayer_State_Finished;
-                 CFAbsoluteTime endTime = CFAbsoluteTimeGetCurrent();
-                 CFAbsoluteTime loadTime = endTime - strongSelf->startTime_beginDraw;
-                 NSLog(@"loadTime(Mmap-Cache): %f",loadTime);
-                 NSLog(@" ");
-                 return;
-             }
-             else {   // Not Hit Cache
-                 NSLog(@"   Not Hit Cache ~~~");
 
-                 if (completion) {
-                     completion(attributedText, YES);
-                 }
-             }
-         }];
-         */
-        
-        
-        /*
-         if (attributedLabel.attributedString) {
-             attributedText = [self getAttributedStringWithAttributedString:attributedLabel.attributedString
-                                                                   maxWidth:boundsWidth];
-             
-             if (self.attributedText_backup) {
-                 self->_attributedText_backup = attributedText;
-                 self->_text_backup = nil;
-             }
-         }
-         */
-    }
-    else {
-        NSLog(@"生成attributedText");
-        attributedText = [self getAttributedStringWithString:content
-                                                    maxWidth:boundsWidth];
-        if (!attributedText) {
-            self->_attributedText_backup = attributedText;
-            if (completion) {
-                completion(nil);
-            }
-            return;
-        }
-        
-        self->_attributedText_backup = attributedText;
-        self->_text_backup = nil;
-        
-        if (completion) {
-            completion(attributedText);
-        }
-    }
-}
+//- (void)getDrawAttributedTextWithLabel:(QAAttributedLabel *)attributedLabel
+//                            selfBounds:(CGRect)bounds
+//                   checkAttributedText:(BOOL(^)(NSString *content))checkBlock
+//                            completion:(void(^)(NSMutableAttributedString *))completion {
+//    NSString *content = attributedLabel.text;
+//    CGFloat boundsWidth = bounds.size.width;
+//    
+//    NSMutableAttributedString *attributedText = nil;
+//    if (attributedLabel.srcAttributedString && attributedLabel.attributedString && attributedLabel.attributedString.string.length > 0) {
+//        attributedText = attributedLabel.attributedString;
+//        if (self.renderText == nil) {
+//            self.renderText = attributedLabel.attributedString;
+//        }
+//        
+//        if (completion) {
+//            completion(attributedText);
+//        }
+//        
+//        
+//        /**
+//         // 获取缓存 (mmap 会造成内存瞬间暴涨):
+//         __weak typeof(self) weakSelf = self;
+//         [self getCacheWithIdentifier:attributedText
+//                             finished:^(NSMutableAttributedString * _Nonnull identifier, UIImage * _Nullable image) {
+//             __strong typeof(weakSelf) strongSelf = weakSelf;
+//
+//             if (image) {   // Hit Cache
+//                 NSLog(@"    Hit Cache ~~~");
+//
+//                 UIGraphicsEndImageContext();
+//                 strongSelf.currentCGImage = (__bridge id _Nullable)(image.CGImage);
+//                 strongSelf.contents = nil;
+//                 strongSelf.contents = strongSelf.currentCGImage;
+//                 strongSelf->_drawState = QAAttributedLayer_State_Finished;
+//                 CFAbsoluteTime endTime = CFAbsoluteTimeGetCurrent();
+//                 CFAbsoluteTime loadTime = endTime - strongSelf->startTime_beginDraw;
+//                 NSLog(@"loadTime(Mmap-Cache): %f",loadTime);
+//                 NSLog(@" ");
+//                 return;
+//             }
+//             else {   // Not Hit Cache
+//                 NSLog(@"   Not Hit Cache ~~~");
+//
+//                 if (completion) {
+//                     completion(attributedText, YES);
+//                 }
+//             }
+//         }];
+//         */
+//        
+//        
+//        /*
+//         if (attributedLabel.attributedString) {
+//             attributedText = [self getAttributedStringWithAttributedString:attributedLabel.attributedString
+//                                                                   maxWidth:boundsWidth];
+//             
+//             if (self.attributedText_backup) {
+//                 self->_attributedText_backup = attributedText;
+//                 self->_text_backup = nil;
+//             }
+//         }
+//         */
+//    }
+//    else {
+//        NSLog(@"生成attributedText");
+//        attributedText = [self getAttributedStringWithString:content
+//                                                    maxWidth:boundsWidth];
+//        if (!attributedText) {
+//            self->_attributedText_backup = attributedText;
+//            if (completion) {
+//                completion(nil);
+//            }
+//            return;
+//        }
+//        
+//        self->_attributedText_backup = attributedText;
+//        self->_text_backup = nil;
+//        
+//        if (completion) {
+//            completion(attributedText);
+//        }
+//    }
+//}
 - (void)getTapedTextColor:(UIColor * __strong *)tapedTextColor
      tapedBackgroundColor:(UIColor * __strong *)tapedBackgroundColor
           withContentType:(NSString *)contentType
@@ -1103,7 +1308,8 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
                   inRange:(NSRange)range
                 textColor:(UIColor * _Nonnull)textColor
       textBackgroundColor:(UIColor * _Nonnull)textBackgroundColor
-               truncation:(BOOL)truncation {
+               truncation:(BOOL)truncation
+               highlightRects:(NSArray *)highlightRects {
     if (!textBackgroundColor && !textColor) {
         return;
     }
@@ -1126,10 +1332,21 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
     _currentTapedRange = range;
     
     // 更新attributedText的相关属性设置:
+//    [self updateAttributeText:attributedText
+//                withTextColor:textColor
+//          textBackgroundColor:textBackgroundColor
+//                        range:range];
+    
+    
     [self updateAttributeText:attributedText
                 withTextColor:textColor
-          textBackgroundColor:textBackgroundColor
+          textBackgroundColor:nil
                         range:range];
+    [QABackgroundDraw drawBackgroundWithRects:highlightRects
+                                       radius:2
+                              backgroundColor:textBackgroundColor];
+    
+    
     
     // 文案的绘制:
     QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
@@ -1138,13 +1355,14 @@ typedef NS_ENUM(NSUInteger, QAAttributedLayer_State) {
     if (attributedText.showMoreTextEffected && attributedLabel.textAlignment == NSTextAlignmentJustified) {
         justified = YES;
     }
-    [attributedText drawAttributedTextWithContext:context
-                                      contentSize:bounds.size
-                                        wordSpace:attributedLabel.wordSpace
-                                 maxNumberOfLines:numberOfLines
-                                    textAlignment:attributedLabel.textAlignment
-                                saveHighlightText:NO
-                                        justified:justified];
+    [self drawAttributedString:attributedText
+                       context:context
+                   contentSize:bounds.size
+                     wordSpace:attributedLabel.wordSpace
+                 numberOfLines:numberOfLines
+                 textAlignment:attributedLabel.textAlignment
+             saveHighlightText:NO
+                     justified:justified];
     
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
