@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BB454A2F240CE8BD0013819D /* QABackgroundDraw.m in Sources */ = {isa = PBXBuildFile; fileRef = BB454A2D240CE8BD0013819D /* QABackgroundDraw.m */; };
 		BB9F6B7E2381789100F05116 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6B7D2381789100F05116 /* AppDelegate.m */; };
 		BB9F6B892381789300F05116 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6B882381789300F05116 /* Assets.xcassets */; };
 		BB9F6B8F2381789300F05116 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6B8E2381789300F05116 /* main.m */; };
@@ -33,6 +34,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BB454A2D240CE8BD0013819D /* QABackgroundDraw.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QABackgroundDraw.m; sourceTree = "<group>"; };
+		BB454A2E240CE8BD0013819D /* QABackgroundDraw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QABackgroundDraw.h; sourceTree = "<group>"; };
 		BB9F6B792381789100F05116 /* CoreText.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoreText.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9F6B7C2381789100F05116 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		BB9F6B7D2381789100F05116 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -146,6 +149,8 @@
 				BBA5395A23B0FE9400977DD7 /* QATextDraw.m */,
 				BB9F6BE223817A7A00F05116 /* QATextRunDelegate.h */,
 				BB9F6BC823817A7A00F05116 /* QATextRunDelegate.m */,
+				BB454A2E240CE8BD0013819D /* QABackgroundDraw.h */,
+				BB454A2D240CE8BD0013819D /* QABackgroundDraw.m */,
 				BB9F6BCB23817A7A00F05116 /* Category */,
 				BB9F6BDC23817A7A00F05116 /* Manager */,
 				BB9F6BE623817A7A00F05116 /* Utility */,
@@ -294,6 +299,7 @@
 				BB9F6BEF23817A7A00F05116 /* UIImage+DecodeImage.m in Sources */,
 				BB9F6BED23817A7A00F05116 /* UIImage+QACutImage.m in Sources */,
 				BB9F6BF423817A7A00F05116 /* QAEmojiTextManager.m in Sources */,
+				BB454A2F240CE8BD0013819D /* QABackgroundDraw.m in Sources */,
 				BB9F6BEB23817A7A00F05116 /* NSData+Md5.m in Sources */,
 				BB9F6BF323817A7A00F05116 /* QAHighlightTextManager.m in Sources */,
 				BBA5395B23B0FE9400977DD7 /* QATextDraw.m in Sources */,

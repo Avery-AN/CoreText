@@ -39,13 +39,14 @@
     [self.view addSubview:label];
     self.label = label;
     label.backgroundColor = [UIColor grayColor];
-    label.font = [UIFont fontWithName:@"PingFangTC-Regular" size:19];
+//    label.font = [UIFont fontWithName:@"PingFangTC-Regular" size:19];
+    label.font = [UIFont systemFontOfSize:19];
     label.textColor = [UIColor whiteColor];
     label.textAlignment = NSTextAlignmentJustified;
     //label.textAlignment = NSTextAlignmentLeft;
     //label.lineBreakMode = NSLineBreakByCharWrapping;
     label.lineBreakMode = NSLineBreakByWordWrapping;
-    NSString *content = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#https://github.com/Avery-AN/哈哈哈哈#12345# Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@Avery-AN:本例中的Label在tableView中的使用详见:www.github.com/Avery-AN/TableView";
+    NSString *content = @"[nezha][nezha][nezha][nezha][nezha]#注意啦#https://github.com/Avery-AN/哈哈哈哈#12345#Cell上添加系统控件的时候，实质上系统都需要调用底层的接口进行绘制，当我们大量添加控件时，对资源的开销也会是很大的，所以我们可以索性直接绘制，提高效率。[nezha][nezha][nezha][nezha][nezha][nezha][nezha][nezha]@Avery-AN:本例中的Label在tableView中的使用详见:www.github.com/Avery-AN/TableView欢迎骚扰";
     label.text = content;
     
     
@@ -68,13 +69,13 @@
         label.atHighlight = YES;
         label.topicHighlight = YES;
         label.showShortLink = YES;
-        label.shortLink = @"网页短链接";
+        label.shortLink = @"链接地址";
         // label.highlightFont = [UIFont systemFontOfSize:29];
 
         label.highLightTexts = [NSArray arrayWithObjects:@"调用底层的接口进行绘制", nil];
         label.highlightTextColor = [UIColor purpleColor];
         label.highlightTapedTextColor = [UIColor greenColor];
-        // label.highlightTapedBackgroundColor = [UIColor yellowColor];
+        label.highlightTapedBackgroundColor = [UIColor lightGrayColor];
         label.highlightAtTextColor = [UIColor greenColor];
         label.highlightLinkTextColor = [UIColor orangeColor];
         label.highlightTopicTextColor = [UIColor blueColor];
@@ -89,7 +90,7 @@
     {
 //        label.numberOfLines = 0;
         
-        label.numberOfLines = 10;
+        label.numberOfLines = 11;
         label.showMoreText = YES;
         label.seeMoreText = @"...全文";
         label.moreTextFont = [UIFont fontWithName:@"PingFangTC-Regular" size:19];
