@@ -26,6 +26,7 @@
 
 效果图如下:<br>
 ------------
+![圆角背景色](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo_0.png)<br>
 ![基本使用](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo_1.png)<br>
 ![自适应高度](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo_2.png)<br>
 ![截断文案示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo_3.png)<br>
