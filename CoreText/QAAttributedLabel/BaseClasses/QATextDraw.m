@@ -7,8 +7,22 @@
 //
 
 #import "QATextDraw.h"
-#import "QAAttributedLabelConfig.h"
 #import "QATextRunDelegate.h"
+#import "QATrapezoidalDraw.h"
+#import "QARichTextDraw.h"
+
+static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignment) {
+    switch (textAlignment) {
+        case NSTextAlignmentCenter:
+            return .5;
+        case NSTextAlignmentRight:
+            return 1.;
+        case NSTextAlignmentLeft:
+            return 0.;
+        default:
+            return 0.;
+    }
+}
 
 @interface NSMutableAttributedString ()
 
@@ -66,213 +80,141 @@
         CFRelease(ctFramesetter);
     }
 }
-//- (int)drawAttributedTextWithContext:(CGContextRef)context
-//                         contentSize:(CGSize)contentSize
-//                           wordSpace:(CGFloat)wordSpace
-//                    maxNumberOfLines:(NSInteger)maxNumberOfLines
-//                       textAlignment:(NSTextAlignment)textAlignment
-//                   saveHighlightText:(BOOL)saveHighlightText
-//                           justified:(BOOL)justified {
-//    if (context == NULL || CGSizeEqualToSize(contentSize, CGSizeZero)) {
-//        return -10;
-//    }
-//    
-//    NSMutableAttributedString *attributedString = self;
-//    if (attributedString.highlightFrameDic &&
-//        attributedString.highlightFrameDic.count > 0) {   // 无需再次获取highlightFrameDic的值
-//        saveHighlightText = NO;
-//    }
-//    
-//    @autoreleasepool {
-//        if (saveHighlightText) { // 保存TextInfo的情况
-//            [self getSortedHighlightRanges:attributedString];
-//        }
-//        
-//        CGFloat contentHeight = contentSize.height;
-//        CGFloat contentWidth = contentSize.width;
-//        
-//        // 翻转坐标系:
-//        CGContextSetTextMatrix(context, CGAffineTransformIdentity);
-//        CGContextTranslateCTM(context, 0, contentHeight);
-//        CGContextScaleCTM(context, 1.0, -1.0);
-//        
-//        // 基于attributedString创建CTFramesetter:
-//        CTFramesetterRef ctFramesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attributedString);
-//        
-//        // 创建绘制路径path:
-//        CGRect drawRect = (CGRect) {0, 0, contentSize};
-//        CGMutablePathRef drawPath = CGPathCreateMutable();
-//        CGPathAddRect(drawPath, NULL, drawRect);
-//        
-//        // 创建CTFrame:
-//        CTFrameRef ctFrame = CTFramesetterCreateFrame(ctFramesetter, CFRangeMake(0, 0), drawPath, NULL);
-//        /*
-//         CTFrameDraw(ctFrame, context);
-//         */
-//        
-//        // 从CTFrame中获取所有的CTLine:
-//        CFArrayRef lines = CTFrameGetLines(ctFrame);
-//        NSInteger numberOfLines = CFArrayGetCount(lines);  // 展示文案所需要的总行数
-//        CGPoint lineOrigins[numberOfLines];
-//        CTFrameGetLineOrigins(ctFrame, CFRangeMake(0, numberOfLines), lineOrigins);
-//        
-//        // 遍历CTFrame中的每一行CTLine:
-//        for (CFIndex lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
-//            CGPoint lineOrigin = lineOrigins[lineIndex];
-//            CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
-//            
-//            CGFloat lineDescent = 0.0f, lineAscent = 0.0f, lineLeading = 0.0f;
-//            double lineWidth = CTLineGetTypographicBounds((CTLineRef)line, &lineAscent, &lineDescent, &lineLeading);
-//            CGFloat lineHeight = lineAscent + lineDescent;
-//            CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(line, QAFlushFactorForTextAlignment(textAlignment), drawRect.size.width); // 获取绘制文本时光笔所需的偏移量
-//            CGContextSetTextPosition(context, penOffset, lineOrigin.y); // 设置每一行位置
-//            if (justified && lineIndex == numberOfLines - 1 && lineWidth / contentWidth > 0.80) { // 处理最后一行
-//                line = CTLineCreateJustifiedLine(line, 1, contentWidth);  // 设置最后一行的两端对齐(当添加了"...全文"之后的情况)
-//                CTLineDraw(line, context); // 绘制每一行的内容
-//            }
-//            else {
-//                CTLineDraw(line, context); // 绘制每一行的内容
-//            }
-//            
-//            
-//            // 从CTLine中获取所有的CTRun:
-//            CFArrayRef runs = CTLineGetGlyphRuns(line);
-//            long runCounts = CFArrayGetCount(runs);
-//            
-//            // 遍历CTLine中的每一个CTRun:
-//            for (int j = 0; j < runCounts; j++) {
-//                CTRunRef run = CFArrayGetValueAtIndex(runs, j);
-//                
-//                /*
-//                 CFDictionaryRef attributes = CTRunGetAttributes(run);
-//                 */
-//                
-//                /*
-//                 void CTRunDraw(CTRunRef run, CGContextRef context, CFRange range)
-//                 
-//                 range: The range of glyphs to be drawn, with the entire range having a  location of 0 and a length of CTRunGetGlyphCount. If the length of the range is set to 0, then the operation will continue from the range's start index to the end of the run.
-//                 */
-//                
-//                /*
-//                 CTRunDraw(run, context, CFRangeMake(0, 0));    // 绘制每一个run的内容
-//                 */
-//                
-//                NSDictionary *runAttributes = (__bridge NSDictionary *)CTRunGetAttributes(run);
-//                CTRunDelegateRef delegate = (__bridge CTRunDelegateRef)[runAttributes valueForKey:(id)kCTRunDelegateAttributeName];
-//                if (delegate) {
-//                    // 绘制附件的内容:
-//                    [self drawAttachmentContentInContext:context
-//                                                 ctframe:ctFrame
-//                                                    line:line
-//                                              lineOrigin:lineOrigin
-//                                                     run:run
-//                                                delegate:delegate
-//                                               wordSpace:wordSpace];
-//                }
-//                else {
-//                    // 保存高亮文案在字符中的NSRange以及在CTFrame中的CGRect (以便在label中处理点击事件):
-//                    if (saveHighlightText) {
-//                        int result = [self saveHighlightRangeAndFrame:line
-//                                                           lineOrigin:lineOrigin
-//                                                            lineIndex:lineIndex
-//                                                           lineHeight:lineHeight
-//                                                                  run:run
-//                                                        ContentHeight:contentHeight
-//                                                     attributedString:attributedString];
-//                        if (result < 0) {
-//                            
-//                            CFRelease(drawPath);
-//                            CFRelease(ctFrame);
-//                            CFRelease(ctFramesetter);
-//                            
-//                            return result;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        
-//        CFRelease(drawPath);
-//        CFRelease(ctFrame);
-//        CFRelease(ctFramesetter);
-//    }
-//    
-//    return 0;
-//}
-- (int)drawAttachment:(CTLineRef)line
-    saveHighlightText:(BOOL)saveHighlightText
-              context:(CGContextRef)context
-              ctFrame:(CTFrameRef)ctFrame
-        ctFramesetter:(CTFramesetterRef)ctFramesetter
-             drawPath:(CGMutablePathRef)drawPath
-           lineOrigin:(CGPoint)lineOrigin
-            wordSpace:(CGFloat)wordSpace
-            lineIndex:(NSInteger)lineIndex
-           lineHeight:(CGFloat)lineHeight
-        contentHeight:(CGFloat)contentHeight {
+- (int)drawAttributedTextWithContext:(CGContextRef)context
+                         contentSize:(CGSize)contentSize
+                           wordSpace:(CGFloat)wordSpace
+                    maxNumberOfLines:(NSInteger)maxNumberOfLines
+                       textAlignment:(NSTextAlignment)textAlignment
+                   saveHighlightText:(BOOL)saveHighlightText
+                           justified:(BOOL)justified {
+    if (context == NULL || CGSizeEqualToSize(contentSize, CGSizeZero)) {
+        return -10;
+    }
     
-    // 从CTLine中获取所有的CTRun:
-    CFArrayRef runs = CTLineGetGlyphRuns(line);
-    long runCounts = CFArrayGetCount(runs);
+    NSMutableAttributedString *attributedString = self;
+    if (attributedString.highlightFrameDic &&
+        attributedString.highlightFrameDic.count > 0) {   // 无需再次获取highlightFrameDic的值
+        saveHighlightText = NO;
+    }
     
-    // 遍历CTLine中的每一个CTRun:
-    for (int j = 0; j < runCounts; j++) {
-        CTRunRef run = CFArrayGetValueAtIndex(runs, j);
-        
-        /*
-         CFDictionaryRef attributes = CTRunGetAttributes(run);
-         */
-        
-        /*
-         void CTRunDraw(CTRunRef run, CGContextRef context, CFRange range)
-         
-         range: The range of glyphs to be drawn, with the entire range having a  location of 0 and a length of CTRunGetGlyphCount. If the length of the range is set to 0, then the operation will continue from the range's start index to the end of the run.
-         */
-        
-        /*
-         CTRunDraw(run, context, CFRangeMake(0, 0));    // 绘制每一个run的内容
-         */
-        
-        NSDictionary *runAttributes = (__bridge NSDictionary *)CTRunGetAttributes(run);
-        CTRunDelegateRef delegate = (__bridge CTRunDelegateRef)[runAttributes valueForKey:(id)kCTRunDelegateAttributeName];
-        if (delegate) {
-            // 绘制附件的内容:
-            [self drawAttachmentContentInContext:context
-                                         ctframe:ctFrame
-                                            line:line
-                                      lineOrigin:lineOrigin
-                                             run:run
-                                        delegate:delegate
-                                       wordSpace:wordSpace];
+    @autoreleasepool {
+        if (saveHighlightText) {
+            [self getSortedHighlightRanges:attributedString];
         }
-        else {
-            // 保存高亮文案在字符中的NSRange以及在CTFrame中的CGRect (以便在label中处理点击事件):
-            if (saveHighlightText) {
-                int result = [self saveHighlightRangeAndFrame:line
-                                                   lineOrigin:lineOrigin
-                                                    lineIndex:lineIndex
-                                                   lineHeight:lineHeight
-                                                          run:run
-                                                ContentHeight:contentHeight
-                                             attributedString:self
-                              context:context];
-                if (result < 0) {
-                    
-                    CFRelease(drawPath);
-                    CFRelease(ctFrame);
-                    CFRelease(ctFramesetter);
-                    
-                    return result;
+        
+        CGFloat contentHeight = contentSize.height;
+        CGFloat contentWidth = contentSize.width;
+        
+        // 翻转坐标系:
+        CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+        CGContextTranslateCTM(context, 0, contentHeight);
+        CGContextScaleCTM(context, 1.0, -1.0);
+        
+        // 基于attributedString创建CTFramesetter:
+        CTFramesetterRef ctFramesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attributedString);
+        
+        // 创建绘制路径path:
+        CGRect drawRect = (CGRect) {0, 0, contentSize};
+        CGMutablePathRef drawPath = CGPathCreateMutable();
+        CGPathAddRect(drawPath, NULL, drawRect);
+        
+        // 创建CTFrame:
+        CTFrameRef ctFrame = CTFramesetterCreateFrame(ctFramesetter, CFRangeMake(0, 0), drawPath, NULL);
+        /*
+         CTFrameDraw(ctFrame, context);
+         */
+        
+        // 从CTFrame中获取所有的CTLine:
+        CFArrayRef lines = CTFrameGetLines(ctFrame);
+        NSInteger numberOfLines = CFArrayGetCount(lines);  // 展示文案所需要的总行数
+        CGPoint lineOrigins[numberOfLines];
+        CTFrameGetLineOrigins(ctFrame, CFRangeMake(0, numberOfLines), lineOrigins);
+        
+        // 遍历CTFrame中的每一行CTLine:
+        for (CFIndex lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
+            CGPoint lineOrigin = lineOrigins[lineIndex];
+            CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
+            
+            CGFloat lineDescent = 0.0f, lineAscent = 0.0f, lineLeading = 0.0f;
+            double lineWidth = CTLineGetTypographicBounds((CTLineRef)line, &lineAscent, &lineDescent, &lineLeading);
+            CGFloat lineHeight = lineAscent + lineDescent;
+            CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(line, QAFlushFactorForTextAlignment(textAlignment), drawRect.size.width); // 获取绘制文本时光笔所需的偏移量
+            CGContextSetTextPosition(context, penOffset, lineOrigin.y); // 设置每一行位置
+            if (justified && lineIndex == numberOfLines - 1 && lineWidth / contentWidth > 0.80) { // 处理最后一行
+                line = CTLineCreateJustifiedLine(line, 1, contentWidth);  // 设置最后一行的两端对齐(当添加了"...全文"之后的情况)
+                CTLineDraw(line, context); // 绘制每一行的内容
+            }
+            else {
+                CTLineDraw(line, context); // 绘制每一行的内容
+            }
+            
+            
+            // 从CTLine中获取所有的CTRun:
+            CFArrayRef runs = CTLineGetGlyphRuns(line);
+            long runCounts = CFArrayGetCount(runs);
+            
+            // 遍历CTLine中的每一个CTRun:
+            for (int j = 0; j < runCounts; j++) {
+                CTRunRef run = CFArrayGetValueAtIndex(runs, j);
+                
+                /*
+                 CFDictionaryRef attributes = CTRunGetAttributes(run);
+                 */
+                
+                /*
+                 void CTRunDraw(CTRunRef run, CGContextRef context, CFRange range)
+                 
+                 range: The range of glyphs to be drawn, with the entire range having a  location of 0 and a length of CTRunGetGlyphCount. If the length of the range is set to 0, then the operation will continue from the range's start index to the end of the run.
+                 */
+                
+                /*
+                 CTRunDraw(run, context, CFRangeMake(0, 0));    // 绘制每一个run的内容
+                 */
+                
+                NSDictionary *runAttributes = (__bridge NSDictionary *)CTRunGetAttributes(run);
+                CTRunDelegateRef delegate = (__bridge CTRunDelegateRef)[runAttributes valueForKey:(id)kCTRunDelegateAttributeName];
+                if (delegate) {
+                    // 绘制附件的内容:
+                    [self drawAttachmentContentInContext:context
+                                                 ctframe:ctFrame
+                                                    line:line
+                                              lineOrigin:lineOrigin
+                                                     run:run
+                                                delegate:delegate
+                                               wordSpace:wordSpace];
+                }
+                else {
+                    // 保存高亮文案在字符中的NSRange以及在CTFrame中的CGRect (以便在label中处理点击事件):
+                    if (saveHighlightText) {
+                        int result = [self saveHighlightRangeAndFrameWithLineIndex:lineIndex
+                                                                        lineOrigin:lineOrigin
+                                                                      contentWidth:contentWidth
+                                                                     contentHeight:contentHeight
+                                                                  attributedString:attributedString
+                                                                           context:context
+                                                                              line:line
+                                                                               run:run];
+                        if (result < 0) {
+                            
+                            CFRelease(drawPath);
+                            CFRelease(ctFrame);
+                            CFRelease(ctFramesetter);
+                            
+                            return result;
+                        }
+                    }
                 }
             }
         }
+        
+        CFRelease(drawPath);
+        CFRelease(ctFrame);
+        CFRelease(ctFramesetter);
     }
     
     return 0;
 }
 
-
-#pragma mark - Private Methods -
 - (void)getSortedHighlightRanges:(NSMutableAttributedString *)attributedString {
     // 先清空数据
     if (!self.textNewlineDic) {
@@ -286,6 +228,12 @@
     }
     else {
         [self.highlightFrameDic removeAllObjects];
+    }
+    if (!self.highlightLineDic) {
+        self.highlightLineDic = [NSMutableDictionary dictionary];
+    }
+    else {
+        [self.highlightLineDic removeAllObjects];
     }
     if (!self.highlightRanges_sorted) {
         self.highlightRanges_sorted = [NSMutableArray array];
@@ -333,7 +281,6 @@
         }
     }
 }
-
 - (void)drawAttachmentContentInContext:(CGContextRef)context
                                ctframe:(CTFrameRef)ctFrame
                                   line:(CTLineRef)line
@@ -391,25 +338,39 @@
         }
     }
 }
-- (int)saveHighlightRangeAndFrame:(CTLineRef)line
-                       lineOrigin:(CGPoint)lineOrigin
-                        lineIndex:(CFIndex)lineIndex
-                       lineHeight:(CGFloat)lineHeight
-                              run:(CTRunRef)run
-                    ContentHeight:(CGFloat)contentHeight
-                 attributedString:(NSMutableAttributedString *)attributedString
-                          context:(CGContextRef)context{
+- (int)saveHighlightRangeAndFrameWithLineIndex:(CFIndex)lineIndex
+                                    lineOrigin:(CGPoint)lineOrigin
+                                  contentWidth:(CGFloat)contentWidth
+                                 contentHeight:(CGFloat)contentHeight
+                              attributedString:(NSMutableAttributedString *)attributedString
+                                       context:(CGContextRef)context
+                                          line:(CTLineRef)line
+                                           run:(CTRunRef)run {
     if (self.currentRun != run) {
         self.currentRun = run;
         self.currentPositionInRun = 0;
         self.currentPosition_offsetXInRun = 0;
     }
     
-    CFRange runRange = CTRunGetStringRange(run);
-    NSRange currentRunRange = NSMakeRange(runRange.location, runRange.length);
+    CFRange cf_runRange = CTRunGetStringRange(run);
+    NSRange runRange = NSMakeRange(cf_runRange.location, cf_runRange.length);
+    NSRange currentRunRange;
+    if (lineIndex == 0) {
+        currentRunRange = runRange;
+    }
+    else {
+        if (self.trapezoidalTexts_new) {  // QATrapezoidalDraw进行处理
+            currentRunRange = [self getCurrentRunRangeInQATrapezoidalLabelWithLineIndex:lineIndex
+                                                                               runRange:runRange];
+        }
+        else {
+            currentRunRange = [self getCurrentRunRangeInRichTextLabelWithLineIndex:lineIndex
+                                                                          runRange:runRange];
+        }
+    }
     NSString *runContent = [attributedString.string substringWithRange:currentRunRange];
     NSMutableString *currentRunString = [NSMutableString stringWithString:runContent];
-    
+
     for (int i = 0; i < self.highlightRanges_sorted.count; i++) {
         NSString *rangeString = [self.highlightRanges_sorted objectAtIndex:i];
         NSRange highlightRange = NSRangeFromString(rangeString);  // 存放高亮文本的range
@@ -429,47 +390,12 @@
             // 保存高亮文案的CGRect & 以及文案的换行信息:
             if (highlightRange.location == currentRunRange.location &&
                 highlightRange.length == currentRunRange.length) {
-                // 获取高亮文案的Rect:
-                /**
-                 // 获得CTRun的size大小、这个方法比较精确! (但是得到的rect的x的值只有火星人才能搞懂)
-                 CTRunGetImageBounds(run, context, CFRangeMake(0, 0));
-                 */
-                CGRect srcRect = CTRunGetImageBounds(run, context, CFRangeMake(0, 0));
-                CGPoint *runPositionsPointer = (CGPoint *)CTRunGetPositionsPtr(run);
-                CGSize runSize = srcRect.size;
-                CGRect runRect = CGRectZero;
-                CGFloat originX = floor((*runPositionsPointer).x);
-                int widthAddedValue = 0;
-                if (originX - 1 > 0) {
-                    runRect.origin.x = originX-1;
-                    widthAddedValue = 1.7;
-                }
-                else {
-                    runRect.origin.x = originX;
-                    widthAddedValue = 1.2;
-                }
-                CFRange cfRange = CTRunGetStringRange(run);
-                NSString *text = [attributedString.string substringWithRange:NSMakeRange(cfRange.location, cfRange.length)];
-                if ([text isEqualToString:@"#"] || [text isEqualToString:@"@"]) {
-                    CGFloat runAscent, runDescent, runLeading;
-                    CGFloat typographicWidth = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &runAscent, &runDescent, &runLeading);
-                    runRect.size = CGSizeMake(typographicWidth+widthAddedValue, runSize.height+6);
-                    NSLog(@"CTRunGetImageBounds: %f",srcRect.size.width);
-                    NSLog(@"CTRunGetTypographicBounds: %f",typographicWidth);
-                }
-                else {
-                    runRect.size = CGSizeMake(runSize.width+widthAddedValue, runSize.height+6);   //
-                }
-                runRect.origin.y = floor(contentHeight - (srcRect.origin.y + srcRect.size.height)) - 3;
-                CGRect highlightRect = runRect;
-                NSLog(@"runRect: %@",NSStringFromCGRect(runRect));
-                NSLog(@"location: %ld; length: %ld",cfRange.location, cfRange.length);
-                NSLog(@"text: %@",[attributedString.string substringWithRange:NSMakeRange(cfRange.location, cfRange.length)]);
-                NSLog(@" ");
                 
-                
-                
-                
+                CGRect highlightRect = [self getRunRectWithAttributedString:attributedString
+                                                                    context:context
+                                                                        run:run
+                                                               contentWidth:contentWidth
+                                                              contentHeight:contentHeight];
                 
                 int result = [self saveHighlightRect:highlightRect
                                        highlightText:highlightText
@@ -493,48 +419,14 @@
                         NSInteger length_previousSaved_last = highlightText_previous.length - highlightText_previous_saved.length;
                         NSRange subRange_previous = NSMakeRange(0, length_previousSaved_last);
                         NSString *subHighlightText = [currentRunString substringWithRange:subRange_previous];
-                        
-                        /**
-                         // 获得CTRun的size大小、这个方法比较精确!
-                         CTRunGetImageBounds(run, context, CFRangeMake(0, 0));
-                         */
-                        CGRect srcRect = CTRunGetImageBounds(run, context, CFRangeMake(0, 0));
-                        CGPoint *runPositionsPointer = (CGPoint *)CTRunGetPositionsPtr(run);
-                        CGSize runSize = srcRect.size;
-                        CGRect runRect = CGRectZero;
-                        CGFloat originX = floor((*runPositionsPointer).x);
-                        int widthAddedValue = 0;
-                        if (originX - 1 > 0) {
-                            runRect.origin.x = originX-1;
-                            widthAddedValue = 1.7;
-                        }
-                        else {
-                            runRect.origin.x = originX;
-                            widthAddedValue = 1.2;
-                        }
-                        CFRange cfRange = CTRunGetStringRange(run);
-                        NSString *text = [attributedString.string substringWithRange:NSMakeRange(cfRange.location, cfRange.length)];
-                        if ([text isEqualToString:@"#"] || [text isEqualToString:@"@"] || [text isEqualToString:@"."]) {
-                            CGFloat runAscent, runDescent, runLeading;
-                            CGFloat typographicWidth = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &runAscent, &runDescent, &runLeading);
-                            runRect.size = CGSizeMake(typographicWidth+widthAddedValue, runSize.height+6);
-                            NSLog(@"CTRunGetImageBounds: %f",srcRect.size.width);
-                            NSLog(@"CTRunGetTypographicBounds: %f",typographicWidth);
-                        }
-                        else {
-                            runRect.size = CGSizeMake(runSize.width+widthAddedValue, runSize.height+6);   //
-                        }
-                        runRect.origin.y = floor(contentHeight - (srcRect.origin.y + srcRect.size.height)) - 3;
-                        CGRect highlightRect_previous = runRect;
-                        NSLog(@"runRect: %@",NSStringFromCGRect(runRect));
-                        NSLog(@"location: %ld; length: %ld",cfRange.location, cfRange.length);
-                        NSLog(@"text: %@",[attributedString.string substringWithRange:NSMakeRange(cfRange.location, cfRange.length)]);
-                        
 
+                        CGRect highlightRect_previous = [self getRunRectWithAttributedString:attributedString
+                                                                                     context:context
+                                                                                         run:run
+                                                                                contentWidth:contentWidth
+                                                                               contentHeight:contentHeight];
                         
-                        
-                        
-                        self.currentPosition_offsetXInRun = runRect.size.width;
+                        self.currentPosition_offsetXInRun = highlightRect_previous.size.width;
                         self.currentPositionInRun = subRange_previous.length;
 
                         int result = [self saveHighlightRect:highlightRect_previous
@@ -570,50 +462,14 @@
                     
                     NSRange subRange = NSMakeRange(0, highlightText.length);
                     NSString *subHighlightText = [currentRunString substringWithRange:subRange];
-                    
-                    // 获取高亮文案的Rect:
-                    /**
-                     // 获得CTRun的size大小、这个方法比较精确!
-                     CTRunGetImageBounds(run, context, CFRangeMake(0, 0));
-                     */
-                    CGRect srcRect = CTRunGetImageBounds(run, context, CFRangeMake(0, 0));
-                    CGPoint *runPositionsPointer = (CGPoint *)CTRunGetPositionsPtr(run);
-                    CGSize runSize = srcRect.size;
-                    CGRect runRect = CGRectZero;
-                    CGFloat originX = floor((*runPositionsPointer).x);
-                    int widthAddedValue = 0;
-                    if (originX - 1 > 0) {
-                        runRect.origin.x = originX-1;
-                        widthAddedValue = 1.7;
-                    }
-                    else {
-                        runRect.origin.x = originX;
-                        widthAddedValue = 1.2;
-                    }
-                    CFRange cfRange = CTRunGetStringRange(run);
-                    NSString *text = [attributedString.string substringWithRange:NSMakeRange(cfRange.location, cfRange.length)];
-                    if ([text isEqualToString:@"#"] || [text isEqualToString:@"@"] || [text isEqualToString:@"."]) {
-                        CGFloat runAscent, runDescent, runLeading;
-                        CGFloat typographicWidth = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &runAscent, &runDescent, &runLeading);
-                        runRect.size = CGSizeMake(typographicWidth+widthAddedValue, runSize.height+6);
-                        NSLog(@"CTRunGetImageBounds: %f",srcRect.size.width);
-                        NSLog(@"CTRunGetTypographicBounds: %f",typographicWidth);
-                    }
-                    else {
-                        runRect.size = CGSizeMake(runSize.width+widthAddedValue, runSize.height+6);   //
-                    }
-                    runRect.origin.y = floor(contentHeight - (srcRect.origin.y + srcRect.size.height)) - 3;
-                    CGRect highlightRect = runRect;
-                    NSLog(@"runRect: %@",NSStringFromCGRect(runRect));
-                    
-                    NSLog(@"location: %ld; length: %ld",cfRange.location, cfRange.length);
-                    NSLog(@"text: %@",[attributedString.string substringWithRange:NSMakeRange(cfRange.location, cfRange.length)]);
-                    NSLog(@" ");
 
+                    CGRect highlightRect = [self getRunRectWithAttributedString:attributedString
+                                                                        context:context
+                                                                            run:run
+                                                                   contentWidth:contentWidth
+                                                                  contentHeight:contentHeight];
                     
-                    
-                    
-                    self.currentPosition_offsetXInRun += runRect.size.width;
+                    self.currentPosition_offsetXInRun += highlightRect.size.width;
                     self.currentPositionInRun += subRange.length;
                     
                     int result = [self saveHighlightRect:highlightRect
@@ -657,49 +513,11 @@
                     }
                     NSString *subHighlightText = [currentRunString substringWithRange:subRange];
                     
-                    // 获取高亮文案的Rect:
-                    /**
-                     // 获得CTRun的size大小、这个方法比较精确!
-                     CTRunGetImageBounds(run, context, CFRangeMake(0, 0));
-                     
-                     CGFloat runAscent, runDescent, runLeading;
-                     CTRunGetTypographicBounds(run, CFRangeMake(self.currentPositionInRun, subRange.length), &runAscent, &runDescent, &runLeading);
-                     */
-                    CGRect srcRect = CTRunGetImageBounds(run, context, CFRangeMake(0, 0));
-                    CGPoint *runPositionsPointer = (CGPoint *)CTRunGetPositionsPtr(run);
-                    CGSize runSize = srcRect.size;
-                    CGRect runRect = CGRectZero;
-                    CGFloat originX = floor((*runPositionsPointer).x);
-                    int widthAddedValue = 0;
-                    if (originX - 1 > 0) {
-                        runRect.origin.x = originX-1;
-                        widthAddedValue = 1.8;
-                    }
-                    else {
-                        runRect.origin.x = originX;
-                        widthAddedValue = 1.2;
-                    }
-                    CFRange cfRange = CTRunGetStringRange(run);
-                    NSString *text = [attributedString.string substringWithRange:NSMakeRange(cfRange.location, cfRange.length)];
-                    if ([text isEqualToString:@"#"] || [text isEqualToString:@"@"] || [text isEqualToString:@"."]) {
-                        CGFloat runAscent, runDescent, runLeading;
-//                        CGFloat typographicWidth = CTRunGetTypographicBounds(run, CFRangeMake(self.currentPositionInRun, cfRange.length), &runAscent, &runDescent, &runLeading);
-                        CGFloat typographicWidth = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &runAscent, &runDescent, &runLeading);
-                        runRect.size = CGSizeMake(typographicWidth+widthAddedValue, runSize.height+6);
-                        NSLog(@"CTRunGetImageBounds: %f",srcRect.size.width);
-                        NSLog(@"CTRunGetTypographicBounds: %f",typographicWidth);
-                    }
-                    else {
-                        runRect.size = CGSizeMake(runSize.width+widthAddedValue, runSize.height+6);   //
-                    }
-                    runRect.origin.y = floor(contentHeight - (srcRect.origin.y + srcRect.size.height)) - 3;
-                    CGRect highlightRect = runRect;
-                    NSLog(@"runRect: %@",NSStringFromCGRect(runRect));
-                    NSLog(@"location: %ld; length: %ld",cfRange.location, cfRange.length);
-                    NSLog(@"text: %@",[attributedString.string substringWithRange:NSMakeRange(cfRange.location, cfRange.length)]);
-                    NSLog(@" ");
-
-                    
+                    CGRect highlightRect = [self getRunRectWithAttributedString:attributedString
+                                                                        context:context
+                                                                            run:run
+                                                                   contentWidth:contentWidth
+                                                                  contentHeight:contentHeight];
                     
                     int result = [self saveHighlightRect:highlightRect
                                            highlightText:subHighlightText
@@ -735,11 +553,65 @@
     
     return 0;
 }
+
+
+#pragma mark - Private Methods -
+- (CGRect)getRunRectWithAttributedString:(NSMutableAttributedString *)attributedString
+                                 context:(CGContextRef)context
+                                     run:(CTRunRef)run
+                            contentWidth:(CGFloat)contentWidth
+                           contentHeight:(CGFloat)contentHeight {
+    // 获取高亮文案的Rect:
+    /**
+     // 获得CTRun的size大小(紧贴文字的bounds、不含文字开头&结尾处的空白)、这个方法比较精确! 但是得到的rect的x的值只有火星人才能搞的懂!
+     CTRunGetImageBounds(run, context, CFRangeMake(0, 0));
+     
+     // 获得CTRun的width(包含文字开头&结尾处的空白):
+     CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &runAscent, &runDescent, &runLeading);
+     */
+    
+    CGRect srcRect = CTRunGetImageBounds(run, context, CFRangeMake(0, 0));
+    CGPoint *runPositionsPointer = (CGPoint *)CTRunGetPositionsPtr(run);  // Returns a direct pointer for the glyph position
+    CGSize runImageBounds = srcRect.size;
+    CGRect runRect = CGRectZero;
+    CGFloat originX = (*runPositionsPointer).x;
+    CGFloat widthAddedValue = 0;
+    if (originX - 1. > 0) {
+        runRect.origin.x = originX-1;
+        widthAddedValue = 3;
+    }
+    else {
+        runRect.origin.x = originX;
+        widthAddedValue = 1.5;
+    }
+    if (attributedString.lines) {   // QATrapezoidal
+        runRect.origin.y = (contentHeight - runImageBounds.height)/2. - 4;
+    }
+    else {
+       runRect.origin.y = contentHeight - (srcRect.origin.y + runImageBounds.height) - 4;
+    }
+    
+    CGFloat forecastWidth = ceil(runImageBounds.width) + widthAddedValue;
+    CGFloat diff_forecast = (runRect.origin.x + forecastWidth) - contentWidth;
+    CGFloat width = diff_forecast > 0 ? forecastWidth - diff_forecast : forecastWidth;
+    CGFloat height = runImageBounds.height+8;  // 此处也可以对最大高度做类似于最大宽度的判断
+    runRect.size = CGSizeMake(width, height);
+    
+    return runRect;
+}
 - (int)saveHighlightRect:(CGRect)highlightRect
            highlightText:(NSString *)highlightText
       withHighlightRange:(NSRange)highlightRange
                lineIndex:(CFIndex)lineIndex
         attributedString:(NSMutableAttributedString *)attributedString {
+    // 保存当前高亮文案的frame所处于的line数 (QATrapezoidalLabel中有可能出现多行的highlightRect一样的情况):
+    NSMutableArray *highlightLineIndexs = [self.highlightLineDic valueForKey:NSStringFromCGRect(highlightRect)];
+    if (!highlightLineIndexs) {
+        highlightLineIndexs = [NSMutableArray array];
+    }
+    [highlightLineIndexs addObject:[NSString stringWithFormat:@"%ld",lineIndex]];
+    [self.highlightLineDic setValue:highlightLineIndexs forKey:NSStringFromCGRect(highlightRect)];
+    
     NSMutableArray *highlightRects = [self.highlightFrameDic valueForKey:NSStringFromRange(highlightRange)];
     if (!highlightRects) {
         highlightRects = [NSMutableArray array];
@@ -757,7 +629,7 @@
         NSString *line = [self.saveLineInfoDic valueForKey:NSStringFromRange(highlightRange)];
         CFIndex line_index = line.intValue;
         if (line_index == lineIndex) {  // 仍处在同一line里
-            CGRect newRect = CGRectMake(rect.origin.x, highlightRect.origin.y, (rect.size.width + highlightRect.size.width), highlightRect.size.height);
+            CGRect newRect = CGRectMake(rect.origin.x, highlightRect.origin.y, (highlightRect.origin.x - rect.origin.x + highlightRect.size.width), highlightRect.size.height);
             [highlightRects replaceObjectAtIndex:(highlightRects.count-1) withObject:[NSValue valueWithCGRect:newRect]];
             [newlineTexts replaceObjectAtIndex:(highlightRects.count-1) withObject:[NSString stringWithFormat:@"%@%@",text,highlightText]];
         }
@@ -818,6 +690,13 @@
     objc_setAssociatedObject(self, @selector(highlightRanges_sorted), highlightRanges_sorted, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 - (NSMutableArray *)highlightRanges_sorted {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setHighlightLineDic:(NSMutableDictionary *)highlightLineDic {
+    objc_setAssociatedObject(self, @selector(highlightLineDic), highlightLineDic, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (NSMutableDictionary *)highlightLineDic {
     return objc_getAssociatedObject(self, _cmd);
 }
 

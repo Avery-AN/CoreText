@@ -2,7 +2,7 @@
 //  QARichTextLabel.h
 //  CoreText
 //
-//  Created by Avery An on 2020/2/27.
+//  Created by Avery An on 2020/3/4.
 //  Copyright © 2020 Avery. All rights reserved.
 //
 

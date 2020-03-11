@@ -2,299 +2,351 @@
 //  QATrapezoidalLayer.m
 //  CoreText
 //
-//  Created by Avery An on 2020/2/27.
+//  Created by Avery An on 2020/3/4.
 //  Copyright © 2020 Avery. All rights reserved.
 //
 
 #import "QATrapezoidalLayer.h"
-#import "QATrapezoidalDraw.h"
+#import "QAHighlightTextManager.h"
 #import "QATrapezoidalLabel.h"
+#import "QATextLayout.h"
+#import "QAAttributedLabelConfig.h"
+#import "QATrapezoidalDraw.h"
 #import "QABackgroundDraw.h"
 
 @implementation QATrapezoidalLayer
 
 #pragma mark - Override Methods -
 - (void)display {
+    // NSLog(@"%s",__func__);
+    super.contents = super.contents;
+
     QATrapezoidalLabel *attributedLabel = (QATrapezoidalLabel *)self.delegate;
-    [self performSelector:@selector(fillContents_async:) withObject:attributedLabel];
-}
-
-
-#pragma mark - Private Methods -
-/**
- 获取AttributedString
- */
-- (void)getDrawAttributedTextWithLabel:(QAAttributedLabel *)attributedLabel
-                            selfBounds:(CGRect)bounds
-                   checkAttributedText:(BOOL(^)(NSString *content))checkBlock
-                            completion:(void(^)(id attributedTextObj))completion {
-    CGFloat boundsWidth = bounds.size.width;
-    QATrapezoidalLabel *label = (QATrapezoidalLabel *)attributedLabel;
-    NSArray *trapezoidalTexts = label.trapezoidalTexts;
-    if (!trapezoidalTexts || trapezoidalTexts.count == 0) {
-        if (completion) {
-            completion(nil);
-        }
+    if (!attributedLabel) {
+        [self clearAllBackup];
+        self.contents = nil;
+        return;
+    }
+    else if (!attributedLabel.trapezoidalTexts || attributedLabel.trapezoidalTexts.count == 0) {
+        [self clearAllBackup];
+        self.contents = nil;
         return;
     }
     
-    @autoreleasepool {
-        NSMutableArray *trapezoidalAttributedTexts = [NSMutableArray array];
-        for (NSString *content in trapezoidalTexts) {
-            NSMutableAttributedString *attributedText = [self getAttributedStringWithString:content
-                                                                                   maxWidth:boundsWidth];
-            [trapezoidalAttributedTexts addObject:attributedText];
-        }
-        if (completion) {
-            completion(trapezoidalAttributedTexts);
-        }
+    [self fillContents:attributedLabel];
+}
+
+
+#pragma mark - Public Apis -
+- (BOOL)isDrawAvailable:(id)label {
+    if (!label || ![label isKindOfClass:[QATrapezoidalLabel class]]) {
+        return NO;
     }
+    
+    QATrapezoidalLabel *attributedLabel = (QATrapezoidalLabel *)label;
+    if (CGSizeEqualToSize(self.bounds.size, CGSizeZero)) {
+        return NO;
+    }
+    else if ((attributedLabel.trapezoidalTexts == nil || attributedLabel.trapezoidalTexts.count == 0)) {
+        self.contents = nil;
+        return NO;
+    }
+    else if (attributedLabel.trapezoidalLineHeight <= 0) {
+        self.contents = nil;
+        return NO;
+    }
+    return YES;
 }
-
-/**
- 获取文案所对应的AttributedString并保存相关的属性
- */
-- (NSMutableAttributedString * _Nullable)getAttributedStringWithString:(NSString * _Nonnull)content
-                                                              maxWidth:(CGFloat)maxWidth {
-    NSString *showContent = [content copy];
-    QAAttributedLabel *attributedLabel = (QAAttributedLabel *)self.delegate;
+- (CGFloat)updateContentsHeightWithTrapezoidalTexts:(NSArray *)trapezoidalTexts
+                                         lineWidths:(NSMutableArray *)lineWidths
+                                              lines:(NSMutableArray *)lines
+                               trapezoidalTexts_new:(NSMutableArray *)trapezoidalTexts_new
+                                            context:(CGContextRef)context
+                                       maxLineWidth:(CGFloat)maxLineWidth
+                              trapezoidalLineHeight:(CGFloat)trapezoidalLineHeight {
+    for (NSAttributedString *attributedString in trapezoidalTexts) {
+        CTLineRef line = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)attributedString);
+         
+        [self updateLine:line
+                 context:context
+        attributedString:attributedString
+            maxLineWidth:maxLineWidth
+                   lines:lines
+              lineWidths:lineWidths
+        trapezoidalTexts:trapezoidalTexts_new];
+    }
     
-    NSMutableAttributedString *attributedString = nil;
-    NSMutableDictionary *highlightContents = nil;
-    NSMutableDictionary *highlightRanges = nil;
-    
-    [self getAttributedString:&attributedString
-            highlightContents:&highlightContents
-              highlightRanges:&highlightRanges
-                  withContent:showContent];
-    
-    [self processDiyEmojiText:attributedString
-                        label:attributedLabel
-            highlightContents:highlightContents
-              highlightRanges:highlightRanges];
-    
-    [self setSetedHighlightTexts:attributedString label:attributedLabel];
-    
-    [self setHighlightTexts:attributedString highlightRanges:highlightRanges];
-
-    [self saveAttributedTextInfo:attributedString
-               highlightContents:highlightContents
-                 highlightRanges:highlightRanges
-                           label:attributedLabel];
-    
-    return attributedString;
+    return lineWidths.count * trapezoidalLineHeight;
 }
-
-/**
- 开始绘制AttributedText
- */
-- (int)beginDrawAttributedText:(id)attributedTextObj
-                         label:(QAAttributedLabel *)attributedLabel
-                    selfBounds:(CGRect)bounds
-                       context:(CGContextRef)context
-           checkAttributedText:(BOOL(^)(NSString *content))checkBlock {
-    
-    NSMutableArray *attributedTexts = attributedTextObj;
-    CGFloat boundsWidth = bounds.size.width;
-    CGFloat boundsHeight = bounds.size.height;
-    CGSize contentSize = CGSizeMake(ceil(boundsWidth), ceil(boundsHeight));
-    [self drawAttributedString:attributedTexts
-                       context:context
-                   contentSize:contentSize
-                     wordSpace:attributedLabel.wordSpace
-                 numberOfLines:0   // 统一设为0 (展示全部文案)
-                 textAlignment:attributedLabel.textAlignment
-             saveHighlightText:YES];
-    
-    
-//    // 处理搜索结果:
-//    if (attributedText.searchRanges && attributedText.searchRanges.count > 0) {
-//        UIColor *textColor = [attributedText.searchAttributeInfo valueForKey:@"textColor"];
-//        UIColor *textBackgroundColor = [attributedText.searchAttributeInfo valueForKey:@"textBackgroundColor"];
-//        for (NSString *rangeString in attributedText.searchRanges) {
-//            NSRange range = NSRangeFromString(rangeString);
-//            int result = [self updateAttributeText:attributedText
-//                                           withTextColor:textColor
-//                                     textBackgroundColor:textBackgroundColor
-//                                                   range:range];
-//            if (result < 0) {
-//                if (cancel) {
-//                    cancel();
-//                }
-//                return -1;
-//            }
-//        }
-//    }
-//
-//    // 保存高亮相关信息(link & at & Topic & Seemore)到attributedText对应的属性中:
-//    int saveResult = [self saveHighlightRanges:attributedText.highlightRanges
-//                                   highlightContents:attributedText.highlightContents
-//                                      truncationInfo:attributedText.truncationInfo
-//                                     attributedLabel:attributedLabel
-//                                    attributedString:attributedText];
-//    if (saveResult < 0) {
-//        if (cancel) {
-//            cancel();
-//        }
-//        return -1;
-//    }
-//
-//    // 文案的绘制:
-//    CGFloat boundsWidth = bounds.size.width;
-//    CGFloat boundsHeight = bounds.size.height;
-//    CGSize contentSize = CGSizeMake(ceil(boundsWidth), ceil(boundsHeight));
-//    NSInteger numberOfLines = attributedLabel.numberOfLines;
-//    BOOL justified = NO;
-//    if (attributedText.showMoreTextEffected && attributedLabel.textAlignment == NSTextAlignmentJustified) {
-//        justified = YES;
-//    }
-//    int drawResult = [self drawAttributedString:attributedText
-//                                        context:context
-//                                    contentSize:contentSize
-//                                      wordSpace:attributedLabel.wordSpace
-//                                  numberOfLines:numberOfLines
-//                                  textAlignment:attributedLabel.textAlignment
-//                              saveHighlightText:YES];
-//    if (drawResult < 0) {
-//        if (cancel) {
-//            cancel();
-//        }
-//        return -1;
-//    }
-//
-//    // 更新搜索数据到数据源中:
-//    SEL appendDrawResultSelector = NSSelectorFromString(@"appendDrawResult:");
-//    IMP appendDrawResultImp = [attributedLabel methodForSelector:appendDrawResultSelector];
-//    void (*appendDrawResult)(id, SEL, NSMutableAttributedString *) = (void *)appendDrawResultImp;
-//    appendDrawResult(attributedLabel, appendDrawResultSelector, attributedText);
-    
-    return 0;
-}
-
-/**
- 文案的绘制
- */
-- (int)drawAttributedString:(NSMutableArray *)trapezoidalTexts
-                    context:(CGContextRef)context
-                contentSize:(CGSize)contentSize
-                  wordSpace:(NSInteger)wordSpace
-              numberOfLines:(NSInteger)numberOfLines
-              textAlignment:(NSTextAlignment)textAlignment
-          saveHighlightText:(BOOL)saveHighlightText {
-    
+- (int)drawAttributedText:(NSMutableAttributedString *)attributedText
+                  context:(CGContextRef _Nonnull)context
+              contentSize:(CGSize)contentSize
+                wordSpace:(CGFloat)wordSpace
+         maxNumberOfLines:(NSInteger)numberOfLines
+            textAlignment:(NSTextAlignment)textAlignment
+        saveHighlightText:(BOOL)saveHighlightText
+                justified:(BOOL)justified {
     QATrapezoidalLabel *attributedLabel = (QATrapezoidalLabel *)self.delegate;
     NSInteger trapezoidalLineHeight = attributedLabel.trapezoidalLineHeight;
-    if (trapezoidalLineHeight - attributedLabel.font.pointSize <= 3) {  // 异常处理
-        trapezoidalLineHeight = attributedLabel.font.pointSize + 6;
+    UIColor *lineBackgroundColor = attributedLabel.lineBackgroundColor;
+    
+    // 绘制整个label中line的背景色:
+    if (lineBackgroundColor && ![lineBackgroundColor isEqual:[UIColor clearColor]]) {
+        [self drawAttributedTextBackground:attributedText
+                               contentSize:contentSize
+                             textAlignment:textAlignment
+                     trapezoidalLineHeight:trapezoidalLineHeight
+                       lineBackgroundColor:lineBackgroundColor];
     }
     
-    // 设置左右间距(背景色和文字之间的间隔):
-    CGFloat leftGap = 10;
-    CGFloat rightGap = leftGap;
+    // 绘制文案:
+    int drawResult = [self drawAttributedText:attributedText
+                                  contentSize:contentSize
+                                    wordSpace:wordSpace
+                            saveHighlightText:saveHighlightText
+                                      context:context];
+    return drawResult;
+}
+- (int)drawAttributedText:(NSMutableAttributedString *)attributedText
+              contentSize:(CGSize)contentSize
+                wordSpace:(CGFloat)wordSpace
+        saveHighlightText:(BOOL)saveHighlightText
+                  context:(CGContextRef)context {
+    QATrapezoidalLabel *attributedLabel = (QATrapezoidalLabel *)self.delegate;
+    NSInteger trapezoidalLineHeight = attributedLabel.trapezoidalLineHeight;
+
+    NSArray *trapezoidalTexts = nil;
+    NSArray *lines = nil;
+    if (saveHighlightText) {   // 绘制attributedText
+        trapezoidalTexts = attributedText.trapezoidalTexts_new;
+        lines = attributedText.lines;
+    }
+    else {   // 绘制attributedText(当绘制高亮文案的点击背景色时、此时需要绘制更新后的attributedText的富文本)
+        NSMutableArray *trapezoidalTexts_ = [NSMutableArray array];
+        NSMutableArray *lines_ = [NSMutableArray array];
+        NSInteger location = 0;
+        for (NSAttributedString *attributedString in attributedText.trapezoidalTexts_new) {
+            NSInteger length = attributedString.length;
+            NSAttributedString *attributedString_new = [attributedText attributedSubstringFromRange:NSMakeRange(location, length)];
+            [trapezoidalTexts_ addObject:attributedString_new];
+            location = location + length;
+
+            CTLineRef line = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)attributedString_new);
+            [lines_ addObject:(__bridge id)line];
+        }
+        trapezoidalTexts = trapezoidalTexts_;
+        lines = lines_;
+    }
+
+    int drawResult = [attributedText drawTrapezoidalWithLineHeight:trapezoidalLineHeight
+                                                       contentSize:contentSize
+                                                         wordSpace:wordSpace
+                                                     textAlignment:attributedLabel.textAlignment
+                                                           leftGap:QATrapezoidal_LeftGap
+                                                          rightGap:QATrapezoidal_RightGap
+                                                             lines:lines
+                                                  trapezoidalTexts:trapezoidalTexts
+                                                           context:context
+                                                 saveHighlightText:saveHighlightText];
+    return drawResult;
+}
+- (void)drawBackgroundWithRects:(NSArray * _Nonnull)highlightRects
+                backgroundColor:(UIColor * _Nullable)backgroundColor
+                 attributedText:(NSMutableAttributedString *)attributedText
+                          range:(NSRange)range {
+    // 需要确定点击的高亮文案的位置处于第几行
+    NSArray *trapezoidalTexts = attributedText.trapezoidalTexts_new;
+    int lineIndex = 0;
+    NSInteger length = 0;
+    for (int i = 0; i < trapezoidalTexts.count; i++) {
+        NSAttributedString *attributedString = [trapezoidalTexts objectAtIndex:i];
+        length = length + attributedString.length;
+        if (length > range.location) {
+            lineIndex = i;
+            break;
+        }
+    }
+    
+    QATrapezoidalLabel *attributedLabel = (QATrapezoidalLabel *)self.delegate;
+    CGFloat trapezoidalLineHeight = attributedLabel.trapezoidalLineHeight;
+    
+    NSInteger widthAdded = 1;
+    NSMutableArray *highlightRects_new = [NSMutableArray array];
+    NSArray *lineWidths = attributedText.lineWidths;
+    for (int i = 0; i < highlightRects.count; i++) {
+        NSValue *rectValue = [highlightRects objectAtIndex:i];
+        CGRect rect = rectValue.CGRectValue;
+        NSInteger currentLineIndex = lineIndex+i;
+        CGFloat lineWidth = [[lineWidths objectAtIndex:currentLineIndex] floatValue];
+        CGFloat offsetX = 0;
+        if (attributedLabel.textAlignment == NSTextAlignmentRight) {
+            offsetX = self.bounds.size.width - lineWidth + QATrapezoidal_LeftGap;
+        }
+        else if (attributedLabel.textAlignment == NSTextAlignmentLeft) {
+            offsetX = QATrapezoidal_LeftGap;
+        }
+        else {  // NSTextAlignmentCenter
+            offsetX = (self.bounds.size.width - lineWidth) / 2. + QATrapezoidal_LeftGap;
+        }
+        CGFloat offsetY = currentLineIndex*trapezoidalLineHeight;
+        CGRect rect_new = CGRectMake(rect.origin.x + offsetX, rect.origin.y + offsetY, rect.size.width+widthAdded, rect.size.height);
+        [highlightRects_new addObject:[NSValue valueWithCGRect:rect_new]];
+    }
+    
+    [QABackgroundDraw drawBackgroundWithRects:highlightRects_new
+                                       radius:3
+                              backgroundColor:backgroundColor];
+}
+- (void)drawAttributedTextAndTapedBackgroungcolor:(NSMutableAttributedString * _Nonnull)attributedText
+                                          context:(CGContextRef _Nonnull)context
+                                      contentSize:(CGSize)contentSize
+                                        wordSpace:(CGFloat)wordSpace
+                                 maxNumberOfLines:(NSInteger)numberOfLines
+                                    textAlignment:(NSTextAlignment)textAlignment
+                                saveHighlightText:(BOOL)saveHighlightText
+                                        justified:(BOOL)justified
+                                   highlightRects:(NSArray *)highlightRects
+                              textBackgroundColor:(UIColor *)textBackgroundColor
+                                            range:(NSRange)range {
+    QATrapezoidalLabel *attributedLabel = (QATrapezoidalLabel *)self.delegate;
+    NSInteger trapezoidalLineHeight = attributedLabel.trapezoidalLineHeight;
+    UIColor *lineBackgroundColor = attributedLabel.lineBackgroundColor;
+    
+    @autoreleasepool {
+        // 绘制整个label中line的背景色:
+        if (lineBackgroundColor && ![lineBackgroundColor isEqual:[UIColor clearColor]]) {
+            [self drawAttributedTextBackground:attributedText
+                                   contentSize:contentSize
+                                 textAlignment:textAlignment
+                         trapezoidalLineHeight:trapezoidalLineHeight
+                           lineBackgroundColor:lineBackgroundColor];
+        }
+        
+        // 绘制高亮文案的背景色:
+        if (textBackgroundColor) {
+            [self drawBackgroundWithRects:highlightRects
+                          backgroundColor:textBackgroundColor
+                           attributedText:attributedText
+                                    range:range];
+        }
+        
+        // 绘制文案:
+        [self drawAttributedText:attributedText
+                     contentSize:contentSize
+                       wordSpace:wordSpace
+               saveHighlightText:saveHighlightText
+                         context:context];
+    }
+}
+- (void)getBaseInfoWithContentSize:(CGSize)contentSize
+                    attributedText:(NSMutableAttributedString * __strong *)attributedText
+                     contentHeight:(CGFloat *)contentHeight {
+    QATrapezoidalLabel *attributedLabel = (QATrapezoidalLabel *)self.delegate;
+    NSArray *trapezoidalTexts = attributedLabel.trapezoidalTexts;
+    if (!trapezoidalTexts || trapezoidalTexts.count == 0) {
+        *attributedText = nil;
+        *contentHeight = 0;
+    }
+    
+    CGFloat boundsWidth = contentSize.width;
+    NSMutableArray *attributedTexts = [NSMutableArray array];
+    *attributedText = [self getAttributedStringWithContents:trapezoidalTexts
+                                                   maxWidth:boundsWidth
+                                          attributedStrings:attributedTexts];
+    
+    // 在赋值text的情况下更新attributedLabel的 attributedString 的属性值:
+    if (attributedLabel.srcAttributedString == nil) {
+        [self updateAttributeText:*attributedText forAttributedLabel:attributedLabel];
+    }
+    
+    
+    // 获取上下文:
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(contentSize.width, contentSize.height), self.opaque, 0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGFloat trapezoidalLineHeight = attributedLabel.trapezoidalLineHeight;
+    if (trapezoidalLineHeight - attributedLabel.font.pointSize <= 3) {  // 异常处理
+        trapezoidalLineHeight = attributedLabel.font.pointSize + 4;
+        attributedLabel.trapezoidalLineHeight = trapezoidalLineHeight;
+    }
     
     // 创建CTLineRef & 更新trapezoidalTexts:
     NSMutableArray *trapezoidalTexts_new = [NSMutableArray array];
     NSMutableArray *lineWidths = [NSMutableArray array];
     NSMutableArray *lines = [NSMutableArray array];
-    for (NSAttributedString *attributedString in trapezoidalTexts) {
-        CTLineRef line = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)attributedString);
-         
-         [self updateLine:line
-                  context:context
-         attributedString:attributedString
-             maxLineWidth:contentSize.width
-                  leftGap:leftGap
-                 rightGap:rightGap
-                    lines:lines
-               lineWidths:lineWidths
-        trapezoidalTexts:trapezoidalTexts_new];
-    }
+    CGFloat maxLineWidth = contentSize.width - QATrapezoidal_LeftGap - QATrapezoidal_RightGap;
+    [self updateContentsHeightWithTrapezoidalTexts:attributedTexts
+                                        lineWidths:lineWidths
+                                             lines:lines
+                              trapezoidalTexts_new:trapezoidalTexts_new
+                                           context:context
+                                      maxLineWidth:maxLineWidth
+                             trapezoidalLineHeight:trapezoidalLineHeight];
+    (*attributedText).trapezoidalTexts_new = trapezoidalTexts_new;
+    (*attributedText).lines = lines;
+    (*attributedText).lineWidths = lineWidths;
     
-    /**
-     if (trapezoidalTexts_new.count != trapezoidalTexts.count) {
-         UIGraphicsEndImageContext();
-
-         // 给上下文填充背景色:
-         CGContextSetFillColorWithColor(context, attributedLabel.backgroundColor.CGColor);
-         CGContextFillRect(context, attributedLabel.bounds);
-
-         UIGraphicsBeginImageContextWithOptions(contentSize, YES, 0);
-         context = UIGraphicsGetCurrentContext();
-     }
-     */
+    *contentHeight = lines.count * trapezoidalLineHeight;
     
-    // 设置绘制背景:
-    if (textAlignment == NSTextAlignmentCenter) {
-        [QABackgroundDraw drawBackgroundWithMaxWidth:contentSize.width
-                                       lineWidths:lineWidths
-                                       lineHeight:trapezoidalLineHeight
-                                           radius:6
-                                    textAlignment:Background_TextAlignment_Center
-                                  backgroundColor:attributedLabel.highlightTextBackgroundColor];
-    }
-    else if (textAlignment == NSTextAlignmentLeft) {
-        [QABackgroundDraw drawBackgroundWithMaxWidth:contentSize.width
-                                       lineWidths:lineWidths
-                                       lineHeight:trapezoidalLineHeight
-                                           radius:6
-                                    textAlignment:Background_TextAlignment_Left
-                                    backgroundColor:attributedLabel.highlightTextBackgroundColor];
-    }
-    else if (textAlignment == NSTextAlignmentRight) {
-        [QABackgroundDraw drawBackgroundWithMaxWidth:contentSize.width
-                                       lineWidths:lineWidths
-                                       lineHeight:trapezoidalLineHeight
-                                           radius:6
-                                    textAlignment:Background_TextAlignment_Right
-                                    backgroundColor:attributedLabel.highlightTextBackgroundColor];
-    }
-    
-    
-    
-//    for (NSMutableAttributedString *attributedText in trapezoidalTexts) {
-//        int result = [attributedText drawWithTrapezoidalLineHeight:trapezoidalLineHeight
-//                                                       contentSize:contentSize
-//                                                         wordSpace:wordSpace
-//                                                     textAlignment:attributedLabel.textAlignment
-//                                                           leftGap:leftGap
-//                                                          rightGap:rightGap
-//                                                           context:context
-//                                                             lines:lines
-//                                                 saveHighlightText:saveHighlightText];
-//        return result;
-//    }
-    
-    NSMutableAttributedString *_attributedText_ = [[NSMutableAttributedString alloc] initWithString:@""];
-    int result = [_attributedText_ drawWithTrapezoidalLineHeight:trapezoidalLineHeight
-                                                   contentSize:contentSize
-                                                     wordSpace:wordSpace
-                                                 textAlignment:attributedLabel.textAlignment
-                                                       leftGap:leftGap
-                                                      rightGap:rightGap
-                                                       context:context
-                                                         lines:lines
-                                             saveHighlightText:saveHighlightText];
-    return result;
-    
-    return 0;
+    UIGraphicsEndImageContext();
 }
 
+
+#pragma mark - Private Methods -
+- (void)getDrawAttributedTextWithLabel:(id)label
+                            selfBounds:(CGRect)bounds
+                   checkAttributedText:(BOOL(^)(NSString *content))checkBlock
+                            completion:(void(^)(NSMutableAttributedString *))completion {
+    QATrapezoidalLabel *attributedLabel = label;
+    if (attributedLabel.srcAttributedString && attributedLabel.srcAttributedString.lines.count > 0 && completion) {
+        completion(attributedLabel.srcAttributedString);
+        return;
+    }
+    
+    NSMutableAttributedString *attributedText = nil;
+    CGFloat contentHeight = 0;
+    [self getBaseInfoWithContentSize:bounds.size attributedText:&attributedText contentHeight:&contentHeight];
+    
+    if (completion) {
+        completion(attributedText);
+    }
+}
+- (NSMutableAttributedString *)getAttributedStringWithContents:(NSArray * _Nonnull)contents
+                                                      maxWidth:(CGFloat)maxWidth
+                                             attributedStrings:(NSMutableArray *)attributedStrings {
+    NSString *showContent = @"";
+    for (NSString *content_ in contents) {
+        showContent = [NSString stringWithFormat:@"%@%@",showContent,content_];
+    }
+    NSMutableAttributedString *attributedString_all = [self getAttributedStringWithString:showContent maxWidth:maxWidth];
+    
+    for (NSString *content_ in contents) {
+        NSMutableAttributedString *attributedString = [self getAttributedStringWithString:content_ maxWidth:maxWidth];
+        [attributedStrings addObject:attributedString];
+    }
+    
+    return attributedString_all;
+}
 - (void)updateLine:(CTLineRef)line
            context:(CGContextRef)context
   attributedString:(NSAttributedString *)attributedString
       maxLineWidth:(NSInteger)maxLineWidth
-           leftGap:(CGFloat)leftGap
-          rightGap:(CGFloat)rightGap
              lines:(NSMutableArray *)lines
         lineWidths:(NSMutableArray *)lineWidths
   trapezoidalTexts:(NSMutableArray *)trapezoidalTexts {
-    CGRect rect_line = CTLineGetImageBounds(line, context);
-    NSInteger lineWidth = ceil(rect_line.size.width);
+    
+    /**
+     CGRect rect_line = CTLineGetImageBounds(line, context);  // 如果attributedString中包含runDelegate此方法返回的宽度有问题
+     CGFloat lineWidth = rect_line.size.width;
+     */
+    
+    CGFloat ascent = 0, descent = 0, leading = 0;
+    CGFloat lineWidth = CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
+    
+    
     if (lineWidth - maxLineWidth > 0) {   // 特殊情况
         [self updateLinesWithAttributedString:attributedString
                                  maxLineWidth:maxLineWidth
-                                      leftGap:leftGap
-                                     rightGap:rightGap
                                       context:context
                                         lines:lines
                                    lineWidths:lineWidths
@@ -302,17 +354,14 @@
     }
     else {
         [lines addObject:(__bridge id)line];
-        lineWidth = lineWidth + leftGap + rightGap;
-        NSLog(@"lineWidth(背景): %ld",lineWidth);
-        [lineWidths addObject:[NSString stringWithFormat:@"%ld",lineWidth]];
+        lineWidth = lineWidth + QATrapezoidal_LeftGap + QATrapezoidal_RightGap;
+        [lineWidths addObject:[NSString stringWithFormat:@"%f",lineWidth]];
         [trapezoidalTexts addObject:attributedString];
     }
 }
 
 - (void)updateLinesWithAttributedString:(NSAttributedString *)attributedString
                            maxLineWidth:(CGFloat)maxLineWidth
-                                leftGap:(CGFloat)leftGap
-                               rightGap:(CGFloat)rightGap
                                 context:(CGContextRef)context
                                   lines:(NSMutableArray *)lines
                              lineWidths:(NSMutableArray *)lineWidths
@@ -337,13 +386,49 @@
         NSAttributedString *subAttributedString = [attributedString attributedSubstringFromRange:range];
         
         CTLineRef line = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)subAttributedString);
+       /**
         CGRect rect_line = CTLineGetImageBounds(line, context);
-        NSInteger lineWidth = ceil(rect_line.size.width);
+        CGFloat lineWidth = rect_line.size.width;
+        */
+        CGFloat ascent = 0, descent = 0, leading = 0;
+        CGFloat lineWidth = CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
+        
         
         [lines addObject:(__bridge id)line];
-        lineWidth = lineWidth + leftGap + rightGap;
-        [lineWidths addObject:[NSString stringWithFormat:@"%ld",lineWidth]];
-        [trapezoidalTexts addObject:attributedString];
+        lineWidth = lineWidth + QATrapezoidal_LeftGap + QATrapezoidal_RightGap;
+        [lineWidths addObject:[NSString stringWithFormat:@"%f",lineWidth]];
+        [trapezoidalTexts addObject:subAttributedString];
+    }
+}
+- (void)drawAttributedTextBackground:(NSMutableAttributedString *)attributedText
+                         contentSize:(CGSize)contentSize
+                       textAlignment:(NSTextAlignment)textAlignment
+               trapezoidalLineHeight:(CGFloat)trapezoidalLineHeight
+                 lineBackgroundColor:lineBackgroundColor {
+    // 设置绘制背景:
+    if (textAlignment == NSTextAlignmentLeft) {
+        [QABackgroundDraw drawBackgroundWithMaxWidth:contentSize.width
+                                          lineWidths:attributedText.lineWidths
+                                          lineHeight:trapezoidalLineHeight
+                                              radius:6
+                                       textAlignment:Background_TextAlignment_Left
+                                     backgroundColor:lineBackgroundColor];
+    }
+    else if (textAlignment == NSTextAlignmentRight) {
+        [QABackgroundDraw drawBackgroundWithMaxWidth:contentSize.width
+                                          lineWidths:attributedText.lineWidths
+                                          lineHeight:trapezoidalLineHeight
+                                              radius:6
+                                       textAlignment:Background_TextAlignment_Right
+                                     backgroundColor:lineBackgroundColor];
+    }
+    else {   // NSTextAlignmentCenter 其它情况
+        [QABackgroundDraw drawBackgroundWithMaxWidth:contentSize.width
+                                          lineWidths:attributedText.lineWidths
+                                          lineHeight:trapezoidalLineHeight
+                                              radius:6
+                                       textAlignment:Background_TextAlignment_Center
+                                     backgroundColor:lineBackgroundColor];
     }
 }
 

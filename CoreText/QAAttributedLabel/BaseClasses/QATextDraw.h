@@ -8,20 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <CoreText/CoreText.h>
-
-static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignment) {
-    switch (textAlignment) {
-        case NSTextAlignmentCenter:
-            return .5;
-        case NSTextAlignmentRight:
-            return 1.;
-        case NSTextAlignmentLeft:
-            return 0.;
-        default:
-            return 0.;
-    }
-}
+#import "QAAttributedLabelConfig.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,6 +23,12 @@ NS_ASSUME_NONNULL_BEGIN
  保存高亮文案所处位置对应的frame (key:range - value:CGRect)
  */
 @property (nonatomic, strong) NSMutableDictionary *highlightFrameDic;
+
+/**
+保存高亮文案的frame对应的line (key:CGRect - value:array(lineIndex))
+*/
+@property (nonatomic, strong) NSMutableDictionary *highlightLineDic;
+
 
 /**
  根据size的大小在context里绘制文本attributedString
@@ -58,8 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
                    saveHighlightText:(BOOL)saveHighlightText
                            justified:(BOOL)justified;
 
-- (void)getSortedHighlightRanges:(NSMutableAttributedString *)attributedString;
 
+// 绘制富文本中的附件
 - (void)drawAttachmentContentInContext:(CGContextRef)context
                                ctframe:(CTFrameRef)ctFrame
                                   line:(CTLineRef)line
@@ -68,28 +61,21 @@ NS_ASSUME_NONNULL_BEGIN
                               delegate:(CTRunDelegateRef)delegate
                              wordSpace:(CGFloat)wordSpace;
 
-- (int)saveHighlightRangeAndFrame:(CTLineRef)line
-                       lineOrigin:(CGPoint)lineOrigin
-                        lineIndex:(CFIndex)lineIndex
-                       lineHeight:(CGFloat)lineHeight
-                              run:(CTRunRef)run
-                    ContentHeight:(CGFloat)contentHeight
-                 attributedString:(NSMutableAttributedString *)attributedString;
+// 保存attributedString中的富文本信息(富文本的frame、富文本所处的line等信息)
+- (int)saveHighlightRangeAndFrameWithLineIndex:(CFIndex)lineIndex
+                                    lineOrigin:(CGPoint)lineOrigin
+                                  contentWidth:(CGFloat)contentWidth
+                                 contentHeight:(CGFloat)contentHeight
+                              attributedString:(NSMutableAttributedString *)attributedString
+                                       context:(CGContextRef)context
+                                          line:(CTLineRef)line
+                                           run:(CTRunRef)run;
 
-/**
- 处理CTRun中的Attachment
- */
-- (int)drawAttachment:(CTLineRef)line
-    saveHighlightText:(BOOL)saveHighlightText
-              context:(CGContextRef)context
-              ctFrame:(CTFrameRef)ctFrame
-        ctFramesetter:(CTFramesetterRef)ctFramesetter
-             drawPath:(CGMutablePathRef)drawPath
-           lineOrigin:(CGPoint)lineOrigin
-            wordSpace:(CGFloat)wordSpace
-            lineIndex:(NSInteger)lineIndex
-           lineHeight:(CGFloat)lineHeight
-        contentHeight:(CGFloat)contentHeight;
+// 获取attributedString中包含的富文本信息(从头至尾顺序排列)
+- (void)getSortedHighlightRanges:(NSMutableAttributedString *)attributedString;
+
+//// 获取当前run的range在整个attributedString中的位置(QARichText中直接返回此值、QATrapezoidal中需要进行转换)
+//- (NSRange)getCurrentRunRangeWithLineIndex:(NSInteger)lineIndex runRange:(NSRange)runRange;
 
 @end
 

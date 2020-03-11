@@ -12,13 +12,13 @@
 
 @implementation RootViewController
 
-
 #pragma mark - Life Cycle -
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor whiteColor];
+    
     
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     button.backgroundColor = [UIColor orangeColor];
@@ -34,8 +34,8 @@
     [button_2 setTitle:@"TrapezoidalText" forState:UIControlStateNormal];
     [button_2 addTarget:self action:@selector(trapezoidalAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:button_2];
-    
 }
+
 
 #pragma mark - Actions -
 - (void)richTextAction {
@@ -46,6 +46,7 @@
     TrapezoidalTextViewController *vc = [TrapezoidalTextViewController new];
     [self.navigationController pushViewController:vc animated:YES];
 }
+
 
 
 /*
