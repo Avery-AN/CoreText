@@ -8,7 +8,6 @@
 
 #import "QAAttributedLabel.h"
 #import "QAAttributedLayer.h"
-#import "QATextLayout.h"
 #import "QATextTransaction.h"
 #import "QATextDraw.h"
 
@@ -91,10 +90,6 @@ static void *TouchingContext = &TouchingContext;
 
 
 #pragma mark - Override Methods -
-+ (Class)layerClass {
-    return [QAAttributedLayer class];
-}
-
 /**
  此处只处理了高度的自适应
  */
@@ -104,11 +99,12 @@ static void *TouchingContext = &TouchingContext;
 
     if (frame.size.height - size.height > 0.) {
         QAAttributedLayer *layer = (QAAttributedLayer *)self.layer;
-        CGImageRef currentCGImage = (__bridge CGImageRef)(layer.currentCGImage);
+        // CGImageRef currentCGImage = (__bridge CGImageRef)(layer.currentCGImage);
+        CGImageRef currentCGImage = [self getLayerContents];
         if (!currentCGImage) {
             return;
         }
-        CGImageRef newCGImage = [UIImage cutCGImage:currentCGImage withRect:(CGRect){{0, 0}, self.textLayout.textBoundSize}];
+        CGImageRef newCGImage = [UIImage cutCGImage:currentCGImage withRect:(CGRect){{0, 0}, size}];
         layer.contents = (__bridge id _Nullable)(newCGImage);
         
         self.frame = (CGRect) {frame.origin, size};
@@ -164,15 +160,16 @@ static void *TouchingContext = &TouchingContext;
     if (self.atHighlight || self.linkHighlight || self.topicHighlight) {
         // 获取self的属性:
         NSDictionary *highlightFrameDic = self.attributedString.highlightFrameDic; // (key:range - value:CGRect-array)
-        for (NSString *key in highlightFrameDic) {
-            NSArray *highlightRects = [highlightFrameDic valueForKey:key];
-
+        
+        for (NSString *highlightRangeString in highlightFrameDic) {
+            NSArray *highlightRects = [highlightFrameDic valueForKey:highlightRangeString];
+            
             for (int i = 0; i < highlightRects.count; i++) {
                 NSValue *value = [highlightRects objectAtIndex:i];
-                CGRect frame = [value CGRectValue];
+                CGRect highlightRect = [value CGRectValue];
                 
-                if (CGRectContainsPoint(frame, point)) {
-                    NSRange highlightRange = NSRangeFromString(key);
+                if ([self isHitHighlightTextWithPoint:point highlightRect:highlightRect highlightRange:highlightRangeString]) {
+                    NSRange highlightRange = NSRangeFromString(highlightRangeString);
                     self.tapedHighlightRange = highlightRange;
                     [layer drawHighlightColor:highlightRange highlightRects:highlightRects];
 
@@ -236,7 +233,9 @@ static void *TouchingContext = &TouchingContext;
         }
     }
     else {
-        self.QAAttributedLabelTapAction(@"点击了label自身", QAAttributedLabel_Taped_Label);
+        if (self.QAAttributedLabelTapAction) {
+            self.QAAttributedLabelTapAction(@"点击了label自身", QAAttributedLabel_Taped_Label);
+        }
     }
     
     [self willChangeValueForKey:NSStringFromSelector(@selector(isTouching))];
@@ -275,42 +274,6 @@ static void *TouchingContext = &TouchingContext;
 
 
 #pragma mark - Public Methods -
-- (void)getTextContentSizeWithLayer:(QAAttributedLayer * _Nonnull)layer
-                            content:(id _Nonnull)content
-                           maxWidth:(CGFloat)width
-                    completionBlock:(GetTextContentSizeBlock _Nullable)block {
-    if (!content ||
-        (![content isKindOfClass:[NSAttributedString class]] &&
-        ![content isKindOfClass:[NSString class]])) {
-        return;
-    }
-    self.getTextContentSizeBlock = block;
-    
-    NSMutableAttributedString *attributedString = nil;
-    if ([content isKindOfClass:[NSAttributedString class]]) {
-        attributedString = content;
-    }
-    else {
-        attributedString = [layer getAttributedStringWithString:content
-                                                       maxWidth:width];
-    }
-    
-    CGSize suggestedSize = [QAAttributedStringSizeMeasurement textSizeWithAttributeString:attributedString
-                                                                     maximumNumberOfLines:self.numberOfLines
-                                                                                 maxWidth:width];
-    
-    /*
-     dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.getTextContentSizeBlock) {
-            self.getTextContentSizeBlock(suggestedSize, attributedString);
-        }
-    });
-     */
-    
-    if (self.getTextContentSizeBlock) {
-        self.getTextContentSizeBlock(suggestedSize, attributedString);
-    }
-}
 - (void)setContentsImage:(UIImage * _Nonnull)image
         attributedString:(NSMutableAttributedString * _Nonnull)attributedString {
     if (!image || !attributedString) {
@@ -413,29 +376,6 @@ static void *TouchingContext = &TouchingContext;
      */
     _srcAttributedString.textNewlineDic = attributedText.textNewlineDic;
     _srcAttributedString.highlightFrameDic = attributedText.highlightFrameDic;
-}
-- (CGSize)getContentSize {
-    NSMutableAttributedString *attributedText;
-    if (self.attributedString && self.attributedString.string &&
-        self.attributedString.length > 0 && self.attributedString.string.length > 0) {
-        attributedText = self.attributedString;
-    }
-    else {
-        NSDictionary *textAttributes = [self.textLayout getTextAttributesWithCheckBlock:^BOOL{
-            return NO;
-        }];
-        attributedText = [[NSMutableAttributedString alloc] initWithString:self.text attributes:textAttributes];
-    }
-    
-    CGSize size = CGSizeZero;
-    if (self.textLayout) {
-        [self.textLayout setupContainerSize:(CGSize){self.bounds.size.width, CGFLOAT_MAX} attributedText:attributedText];
-        size = self.textLayout.textBoundSize;
-    }
-    else {
-        size = [QAAttributedStringSizeMeasurement calculateSizeWithString:attributedText maxWidth:self.bounds.size.width];
-    }
-    return size;
 }
 - (void)processSearchResult:(NSArray *)searchRanges
         searchAttributeInfo:(NSDictionary *)info

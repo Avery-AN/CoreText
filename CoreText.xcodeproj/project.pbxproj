@@ -7,35 +7,51 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BB454A2F240CE8BD0013819D /* QABackgroundDraw.m in Sources */ = {isa = PBXBuildFile; fileRef = BB454A2D240CE8BD0013819D /* QABackgroundDraw.m */; };
+		BB094F74240920C4000CFE60 /* RichTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB094F73240920C4000CFE60 /* RichTextViewController.m */; };
+		BB094F7724092172000CFE60 /* TrapezoidalTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB094F7624092171000CFE60 /* TrapezoidalTextViewController.m */; };
 		BB9F6B7E2381789100F05116 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6B7D2381789100F05116 /* AppDelegate.m */; };
 		BB9F6B892381789300F05116 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6B882381789300F05116 /* Assets.xcassets */; };
 		BB9F6B8F2381789300F05116 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6B8E2381789300F05116 /* main.m */; };
 		BB9F6B972381793900F05116 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6B962381793900F05116 /* RootViewController.m */; };
 		BB9F6BC523817A7400F05116 /* nezha@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6BAF23817A7400F05116 /* nezha@2x.png */; };
 		BB9F6BC623817A7400F05116 /* nezha@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6BB023817A7400F05116 /* nezha@3x.png */; };
-		BB9F6BE923817A7A00F05116 /* QATextRunDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BC823817A7A00F05116 /* QATextRunDelegate.m */; };
-		BB9F6BEA23817A7A00F05116 /* QAAttributedLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BCA23817A7A00F05116 /* QAAttributedLayer.m */; };
-		BB9F6BEB23817A7A00F05116 /* NSData+Md5.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BCD23817A7A00F05116 /* NSData+Md5.m */; };
-		BB9F6BEC23817A7A00F05116 /* NSString+Md5.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD023817A7A00F05116 /* NSString+Md5.m */; };
-		BB9F6BED23817A7A00F05116 /* UIImage+QACutImage.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD123817A7A00F05116 /* UIImage+QACutImage.m */; };
-		BB9F6BEE23817A7A00F05116 /* NSString+QAReplace.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD523817A7A00F05116 /* NSString+QAReplace.m */; };
-		BB9F6BEF23817A7A00F05116 /* UIImage+DecodeImage.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD623817A7A00F05116 /* UIImage+DecodeImage.m */; };
-		BB9F6BF023817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD823817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.m */; };
-		BB9F6BF123817A7A00F05116 /* QAAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BD923817A7A00F05116 /* QAAttributedLabel.m */; };
-		BB9F6BF323817A7A00F05116 /* QAHighlightTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BDD23817A7A00F05116 /* QAHighlightTextManager.m */; };
-		BB9F6BF423817A7A00F05116 /* QAEmojiTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BE023817A7A00F05116 /* QAEmojiTextManager.m */; };
-		BB9F6BF523817A7A00F05116 /* QATextLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BE423817A7A00F05116 /* QATextLayout.m */; };
-		BB9F6BF623817A7A00F05116 /* QAAttributedStringSizeMeasurement.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9F6BE723817A7A00F05116 /* QAAttributedStringSizeMeasurement.m */; };
-		BB9F6BFA2382E94200F05116 /* emoji_default@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6BF82382E94200F05116 /* emoji_default@3x.png */; };
-		BB9F6BFB2382E94200F05116 /* emoji_default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB9F6BF92382E94200F05116 /* emoji_default@2x.png */; };
-		BBA5395B23B0FE9400977DD7 /* QATextDraw.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA5395A23B0FE9400977DD7 /* QATextDraw.m */; };
-		BBFB190023A8E1E2009CD0C1 /* QATextTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = BBFB18FF23A8E1E2009CD0C1 /* QATextTransaction.m */; };
+		BBB7BDB2241893E200347814 /* QATextRunDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD6B241893E200347814 /* QATextRunDelegate.m */; };
+		BBB7BDB3241893E200347814 /* QAAttributedLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD6D241893E200347814 /* QAAttributedLayer.m */; };
+		BBB7BDB4241893E200347814 /* NSData+Md5.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD70241893E200347814 /* NSData+Md5.m */; };
+		BBB7BDB5241893E200347814 /* NSString+Md5.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD73241893E200347814 /* NSString+Md5.m */; };
+		BBB7BDB6241893E200347814 /* UIImage+QACutImage.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD74241893E200347814 /* UIImage+QACutImage.m */; };
+		BBB7BDB7241893E200347814 /* NSString+QAReplace.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD78241893E200347814 /* NSString+QAReplace.m */; };
+		BBB7BDB8241893E200347814 /* UIImage+DecodeImage.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD79241893E200347814 /* UIImage+DecodeImage.m */; };
+		BBB7BDB9241893E200347814 /* NSMutableAttributedString+QAAttributedString.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD7B241893E200347814 /* NSMutableAttributedString+QAAttributedString.m */; };
+		BBB7BDBA241893E200347814 /* emoji_default@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BBB7BD7E241893E200347814 /* emoji_default@3x.png */; };
+		BBB7BDBB241893E200347814 /* emoji_default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BBB7BD7F241893E200347814 /* emoji_default@2x.png */; };
+		BBB7BDBC241893E200347814 /* QAAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD80241893E200347814 /* QAAttributedLabel.m */; };
+		BBB7BDBD241893E200347814 /* QATextDraw.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD83241893E200347814 /* QATextDraw.m */; };
+		BBB7BDBE241893E200347814 /* QAHighlightTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD85241893E200347814 /* QAHighlightTextManager.m */; };
+		BBB7BDBF241893E200347814 /* QAEmojiTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD88241893E200347814 /* QAEmojiTextManager.m */; };
+		BBB7BDC0241893E200347814 /* QABackgroundDraw.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD8B241893E200347814 /* QABackgroundDraw.m */; };
+		BBB7BDC1241893E200347814 /* QATextLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD8C241893E200347814 /* QATextLayout.m */; };
+		BBB7BDC2241893E200347814 /* QATextTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD8D241893E200347814 /* QATextTransaction.m */; };
+		BBB7BDC3241893E200347814 /* QAAttributedStringSizeMeasurement.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD90241893E200347814 /* QAAttributedStringSizeMeasurement.m */; };
+		BBB7BDC4241893E200347814 /* QATrapezoidalDraw.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD95241893E200347814 /* QATrapezoidalDraw.m */; };
+		BBB7BDC5241893E200347814 /* QATrapezoidalLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD96241893E200347814 /* QATrapezoidalLabel.m */; };
+		BBB7BDC6241893E200347814 /* QATrapezoidalLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD98241893E200347814 /* QATrapezoidalLayer.m */; };
+		BBB7BDC7241893E200347814 /* QARichTextLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD9A241893E200347814 /* QARichTextLayer.m */; };
+		BBB7BDC8241893E200347814 /* QARichTextLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD9B241893E200347814 /* QARichTextLabel.m */; };
+		BBB7BDC9241893E200347814 /* QARichTextDraw.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BD9C241893E200347814 /* QARichTextDraw.m */; };
+		BBB7BDCA241893E200347814 /* NSData+Md5.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BDA4241893E200347814 /* NSData+Md5.m */; };
+		BBB7BDCB241893E200347814 /* NSString+Md5.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BDA7241893E200347814 /* NSString+Md5.m */; };
+		BBB7BDCC241893E200347814 /* QAFastImageDiskCache.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BDA8241893E200347814 /* QAFastImageDiskCache.m */; };
+		BBB7BDCD241893E200347814 /* QAImageFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BDA9241893E200347814 /* QAImageFormat.m */; };
+		BBB7BDCE241893E200347814 /* QAImageCachePath.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BDAB241893E200347814 /* QAImageCachePath.m */; };
+		BBB7BDCF241893E200347814 /* QAImageFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB7BDAD241893E200347814 /* QAImageFileManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		BB454A2D240CE8BD0013819D /* QABackgroundDraw.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QABackgroundDraw.m; sourceTree = "<group>"; };
-		BB454A2E240CE8BD0013819D /* QABackgroundDraw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QABackgroundDraw.h; sourceTree = "<group>"; };
+		BB094F72240920C4000CFE60 /* RichTextViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RichTextViewController.h; sourceTree = "<group>"; };
+		BB094F73240920C4000CFE60 /* RichTextViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RichTextViewController.m; sourceTree = "<group>"; };
+		BB094F7524092171000CFE60 /* TrapezoidalTextViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TrapezoidalTextViewController.h; sourceTree = "<group>"; };
+		BB094F7624092171000CFE60 /* TrapezoidalTextViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TrapezoidalTextViewController.m; sourceTree = "<group>"; };
 		BB9F6B792381789100F05116 /* CoreText.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoreText.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9F6B7C2381789100F05116 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		BB9F6B7D2381789100F05116 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -46,39 +62,66 @@
 		BB9F6B962381793900F05116 /* RootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		BB9F6BAF23817A7400F05116 /* nezha@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nezha@2x.png"; sourceTree = "<group>"; };
 		BB9F6BB023817A7400F05116 /* nezha@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nezha@3x.png"; sourceTree = "<group>"; };
-		BB9F6BC823817A7A00F05116 /* QATextRunDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATextRunDelegate.m; sourceTree = "<group>"; };
-		BB9F6BCA23817A7A00F05116 /* QAAttributedLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAAttributedLayer.m; sourceTree = "<group>"; };
-		BB9F6BCD23817A7A00F05116 /* NSData+Md5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Md5.m"; sourceTree = "<group>"; };
-		BB9F6BCE23817A7A00F05116 /* NSString+Md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Md5.h"; sourceTree = "<group>"; };
-		BB9F6BCF23817A7A00F05116 /* NSData+Md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Md5.h"; sourceTree = "<group>"; };
-		BB9F6BD023817A7A00F05116 /* NSString+Md5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Md5.m"; sourceTree = "<group>"; };
-		BB9F6BD123817A7A00F05116 /* UIImage+QACutImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+QACutImage.m"; sourceTree = "<group>"; };
-		BB9F6BD223817A7A00F05116 /* UIImage+DecodeImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+DecodeImage.h"; sourceTree = "<group>"; };
-		BB9F6BD323817A7A00F05116 /* NSString+QAReplace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+QAReplace.h"; sourceTree = "<group>"; };
-		BB9F6BD423817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+QAAttributedString.h"; sourceTree = "<group>"; };
-		BB9F6BD523817A7A00F05116 /* NSString+QAReplace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+QAReplace.m"; sourceTree = "<group>"; };
-		BB9F6BD623817A7A00F05116 /* UIImage+DecodeImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+DecodeImage.m"; sourceTree = "<group>"; };
-		BB9F6BD723817A7A00F05116 /* UIImage+QACutImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+QACutImage.h"; sourceTree = "<group>"; };
-		BB9F6BD823817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+QAAttributedString.m"; sourceTree = "<group>"; };
-		BB9F6BD923817A7A00F05116 /* QAAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAAttributedLabel.m; sourceTree = "<group>"; };
-		BB9F6BDA23817A7A00F05116 /* QATextLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATextLayout.h; sourceTree = "<group>"; };
-		BB9F6BDD23817A7A00F05116 /* QAHighlightTextManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAHighlightTextManager.m; sourceTree = "<group>"; };
-		BB9F6BDE23817A7A00F05116 /* QAEmojiTextManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAEmojiTextManager.h; sourceTree = "<group>"; };
-		BB9F6BDF23817A7A00F05116 /* QAHighlightTextManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAHighlightTextManager.h; sourceTree = "<group>"; };
-		BB9F6BE023817A7A00F05116 /* QAEmojiTextManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAEmojiTextManager.m; sourceTree = "<group>"; };
-		BB9F6BE123817A7A00F05116 /* QAAttributedLabelConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAAttributedLabelConfig.h; sourceTree = "<group>"; };
-		BB9F6BE223817A7A00F05116 /* QATextRunDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATextRunDelegate.h; sourceTree = "<group>"; };
-		BB9F6BE323817A7A00F05116 /* QAAttributedLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAAttributedLayer.h; sourceTree = "<group>"; };
-		BB9F6BE423817A7A00F05116 /* QATextLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATextLayout.m; sourceTree = "<group>"; };
-		BB9F6BE523817A7A00F05116 /* QAAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAAttributedLabel.h; sourceTree = "<group>"; };
-		BB9F6BE723817A7A00F05116 /* QAAttributedStringSizeMeasurement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAAttributedStringSizeMeasurement.m; sourceTree = "<group>"; };
-		BB9F6BE823817A7A00F05116 /* QAAttributedStringSizeMeasurement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAAttributedStringSizeMeasurement.h; sourceTree = "<group>"; };
-		BB9F6BF82382E94200F05116 /* emoji_default@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "emoji_default@3x.png"; sourceTree = "<group>"; };
-		BB9F6BF92382E94200F05116 /* emoji_default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "emoji_default@2x.png"; sourceTree = "<group>"; };
-		BBA5395923B0FE9400977DD7 /* QATextDraw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATextDraw.h; sourceTree = "<group>"; };
-		BBA5395A23B0FE9400977DD7 /* QATextDraw.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATextDraw.m; sourceTree = "<group>"; };
-		BBFB18FE23A8E1E2009CD0C1 /* QATextTransaction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QATextTransaction.h; sourceTree = "<group>"; };
-		BBFB18FF23A8E1E2009CD0C1 /* QATextTransaction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QATextTransaction.m; sourceTree = "<group>"; };
+		BBB7BD6B241893E200347814 /* QATextRunDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATextRunDelegate.m; sourceTree = "<group>"; };
+		BBB7BD6C241893E200347814 /* QATextDraw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATextDraw.h; sourceTree = "<group>"; };
+		BBB7BD6D241893E200347814 /* QAAttributedLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAAttributedLayer.m; sourceTree = "<group>"; };
+		BBB7BD70241893E200347814 /* NSData+Md5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Md5.m"; sourceTree = "<group>"; };
+		BBB7BD71241893E200347814 /* NSString+Md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Md5.h"; sourceTree = "<group>"; };
+		BBB7BD72241893E200347814 /* NSData+Md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Md5.h"; sourceTree = "<group>"; };
+		BBB7BD73241893E200347814 /* NSString+Md5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Md5.m"; sourceTree = "<group>"; };
+		BBB7BD74241893E200347814 /* UIImage+QACutImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+QACutImage.m"; sourceTree = "<group>"; };
+		BBB7BD75241893E200347814 /* UIImage+DecodeImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+DecodeImage.h"; sourceTree = "<group>"; };
+		BBB7BD76241893E200347814 /* NSString+QAReplace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+QAReplace.h"; sourceTree = "<group>"; };
+		BBB7BD77241893E200347814 /* NSMutableAttributedString+QAAttributedString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+QAAttributedString.h"; sourceTree = "<group>"; };
+		BBB7BD78241893E200347814 /* NSString+QAReplace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+QAReplace.m"; sourceTree = "<group>"; };
+		BBB7BD79241893E200347814 /* UIImage+DecodeImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+DecodeImage.m"; sourceTree = "<group>"; };
+		BBB7BD7A241893E200347814 /* UIImage+QACutImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+QACutImage.h"; sourceTree = "<group>"; };
+		BBB7BD7B241893E200347814 /* NSMutableAttributedString+QAAttributedString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+QAAttributedString.m"; sourceTree = "<group>"; };
+		BBB7BD7C241893E200347814 /* QABackgroundDraw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QABackgroundDraw.h; sourceTree = "<group>"; };
+		BBB7BD7E241893E200347814 /* emoji_default@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "emoji_default@3x.png"; sourceTree = "<group>"; };
+		BBB7BD7F241893E200347814 /* emoji_default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "emoji_default@2x.png"; sourceTree = "<group>"; };
+		BBB7BD80241893E200347814 /* QAAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAAttributedLabel.m; sourceTree = "<group>"; };
+		BBB7BD81241893E200347814 /* QATextTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATextTransaction.h; sourceTree = "<group>"; };
+		BBB7BD82241893E200347814 /* QATextLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATextLayout.h; sourceTree = "<group>"; };
+		BBB7BD83241893E200347814 /* QATextDraw.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATextDraw.m; sourceTree = "<group>"; };
+		BBB7BD85241893E200347814 /* QAHighlightTextManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAHighlightTextManager.m; sourceTree = "<group>"; };
+		BBB7BD86241893E200347814 /* QAEmojiTextManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAEmojiTextManager.h; sourceTree = "<group>"; };
+		BBB7BD87241893E200347814 /* QAHighlightTextManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAHighlightTextManager.h; sourceTree = "<group>"; };
+		BBB7BD88241893E200347814 /* QAEmojiTextManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAEmojiTextManager.m; sourceTree = "<group>"; };
+		BBB7BD89241893E200347814 /* QATextRunDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATextRunDelegate.h; sourceTree = "<group>"; };
+		BBB7BD8A241893E200347814 /* QAAttributedLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAAttributedLayer.h; sourceTree = "<group>"; };
+		BBB7BD8B241893E200347814 /* QABackgroundDraw.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QABackgroundDraw.m; sourceTree = "<group>"; };
+		BBB7BD8C241893E200347814 /* QATextLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATextLayout.m; sourceTree = "<group>"; };
+		BBB7BD8D241893E200347814 /* QATextTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATextTransaction.m; sourceTree = "<group>"; };
+		BBB7BD8E241893E200347814 /* QAAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAAttributedLabel.h; sourceTree = "<group>"; };
+		BBB7BD90241893E200347814 /* QAAttributedStringSizeMeasurement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAAttributedStringSizeMeasurement.m; sourceTree = "<group>"; };
+		BBB7BD91241893E200347814 /* QAAttributedStringSizeMeasurement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAAttributedStringSizeMeasurement.h; sourceTree = "<group>"; };
+		BBB7BD93241893E200347814 /* QATrapezoidalLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATrapezoidalLabel.h; sourceTree = "<group>"; };
+		BBB7BD94241893E200347814 /* QATrapezoidalLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATrapezoidalLayer.h; sourceTree = "<group>"; };
+		BBB7BD95241893E200347814 /* QATrapezoidalDraw.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATrapezoidalDraw.m; sourceTree = "<group>"; };
+		BBB7BD96241893E200347814 /* QATrapezoidalLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATrapezoidalLabel.m; sourceTree = "<group>"; };
+		BBB7BD97241893E200347814 /* QATrapezoidalDraw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QATrapezoidalDraw.h; sourceTree = "<group>"; };
+		BBB7BD98241893E200347814 /* QATrapezoidalLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QATrapezoidalLayer.m; sourceTree = "<group>"; };
+		BBB7BD9A241893E200347814 /* QARichTextLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QARichTextLayer.m; sourceTree = "<group>"; };
+		BBB7BD9B241893E200347814 /* QARichTextLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QARichTextLabel.m; sourceTree = "<group>"; };
+		BBB7BD9C241893E200347814 /* QARichTextDraw.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QARichTextDraw.m; sourceTree = "<group>"; };
+		BBB7BD9D241893E200347814 /* QARichTextLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QARichTextLayer.h; sourceTree = "<group>"; };
+		BBB7BD9E241893E200347814 /* QARichTextLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QARichTextLabel.h; sourceTree = "<group>"; };
+		BBB7BD9F241893E200347814 /* QARichTextDraw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QARichTextDraw.h; sourceTree = "<group>"; };
+		BBB7BDA1241893E200347814 /* QAAttributedLabelConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAAttributedLabelConfig.h; sourceTree = "<group>"; };
+		BBB7BDA4241893E200347814 /* NSData+Md5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Md5.m"; sourceTree = "<group>"; };
+		BBB7BDA5241893E200347814 /* NSString+Md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Md5.h"; sourceTree = "<group>"; };
+		BBB7BDA6241893E200347814 /* NSData+Md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Md5.h"; sourceTree = "<group>"; };
+		BBB7BDA7241893E200347814 /* NSString+Md5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Md5.m"; sourceTree = "<group>"; };
+		BBB7BDA8241893E200347814 /* QAFastImageDiskCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAFastImageDiskCache.m; sourceTree = "<group>"; };
+		BBB7BDA9241893E200347814 /* QAImageFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAImageFormat.m; sourceTree = "<group>"; };
+		BBB7BDAA241893E200347814 /* QAImageFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAImageFileManager.h; sourceTree = "<group>"; };
+		BBB7BDAB241893E200347814 /* QAImageCachePath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAImageCachePath.m; sourceTree = "<group>"; };
+		BBB7BDAC241893E200347814 /* QAFastImageDiskCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAFastImageDiskCache.h; sourceTree = "<group>"; };
+		BBB7BDAD241893E200347814 /* QAImageFileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QAImageFileManager.m; sourceTree = "<group>"; };
+		BBB7BDAE241893E200347814 /* QAImageFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAImageFormat.h; sourceTree = "<group>"; };
+		BBB7BDAF241893E200347814 /* QAImageCachePath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAImageCachePath.h; sourceTree = "<group>"; };
+		BBB7BDB0241893E200347814 /* QAFastImageDiskCacheConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QAFastImageDiskCacheConfig.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,7 +158,11 @@
 				BB9F6B7D2381789100F05116 /* AppDelegate.m */,
 				BB9F6B952381793900F05116 /* RootViewController.h */,
 				BB9F6B962381793900F05116 /* RootViewController.m */,
-				BB9F6BC723817A7A00F05116 /* QAAttributedLabel */,
+				BB094F72240920C4000CFE60 /* RichTextViewController.h */,
+				BB094F73240920C4000CFE60 /* RichTextViewController.m */,
+				BB094F7524092171000CFE60 /* TrapezoidalTextViewController.h */,
+				BB094F7624092171000CFE60 /* TrapezoidalTextViewController.m */,
+				BBB7BD68241893E200347814 /* QAAttributedLabel */,
 				BB9F6B9823817A7400F05116 /* Resources */,
 				BB9F6B882381789300F05116 /* Assets.xcassets */,
 				BB9F6B8D2381789300F05116 /* Info.plist */,
@@ -133,86 +180,151 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		BB9F6BC723817A7A00F05116 /* QAAttributedLabel */ = {
+		BBB7BD68241893E200347814 /* QAAttributedLabel */ = {
 			isa = PBXGroup;
 			children = (
-				BB9F6BE123817A7A00F05116 /* QAAttributedLabelConfig.h */,
-				BB9F6BE523817A7A00F05116 /* QAAttributedLabel.h */,
-				BB9F6BD923817A7A00F05116 /* QAAttributedLabel.m */,
-				BB9F6BE323817A7A00F05116 /* QAAttributedLayer.h */,
-				BB9F6BCA23817A7A00F05116 /* QAAttributedLayer.m */,
-				BBFB18FE23A8E1E2009CD0C1 /* QATextTransaction.h */,
-				BBFB18FF23A8E1E2009CD0C1 /* QATextTransaction.m */,
-				BB9F6BDA23817A7A00F05116 /* QATextLayout.h */,
-				BB9F6BE423817A7A00F05116 /* QATextLayout.m */,
-				BBA5395923B0FE9400977DD7 /* QATextDraw.h */,
-				BBA5395A23B0FE9400977DD7 /* QATextDraw.m */,
-				BB9F6BE223817A7A00F05116 /* QATextRunDelegate.h */,
-				BB9F6BC823817A7A00F05116 /* QATextRunDelegate.m */,
-				BB454A2E240CE8BD0013819D /* QABackgroundDraw.h */,
-				BB454A2D240CE8BD0013819D /* QABackgroundDraw.m */,
-				BB9F6BCB23817A7A00F05116 /* Category */,
-				BB9F6BDC23817A7A00F05116 /* Manager */,
-				BB9F6BE623817A7A00F05116 /* Utility */,
-				BB9F6BF72382E94200F05116 /* Resources */,
+				BBB7BDA1241893E200347814 /* QAAttributedLabelConfig.h */,
+				BBB7BD6A241893E200347814 /* BaseClasses */,
+				BBB7BDA2241893E200347814 /* MmapClasses */,
+				BBB7BD99241893E200347814 /* QARichTextLabel */,
+				BBB7BD92241893E200347814 /* TrapezoidalLabel */,
 			);
 			path = QAAttributedLabel;
 			sourceTree = "<group>";
 		};
-		BB9F6BCB23817A7A00F05116 /* Category */ = {
+		BBB7BD6A241893E200347814 /* BaseClasses */ = {
 			isa = PBXGroup;
 			children = (
-				BB9F6BCC23817A7A00F05116 /* Md5 */,
-				BB9F6BD723817A7A00F05116 /* UIImage+QACutImage.h */,
-				BB9F6BD123817A7A00F05116 /* UIImage+QACutImage.m */,
-				BB9F6BD223817A7A00F05116 /* UIImage+DecodeImage.h */,
-				BB9F6BD623817A7A00F05116 /* UIImage+DecodeImage.m */,
-				BB9F6BD323817A7A00F05116 /* NSString+QAReplace.h */,
-				BB9F6BD523817A7A00F05116 /* NSString+QAReplace.m */,
-				BB9F6BD423817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.h */,
-				BB9F6BD823817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.m */,
+				BBB7BD6E241893E200347814 /* Category */,
+				BBB7BD84241893E200347814 /* Manager */,
+				BBB7BD8E241893E200347814 /* QAAttributedLabel.h */,
+				BBB7BD80241893E200347814 /* QAAttributedLabel.m */,
+				BBB7BD8A241893E200347814 /* QAAttributedLayer.h */,
+				BBB7BD6D241893E200347814 /* QAAttributedLayer.m */,
+				BBB7BD7C241893E200347814 /* QABackgroundDraw.h */,
+				BBB7BD8B241893E200347814 /* QABackgroundDraw.m */,
+				BBB7BD6C241893E200347814 /* QATextDraw.h */,
+				BBB7BD83241893E200347814 /* QATextDraw.m */,
+				BBB7BD82241893E200347814 /* QATextLayout.h */,
+				BBB7BD8C241893E200347814 /* QATextLayout.m */,
+				BBB7BD89241893E200347814 /* QATextRunDelegate.h */,
+				BBB7BD6B241893E200347814 /* QATextRunDelegate.m */,
+				BBB7BD81241893E200347814 /* QATextTransaction.h */,
+				BBB7BD8D241893E200347814 /* QATextTransaction.m */,
+				BBB7BD7D241893E200347814 /* Resources */,
+				BBB7BD8F241893E200347814 /* Utility */,
+			);
+			path = BaseClasses;
+			sourceTree = "<group>";
+		};
+		BBB7BD6E241893E200347814 /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				BBB7BD6F241893E200347814 /* Md5 */,
+				BBB7BD74241893E200347814 /* UIImage+QACutImage.m */,
+				BBB7BD75241893E200347814 /* UIImage+DecodeImage.h */,
+				BBB7BD76241893E200347814 /* NSString+QAReplace.h */,
+				BBB7BD77241893E200347814 /* NSMutableAttributedString+QAAttributedString.h */,
+				BBB7BD78241893E200347814 /* NSString+QAReplace.m */,
+				BBB7BD79241893E200347814 /* UIImage+DecodeImage.m */,
+				BBB7BD7A241893E200347814 /* UIImage+QACutImage.h */,
+				BBB7BD7B241893E200347814 /* NSMutableAttributedString+QAAttributedString.m */,
 			);
 			path = Category;
 			sourceTree = "<group>";
 		};
-		BB9F6BCC23817A7A00F05116 /* Md5 */ = {
+		BBB7BD6F241893E200347814 /* Md5 */ = {
 			isa = PBXGroup;
 			children = (
-				BB9F6BCE23817A7A00F05116 /* NSString+Md5.h */,
-				BB9F6BD023817A7A00F05116 /* NSString+Md5.m */,
-				BB9F6BCF23817A7A00F05116 /* NSData+Md5.h */,
-				BB9F6BCD23817A7A00F05116 /* NSData+Md5.m */,
+				BBB7BD70241893E200347814 /* NSData+Md5.m */,
+				BBB7BD71241893E200347814 /* NSString+Md5.h */,
+				BBB7BD72241893E200347814 /* NSData+Md5.h */,
+				BBB7BD73241893E200347814 /* NSString+Md5.m */,
 			);
 			path = Md5;
 			sourceTree = "<group>";
 		};
-		BB9F6BDC23817A7A00F05116 /* Manager */ = {
+		BBB7BD7D241893E200347814 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				BB9F6BDF23817A7A00F05116 /* QAHighlightTextManager.h */,
-				BB9F6BDD23817A7A00F05116 /* QAHighlightTextManager.m */,
-				BB9F6BDE23817A7A00F05116 /* QAEmojiTextManager.h */,
-				BB9F6BE023817A7A00F05116 /* QAEmojiTextManager.m */,
+				BBB7BD7E241893E200347814 /* emoji_default@3x.png */,
+				BBB7BD7F241893E200347814 /* emoji_default@2x.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		BBB7BD84241893E200347814 /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				BBB7BD85241893E200347814 /* QAHighlightTextManager.m */,
+				BBB7BD86241893E200347814 /* QAEmojiTextManager.h */,
+				BBB7BD87241893E200347814 /* QAHighlightTextManager.h */,
+				BBB7BD88241893E200347814 /* QAEmojiTextManager.m */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
 		};
-		BB9F6BE623817A7A00F05116 /* Utility */ = {
+		BBB7BD8F241893E200347814 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				BB9F6BE823817A7A00F05116 /* QAAttributedStringSizeMeasurement.h */,
-				BB9F6BE723817A7A00F05116 /* QAAttributedStringSizeMeasurement.m */,
+				BBB7BD90241893E200347814 /* QAAttributedStringSizeMeasurement.m */,
+				BBB7BD91241893E200347814 /* QAAttributedStringSizeMeasurement.h */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
 		};
-		BB9F6BF72382E94200F05116 /* Resources */ = {
+		BBB7BD92241893E200347814 /* TrapezoidalLabel */ = {
 			isa = PBXGroup;
 			children = (
-				BB9F6BF92382E94200F05116 /* emoji_default@2x.png */,
-				BB9F6BF82382E94200F05116 /* emoji_default@3x.png */,
+				BBB7BD97241893E200347814 /* QATrapezoidalDraw.h */,
+				BBB7BD95241893E200347814 /* QATrapezoidalDraw.m */,
+				BBB7BD93241893E200347814 /* QATrapezoidalLabel.h */,
+				BBB7BD96241893E200347814 /* QATrapezoidalLabel.m */,
+				BBB7BD94241893E200347814 /* QATrapezoidalLayer.h */,
+				BBB7BD98241893E200347814 /* QATrapezoidalLayer.m */,
 			);
-			path = Resources;
+			path = TrapezoidalLabel;
+			sourceTree = "<group>";
+		};
+		BBB7BD99241893E200347814 /* QARichTextLabel */ = {
+			isa = PBXGroup;
+			children = (
+				BBB7BD9F241893E200347814 /* QARichTextDraw.h */,
+				BBB7BD9C241893E200347814 /* QARichTextDraw.m */,
+				BBB7BD9E241893E200347814 /* QARichTextLabel.h */,
+				BBB7BD9B241893E200347814 /* QARichTextLabel.m */,
+				BBB7BD9D241893E200347814 /* QARichTextLayer.h */,
+				BBB7BD9A241893E200347814 /* QARichTextLayer.m */,
+			);
+			path = QARichTextLabel;
+			sourceTree = "<group>";
+		};
+		BBB7BDA2241893E200347814 /* MmapClasses */ = {
+			isa = PBXGroup;
+			children = (
+				BBB7BDA3241893E200347814 /* Md5 */,
+				BBB7BDA8241893E200347814 /* QAFastImageDiskCache.m */,
+				BBB7BDA9241893E200347814 /* QAImageFormat.m */,
+				BBB7BDAA241893E200347814 /* QAImageFileManager.h */,
+				BBB7BDAB241893E200347814 /* QAImageCachePath.m */,
+				BBB7BDAC241893E200347814 /* QAFastImageDiskCache.h */,
+				BBB7BDAD241893E200347814 /* QAImageFileManager.m */,
+				BBB7BDAE241893E200347814 /* QAImageFormat.h */,
+				BBB7BDAF241893E200347814 /* QAImageCachePath.h */,
+				BBB7BDB0241893E200347814 /* QAFastImageDiskCacheConfig.h */,
+			);
+			path = MmapClasses;
+			sourceTree = "<group>";
+		};
+		BBB7BDA3241893E200347814 /* Md5 */ = {
+			isa = PBXGroup;
+			children = (
+				BBB7BDA4241893E200347814 /* NSData+Md5.m */,
+				BBB7BDA5241893E200347814 /* NSString+Md5.h */,
+				BBB7BDA6241893E200347814 /* NSData+Md5.h */,
+				BBB7BDA7241893E200347814 /* NSString+Md5.m */,
+			);
+			path = Md5;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -274,8 +386,8 @@
 			files = (
 				BB9F6BC523817A7400F05116 /* nezha@2x.png in Resources */,
 				BB9F6BC623817A7400F05116 /* nezha@3x.png in Resources */,
-				BB9F6BFA2382E94200F05116 /* emoji_default@3x.png in Resources */,
-				BB9F6BFB2382E94200F05116 /* emoji_default@2x.png in Resources */,
+				BBB7BDBA241893E200347814 /* emoji_default@3x.png in Resources */,
+				BBB7BDBB241893E200347814 /* emoji_default@2x.png in Resources */,
 				BB9F6B892381789300F05116 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -287,25 +399,39 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB9F6BF123817A7A00F05116 /* QAAttributedLabel.m in Sources */,
-				BB9F6BF623817A7A00F05116 /* QAAttributedStringSizeMeasurement.m in Sources */,
-				BB9F6BEC23817A7A00F05116 /* NSString+Md5.m in Sources */,
+				BBB7BDC8241893E200347814 /* QARichTextLabel.m in Sources */,
+				BBB7BDC3241893E200347814 /* QAAttributedStringSizeMeasurement.m in Sources */,
+				BBB7BDCB241893E200347814 /* NSString+Md5.m in Sources */,
+				BBB7BDBE241893E200347814 /* QAHighlightTextManager.m in Sources */,
+				BBB7BDC4241893E200347814 /* QATrapezoidalDraw.m in Sources */,
+				BBB7BDB4241893E200347814 /* NSData+Md5.m in Sources */,
+				BBB7BDC1241893E200347814 /* QATextLayout.m in Sources */,
+				BBB7BDC6241893E200347814 /* QATrapezoidalLayer.m in Sources */,
+				BBB7BDCD241893E200347814 /* QAImageFormat.m in Sources */,
+				BBB7BDCC241893E200347814 /* QAFastImageDiskCache.m in Sources */,
+				BBB7BDB5241893E200347814 /* NSString+Md5.m in Sources */,
+				BBB7BDCE241893E200347814 /* QAImageCachePath.m in Sources */,
+				BB094F74240920C4000CFE60 /* RichTextViewController.m in Sources */,
+				BBB7BDC5241893E200347814 /* QATrapezoidalLabel.m in Sources */,
+				BB094F7724092172000CFE60 /* TrapezoidalTextViewController.m in Sources */,
 				BB9F6B7E2381789100F05116 /* AppDelegate.m in Sources */,
-				BB9F6BEE23817A7A00F05116 /* NSString+QAReplace.m in Sources */,
-				BB9F6BE923817A7A00F05116 /* QATextRunDelegate.m in Sources */,
-				BBFB190023A8E1E2009CD0C1 /* QATextTransaction.m in Sources */,
-				BB9F6BF023817A7A00F05116 /* NSMutableAttributedString+QAAttributedString.m in Sources */,
-				BB9F6BEA23817A7A00F05116 /* QAAttributedLayer.m in Sources */,
-				BB9F6BEF23817A7A00F05116 /* UIImage+DecodeImage.m in Sources */,
-				BB9F6BED23817A7A00F05116 /* UIImage+QACutImage.m in Sources */,
-				BB9F6BF423817A7A00F05116 /* QAEmojiTextManager.m in Sources */,
-				BB454A2F240CE8BD0013819D /* QABackgroundDraw.m in Sources */,
-				BB9F6BEB23817A7A00F05116 /* NSData+Md5.m in Sources */,
-				BB9F6BF323817A7A00F05116 /* QAHighlightTextManager.m in Sources */,
-				BBA5395B23B0FE9400977DD7 /* QATextDraw.m in Sources */,
+				BBB7BDBF241893E200347814 /* QAEmojiTextManager.m in Sources */,
+				BBB7BDC9241893E200347814 /* QARichTextDraw.m in Sources */,
+				BBB7BDB8241893E200347814 /* UIImage+DecodeImage.m in Sources */,
+				BBB7BDB6241893E200347814 /* UIImage+QACutImage.m in Sources */,
+				BBB7BDB2241893E200347814 /* QATextRunDelegate.m in Sources */,
+				BBB7BDC7241893E200347814 /* QARichTextLayer.m in Sources */,
+				BBB7BDBC241893E200347814 /* QAAttributedLabel.m in Sources */,
+				BBB7BDC0241893E200347814 /* QABackgroundDraw.m in Sources */,
+				BBB7BDB7241893E200347814 /* NSString+QAReplace.m in Sources */,
+				BBB7BDB3241893E200347814 /* QAAttributedLayer.m in Sources */,
+				BBB7BDBD241893E200347814 /* QATextDraw.m in Sources */,
 				BB9F6B8F2381789300F05116 /* main.m in Sources */,
-				BB9F6BF523817A7A00F05116 /* QATextLayout.m in Sources */,
+				BBB7BDCF241893E200347814 /* QAImageFileManager.m in Sources */,
 				BB9F6B972381793900F05116 /* RootViewController.m in Sources */,
+				BBB7BDC2241893E200347814 /* QATextTransaction.m in Sources */,
+				BBB7BDCA241893E200347814 /* NSData+Md5.m in Sources */,
+				BBB7BDB9241893E200347814 /* NSMutableAttributedString+QAAttributedString.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

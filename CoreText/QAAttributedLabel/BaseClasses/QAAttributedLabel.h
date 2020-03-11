@@ -8,7 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "QAAttributedLabelConfig.h"
-@class QAAttributedLayer, QATextLayout;
+#import "QATextLayout.h"
+@class QAAttributedLayer;
 
 typedef void (^GetTextContentSizeBlock)(CGSize size, NSMutableAttributedString * _Nullable attributedString);
 
@@ -97,10 +98,15 @@ typedef NS_ENUM(NSUInteger, QAAttributedLabel_TapedStyle) {
  */
 @property (nonatomic, assign) BOOL needUpdate;
 
+//
+//- (instancetype _Nonnull)init __attribute__((unavailable("请使用QARichTextLabel OR QATrapezoidalLabel")));
+//- (instancetype _Nonnull)initWithFrame:(CGRect)frame __attribute__((unavailable("请使用QARichTextLabel OR QATrapezoidalLabel")));
+
+
 /**
- 获取文案所占用的size
+ 获取文案所占用的size  【 【 .m中不要实现此方法 】 】
  */
-- (void)getTextContentSizeWithLayer:(QAAttributedLayer * _Nonnull)layer
+- (void)getTextContentSizeWithLayer:(id _Nonnull)layer
                             content:(id _Nonnull)content
                            maxWidth:(CGFloat)width
                     completionBlock:(GetTextContentSizeBlock _Nullable)block;
@@ -118,5 +124,13 @@ typedef NS_ENUM(NSUInteger, QAAttributedLabel_TapedStyle) {
  搜索文案
  */
 - (void)searchTexts:(NSArray * _Nonnull)texts resetSearchResultInfo:(NSDictionary * _Nullable (^_Nullable)(void))searchResultInfo;
+
+// 点击事件是否击中了高亮文本
+- (BOOL)isHitHighlightTextWithPoint:(CGPoint)point
+                      highlightRect:(CGRect)highlightRect
+                     highlightRange:(NSString * _Nonnull)rangeString;
+
+- (CGSize)getContentSize;
+- (CGImageRef _Nullable )getLayerContents;
 
 @end

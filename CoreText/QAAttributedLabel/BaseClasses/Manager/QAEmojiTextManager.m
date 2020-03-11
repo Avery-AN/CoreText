@@ -51,7 +51,7 @@ static CGFloat qa_widthCallback(void *ref) {
             for (NSTextCheckingResult *result in [matches reverseObjectEnumerator]) {
                 NSString *emojiText = [attributedString.string substringWithRange:result.range];
                 UIImage *image = nil;
-                CGSize size = CGSizeZero;
+                CGSize emojiSize = CGSizeZero;
                 if (emojiText && emojiText.length > 2) { // [...]
                     success = YES;
                     
@@ -81,14 +81,14 @@ static CGFloat qa_widthCallback(void *ref) {
                         image = [UIImage imageNamed:@"emoji_default"];  // 默认emoji表情(表示没有匹配到emoji的image)
                     }
                     
-                    size = CGSizeMake(image.size.width + wordSpace, image.size.height);
+                    emojiSize = CGSizeMake(image.size.width + wordSpace, image.size.height);
                     if (font.pointSize - image.size.height < 0) {
-                        size = CGSizeMake(font.pointSize + wordSpace, font.pointSize);
+                        emojiSize = CGSizeMake(font.pointSize + wordSpace, font.pointSize);
                     }
                     
                     NSMutableAttributedString *emojiAttributedString =
                     [self qa_attachmentWithContent:image
-                                    attachmentSize:size
+                                    attachmentSize:emojiSize
                                        alignToFont:font
                                     textAttributes:textAttributes
                                          alignment:QATextVerticalAlignmentCenter];

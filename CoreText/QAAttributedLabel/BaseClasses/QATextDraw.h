@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "QAAttributedLabelConfig.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,6 +23,12 @@ NS_ASSUME_NONNULL_BEGIN
  保存高亮文案所处位置对应的frame (key:range - value:CGRect)
  */
 @property (nonatomic, strong) NSMutableDictionary *highlightFrameDic;
+
+/**
+保存高亮文案的frame对应的line (key:CGRect - value:array(lineIndex))
+*/
+@property (nonatomic, strong) NSMutableDictionary *highlightLineDic;
+
 
 /**
  根据size的大小在context里绘制文本attributedString
@@ -43,6 +50,32 @@ NS_ASSUME_NONNULL_BEGIN
                        textAlignment:(NSTextAlignment)textAlignment
                    saveHighlightText:(BOOL)saveHighlightText
                            justified:(BOOL)justified;
+
+
+// 绘制富文本中的附件
+- (void)drawAttachmentContentInContext:(CGContextRef)context
+                               ctframe:(CTFrameRef)ctFrame
+                                  line:(CTLineRef)line
+                            lineOrigin:(CGPoint)lineOrigin
+                                   run:(CTRunRef)run
+                              delegate:(CTRunDelegateRef)delegate
+                             wordSpace:(CGFloat)wordSpace;
+
+// 保存attributedString中的富文本信息(富文本的frame、富文本所处的line等信息)
+- (int)saveHighlightRangeAndFrameWithLineIndex:(CFIndex)lineIndex
+                                    lineOrigin:(CGPoint)lineOrigin
+                                  contentWidth:(CGFloat)contentWidth
+                                 contentHeight:(CGFloat)contentHeight
+                              attributedString:(NSMutableAttributedString *)attributedString
+                                       context:(CGContextRef)context
+                                          line:(CTLineRef)line
+                                           run:(CTRunRef)run;
+
+// 获取attributedString中包含的富文本信息(从头至尾顺序排列)
+- (void)getSortedHighlightRanges:(NSMutableAttributedString *)attributedString;
+
+//// 获取当前run的range在整个attributedString中的位置(QARichText中直接返回此值、QATrapezoidal中需要进行转换)
+//- (NSRange)getCurrentRunRangeWithLineIndex:(NSInteger)lineIndex runRange:(NSRange)runRange;
 
 @end
 

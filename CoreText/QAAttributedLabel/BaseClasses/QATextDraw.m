@@ -7,8 +7,9 @@
 //
 
 #import "QATextDraw.h"
-#import "QAAttributedLabelConfig.h"
 #import "QATextRunDelegate.h"
+#import "QATrapezoidalDraw.h"
+#import "QARichTextDraw.h"
 
 static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignment) {
     switch (textAlignment) {
@@ -97,7 +98,7 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     }
     
     @autoreleasepool {
-        if (saveHighlightText) { // 保存TextInfo的情况
+        if (saveHighlightText) {
             [self getSortedHighlightRanges:attributedString];
         }
         
@@ -185,15 +186,14 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
                 else {
                     // 保存高亮文案在字符中的NSRange以及在CTFrame中的CGRect (以便在label中处理点击事件):
                     if (saveHighlightText) {
-                        int result = [self saveHighlightRangeAndFrame:line
-                                                              context:context
-                                                           lineOrigin:lineOrigin
-                                                            lineIndex:lineIndex
-                                                           lineHeight:lineHeight
-                                                                  run:run
-                                                        contentWidth:contentWidth
-                                                        contentHeight:contentHeight
-                                                     attributedString:attributedString];
+                        int result = [self saveHighlightRangeAndFrameWithLineIndex:lineIndex
+                                                                        lineOrigin:lineOrigin
+                                                                      contentWidth:contentWidth
+                                                                     contentHeight:contentHeight
+                                                                  attributedString:attributedString
+                                                                           context:context
+                                                                              line:line
+                                                                               run:run];
                         if (result < 0) {
                             
                             CFRelease(drawPath);
@@ -215,8 +215,6 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     return 0;
 }
 
-
-#pragma mark - Private Methods -
 - (void)getSortedHighlightRanges:(NSMutableAttributedString *)attributedString {
     // 先清空数据
     if (!self.textNewlineDic) {
@@ -230,6 +228,12 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     }
     else {
         [self.highlightFrameDic removeAllObjects];
+    }
+    if (!self.highlightLineDic) {
+        self.highlightLineDic = [NSMutableDictionary dictionary];
+    }
+    else {
+        [self.highlightLineDic removeAllObjects];
     }
     if (!self.highlightRanges_sorted) {
         self.highlightRanges_sorted = [NSMutableArray array];
@@ -277,7 +281,6 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
         }
     }
 }
-
 - (void)drawAttachmentContentInContext:(CGContextRef)context
                                ctframe:(CTFrameRef)ctFrame
                                   line:(CTLineRef)line
@@ -335,66 +338,39 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
         }
     }
 }
-- (CGRect)getRunRectWithAttributedString:(NSMutableAttributedString *)attributedString
-                                 context:(CGContextRef)context
-                                     run:(CTRunRef)run
-                            contentWidth:(CGFloat)contentWidth
-                           contentHeight:(CGFloat)contentHeight {
-    // 获取高亮文案的Rect:
-    /**
-     // 获得CTRun的size大小(紧贴文字的bounds、不含文字开头&结尾处的空白)、这个方法比较精确! 但是得到的rect的x的值只有火星人才能搞的懂!
-     CTRunGetImageBounds(run, context, CFRangeMake(0, 0));
-     
-     // 获得CTRun的width(包含文字开头&结尾处的空白):
-     CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &runAscent, &runDescent, &runLeading);
-     */
-    
-    CGRect srcRect = CTRunGetImageBounds(run, context, CFRangeMake(0, 0));
-    CGPoint *runPositionsPointer = (CGPoint *)CTRunGetPositionsPtr(run);  // Returns a direct pointer for the glyph position
-    CGSize runImageBounds = srcRect.size;
-    CGRect runRect = CGRectZero;
-    CGFloat originX = (*runPositionsPointer).x;
-    CGFloat widthAddedValue = 0;
-    if (originX - 1. > 0) {
-        runRect.origin.x = originX-1;
-        widthAddedValue = 3;
-    }
-    else {
-        runRect.origin.x = originX;
-        widthAddedValue = 1.5;
-    }
-    // runRect.origin.y = floor(contentHeight - (srcRect.origin.y + srcRect.size.height)) - 4;
-    runRect.origin.y = contentHeight - (srcRect.origin.y + srcRect.size.height) - 4;
-    
-    CGFloat forecastWidth = ceil(runImageBounds.width) + widthAddedValue;
-    CGFloat diff_forecast = (runRect.origin.x + forecastWidth) - contentWidth;
-    CGFloat width = diff_forecast > 0 ? forecastWidth - diff_forecast : forecastWidth;
-    CGFloat height = runImageBounds.height+8;  // 此处也可以对最大高度做类似于最大宽度的判断
-    runRect.size = CGSizeMake(width, height);
-    
-    return runRect;
-}
-- (int)saveHighlightRangeAndFrame:(CTLineRef)line
-                          context:(CGContextRef)context
-                       lineOrigin:(CGPoint)lineOrigin
-                        lineIndex:(CFIndex)lineIndex
-                       lineHeight:(CGFloat)lineHeight
-                              run:(CTRunRef)run
-                     contentWidth:(CGFloat)contentWidth
-                    contentHeight:(CGFloat)contentHeight
-                 attributedString:(NSMutableAttributedString *)attributedString {
+- (int)saveHighlightRangeAndFrameWithLineIndex:(CFIndex)lineIndex
+                                    lineOrigin:(CGPoint)lineOrigin
+                                  contentWidth:(CGFloat)contentWidth
+                                 contentHeight:(CGFloat)contentHeight
+                              attributedString:(NSMutableAttributedString *)attributedString
+                                       context:(CGContextRef)context
+                                          line:(CTLineRef)line
+                                           run:(CTRunRef)run {
     if (self.currentRun != run) {
         self.currentRun = run;
         self.currentPositionInRun = 0;
         self.currentPosition_offsetXInRun = 0;
     }
     
-    CFRange runRange = CTRunGetStringRange(run);
-    NSRange currentRunRange = NSMakeRange(runRange.location, runRange.length);
+    CFRange cf_runRange = CTRunGetStringRange(run);
+    NSRange runRange = NSMakeRange(cf_runRange.location, cf_runRange.length);
+    NSRange currentRunRange;
+    if (lineIndex == 0) {
+        currentRunRange = runRange;
+    }
+    else {
+        if (self.trapezoidalTexts_new) {  // QATrapezoidalDraw进行处理
+            currentRunRange = [self getCurrentRunRangeInQATrapezoidalLabelWithLineIndex:lineIndex
+                                                                               runRange:runRange];
+        }
+        else {
+            currentRunRange = [self getCurrentRunRangeInRichTextLabelWithLineIndex:lineIndex
+                                                                          runRange:runRange];
+        }
+    }
     NSString *runContent = [attributedString.string substringWithRange:currentRunRange];
     NSMutableString *currentRunString = [NSMutableString stringWithString:runContent];
-    
-    
+
     for (int i = 0; i < self.highlightRanges_sorted.count; i++) {
         NSString *rangeString = [self.highlightRanges_sorted objectAtIndex:i];
         NSRange highlightRange = NSRangeFromString(rangeString);  // 存放高亮文本的range
@@ -577,11 +553,65 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     
     return 0;
 }
+
+
+#pragma mark - Private Methods -
+- (CGRect)getRunRectWithAttributedString:(NSMutableAttributedString *)attributedString
+                                 context:(CGContextRef)context
+                                     run:(CTRunRef)run
+                            contentWidth:(CGFloat)contentWidth
+                           contentHeight:(CGFloat)contentHeight {
+    // 获取高亮文案的Rect:
+    /**
+     // 获得CTRun的size大小(紧贴文字的bounds、不含文字开头&结尾处的空白)、这个方法比较精确! 但是得到的rect的x的值只有火星人才能搞的懂!
+     CTRunGetImageBounds(run, context, CFRangeMake(0, 0));
+     
+     // 获得CTRun的width(包含文字开头&结尾处的空白):
+     CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &runAscent, &runDescent, &runLeading);
+     */
+    
+    CGRect srcRect = CTRunGetImageBounds(run, context, CFRangeMake(0, 0));
+    CGPoint *runPositionsPointer = (CGPoint *)CTRunGetPositionsPtr(run);  // Returns a direct pointer for the glyph position
+    CGSize runImageBounds = srcRect.size;
+    CGRect runRect = CGRectZero;
+    CGFloat originX = (*runPositionsPointer).x;
+    CGFloat widthAddedValue = 0;
+    if (originX - 1. > 0) {
+        runRect.origin.x = originX-1;
+        widthAddedValue = 3;
+    }
+    else {
+        runRect.origin.x = originX;
+        widthAddedValue = 1.5;
+    }
+    if (attributedString.lines) {   // QATrapezoidal
+        runRect.origin.y = (contentHeight - runImageBounds.height)/2. - 4;
+    }
+    else {
+       runRect.origin.y = contentHeight - (srcRect.origin.y + runImageBounds.height) - 4;
+    }
+    
+    CGFloat forecastWidth = ceil(runImageBounds.width) + widthAddedValue;
+    CGFloat diff_forecast = (runRect.origin.x + forecastWidth) - contentWidth;
+    CGFloat width = diff_forecast > 0 ? forecastWidth - diff_forecast : forecastWidth;
+    CGFloat height = runImageBounds.height+8;  // 此处也可以对最大高度做类似于最大宽度的判断
+    runRect.size = CGSizeMake(width, height);
+    
+    return runRect;
+}
 - (int)saveHighlightRect:(CGRect)highlightRect
            highlightText:(NSString *)highlightText
       withHighlightRange:(NSRange)highlightRange
                lineIndex:(CFIndex)lineIndex
         attributedString:(NSMutableAttributedString *)attributedString {
+    // 保存当前高亮文案的frame所处于的line数 (QATrapezoidalLabel中有可能出现多行的highlightRect一样的情况):
+    NSMutableArray *highlightLineIndexs = [self.highlightLineDic valueForKey:NSStringFromCGRect(highlightRect)];
+    if (!highlightLineIndexs) {
+        highlightLineIndexs = [NSMutableArray array];
+    }
+    [highlightLineIndexs addObject:[NSString stringWithFormat:@"%ld",lineIndex]];
+    [self.highlightLineDic setValue:highlightLineIndexs forKey:NSStringFromCGRect(highlightRect)];
+    
     NSMutableArray *highlightRects = [self.highlightFrameDic valueForKey:NSStringFromRange(highlightRange)];
     if (!highlightRects) {
         highlightRects = [NSMutableArray array];
@@ -663,6 +693,13 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
     return objc_getAssociatedObject(self, _cmd);
 }
 
+- (void)setHighlightLineDic:(NSMutableDictionary *)highlightLineDic {
+    objc_setAssociatedObject(self, @selector(highlightLineDic), highlightLineDic, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (NSMutableDictionary *)highlightLineDic {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
 - (void)setCurrentPositionInRun:(NSInteger)currentPositionInRun {
     objc_setAssociatedObject(self, @selector(currentPositionInRun), @(currentPositionInRun), OBJC_ASSOCIATION_ASSIGN);
 }
@@ -697,6 +734,5 @@ static inline CGFloat QAFlushFactorForTextAlignment(NSTextAlignment textAlignmen
 - (CTRunRef)currentRun {
     return (__bridge CTRunRef)(objc_getAssociatedObject(self, _cmd));
 }
-
 
 @end
