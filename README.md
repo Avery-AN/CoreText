@@ -35,7 +35,7 @@
 
 
 使用方法简单、只需设置对应项的属性值即可:<br>
-显示富文本使用QARichTextLabel & 异形label使用TrapezoidalLabel<br>
+( 显示富文本使用QARichTextLabel & 异形label使用TrapezoidalLabel )<br>
 ------------
 ![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo_4.png)<br>
 ![示例](https://github.com/Avery-AN/CoreText/raw/master/DEMO_images/demo_5.png)<br>
