@@ -1,8 +1,8 @@
 # CoreText
 
 自定义Label并使用CoreText绘制label的富文本<br>
+如果用在tableView的Cell中, 请参考：https://github.com/Avery-AN/TableView
 ======================================
-
 
 主要功能点:<br>
 --------------
